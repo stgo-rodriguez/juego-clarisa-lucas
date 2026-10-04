@@ -19,14 +19,34 @@ jobs:
     steps:
       - name: Checkout
         uses: actions/checkout@v4
+
+      - name: Build static site
+        shell: bash
+        run: |
+          mkdir -p _site
+          python - <<'PY'
+          from pathlib import Path
+          import re, json, base64, gzip
+
+          wrapper = Path("index.html").read_text(encoding="utf-8")
+          match = re.search(r'atob\(("(?:[^"\\]|\\.)*")\)', wrapper, re.S)
+          if not match:
+              raise SystemExit("No se encontró el payload de la aplicación")
+
+          payload = json.loads(match.group(1))
+          html = gzip.decompress(base64.b64decode(payload)).decode("utf-8")
+          Path("_site/index.html").write_text(html, encoding="utf-8")
+          print(f"Built _site/index.html: {len(html)} chars")
+          PY
+
       - name: Setup Pages
         uses: actions/configure-pages@v5
-        with:
-          enablement: true
+
       - name: Upload artifact
         uses: actions/upload-pages-artifact@v3
         with:
-          path: .
+          path: _site
+
       - name: Deploy
         id: deployment
         uses: actions/deploy-pages@v4
