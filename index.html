@@ -6,7 +6,8 @@
 *{box-sizing:border-box}body{margin:0;background:#171310;color:var(--text);font:16px system-ui,-apple-system,Segoe UI,sans-serif}
 .wrap{width:min(1180px,calc(100% - 24px));margin:auto;padding:28px 0 48px}header{display:flex;justify-content:space-between;gap:20px;align-items:end;margin-bottom:20px}
 h1{margin:4px 0;font-size:clamp(2rem,5vw,3.5rem);letter-spacing:-.05em}.eyebrow{font-size:.75rem;text-transform:uppercase;letter-spacing:.14em;color:#f0b44d;font-weight:800}
-.sub{color:var(--muted);max-width:560px;line-height:1.4}.legend{display:flex;gap:8px;flex-wrap:wrap;margin-top:10px}.chip{border:1px solid var(--line);border-radius:999px;padding:6px 9px;font-size:.8rem;color:#eee1d5}
+.sub{color:var(--muted);max-width:560px;line-height:1.4}
+.top-actions{display:flex;gap:10px;align-items:center;flex-wrap:wrap}.instructions-btn{border:1px solid #725b47;background:#2b221c;color:#fff;padding:10px 14px;border-radius:12px;font-weight:800;cursor:pointer}.instructions-btn:hover{border-color:#a48364}.legend{display:flex;gap:8px;flex-wrap:wrap;margin-top:10px}.chip{border:1px solid var(--line);border-radius:999px;padding:6px 9px;font-size:.8rem;color:#eee1d5}
 .grid{display:grid;grid-template-columns:repeat(12,1fr);gap:16px}.panel{background:var(--panel);border:1px solid var(--line);border-radius:20px;box-shadow:0 14px 38px #0005}
 .dice{grid-column:span 4;padding:20px;min-height:270px;display:flex;flex-direction:column}.decks{grid-column:span 8;display:grid;grid-template-columns:1fr 1fr;gap:16px}
 .deck{--c:#f0b44d;padding:18px;position:relative;overflow:hidden;border-color:color-mix(in srgb,var(--c) 35%,var(--line))}
@@ -18,11 +19,72 @@ h1{margin:4px 0;font-size:clamp(2rem,5vw,3.5rem);letter-spacing:-.05em}.eyebrow{
 .actions{display:flex;gap:8px;flex-wrap:wrap;margin-top:11px}.btn{border:1px solid var(--line);background:#2c241f;color:#fff;padding:9px 11px;border-radius:11px;font-weight:800;cursor:pointer}.primary{background:var(--c);color:#20150d}
 .diebox{flex:1;display:grid;place-items:center}.diebtn{width:132px;height:132px;border-radius:28px;border:0;background:#efe0ce;color:#21170f;font-size:4rem;cursor:pointer;box-shadow:0 15px 30px #0005}.hint{text-align:center;color:var(--muted);font-size:.84rem}
 .footer{display:flex;justify-content:space-between;gap:15px;margin-top:18px;color:var(--muted);font-size:.8rem}.linkbtn{background:none;border:0;color:var(--muted);text-decoration:underline;cursor:pointer}
+.instructions-overlay{position:fixed;inset:0;background:#000b;display:none;align-items:flex-start;justify-content:center;padding:22px;z-index:100;overflow:auto}.instructions-overlay.open{display:flex}.instructions-modal{width:min(860px,100%);background:#211a16;border:1px solid #564438;border-radius:22px;box-shadow:0 28px 80px #000a;margin:auto;overflow:hidden}.instructions-head{position:sticky;top:0;z-index:2;background:#211a16f2;backdrop-filter:blur(8px);display:flex;justify-content:space-between;align-items:center;padding:18px 20px;border-bottom:1px solid var(--line)}.instructions-head h2{margin:0;font-size:1.35rem}.close-btn{border:1px solid var(--line);background:#2c241f;color:#fff;width:38px;height:38px;border-radius:10px;cursor:pointer;font-size:1.2rem}.instructions-body{padding:22px 24px 30px;line-height:1.58;color:#eee3d9}.instructions-body h3{font-size:1.22rem;margin:26px 0 9px;color:#fff}.instructions-body h3:first-child{margin-top:0}.instructions-body p{margin:9px 0 14px}.resource-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:10px;margin:14px 0 18px}.resource-card{border:1px solid var(--line);border-radius:14px;padding:15px;text-align:center;background:#ffffff08}.resource-card .emoji{font-size:2rem;display:block;margin-bottom:5px}.steps{counter-reset:step;display:grid;gap:12px;margin:14px 0}.step{border:1px solid var(--line);background:#ffffff07;border-radius:14px;padding:14px 15px}.step strong{display:block;margin-bottom:5px;color:#fff}.example{display:grid;grid-template-columns:repeat(3,1fr);gap:10px;margin:14px 0}.example-card{border:1px solid var(--line);border-radius:14px;padding:16px;text-align:center;background:#ffffff08}.example-card .big{font-size:2rem;font-weight:900;display:block}.note{border-left:3px solid #f0b44d;padding:10px 14px;background:#f0b44d10;border-radius:0 10px 10px 0}
+@media(max-width:650px){.resource-grid,.example{grid-template-columns:1fr 1fr}.instructions-overlay{padding:8px}.instructions-body{padding:18px 16px 24px}}
 @media(max-width:900px){.dice,.decks{grid-column:1/-1}}@media(max-width:650px){header{flex-direction:column;align-items:start}.decks{grid-template-columns:1fr}.wrap{width:calc(100% - 16px)}}
 </style></head><body><div class="wrap">
-<header><div><div class="eyebrow">Soporte de partida</div><h1>Clarisa + Lucas</h1><div class="legend"><span class="chip">❤️ Amor</span><span class="chip">👤 Personalidad</span><span class="chip">📖 Conocimiento</span><span class="chip">💰 Dinero</span></div></div><div class="sub">Dado D6 y mazos de Cartas de Situación. La carta anterior vuelve al fondo al sacar la siguiente.</div></header>
+<header><div><div class="eyebrow">Soporte de partida</div><h1>Clarisa + Lucas</h1><div class="legend"><span class="chip">❤️ Amor</span><span class="chip">👤 Personalidad</span><span class="chip">📖 Conocimiento</span><span class="chip">💰 Dinero</span></div></div><div class="top-actions"><div class="sub">Dado D6 y mazos de Cartas de Situación. La carta anterior vuelve al fondo al sacar la siguiente.</div><button id="openInstructions" class="instructions-btn">📘 Instrucciones</button></div></header>
 <main class="grid"><section class="panel dice"><strong>🎲 Dado D6</strong><div class="diebox"><button id="die" class="diebtn">?</button></div><div class="hint">Hacé click sobre el dado para tirar.</div></section><section id="decks" class="decks"></section></main>
 <div class="footer"><span>El estado de los mazos se guarda en este dispositivo.</span><button id="resetAll" class="linkbtn">Reiniciar todos</button></div></div>
+
+<div id="instructionsOverlay" class="instructions-overlay" aria-hidden="true">
+  <section class="instructions-modal" role="dialog" aria-modal="true" aria-labelledby="instructionsTitle">
+    <div class="instructions-head">
+      <h2 id="instructionsTitle">Instrucciones del juego · Intro</h2>
+      <button id="closeInstructions" class="close-btn" aria-label="Cerrar instrucciones">×</button>
+    </div>
+    <div class="instructions-body">
+      <h3>Primero, ¿de qué se trata el juego?</h3>
+      <p>En este juego vas a vivir distintas etapas de la vida: la infancia, la juventud y la adultez.</p>
+      <p>Tu objetivo es formar pareja, estudiar, conseguir el pasaporte europeo, comprar una casa y finalmente casarte.</p>
+      <p>Pero no podés casarte con cualquiera: las parejas tienen que estar formadas por una Clarisa y un Lucas.</p>
+      <p><strong>La primera pareja que consigue casarse gana el juego y termina la partida.</strong></p>
+
+      <h3>¿Qué necesitás para conseguirlo?</h3>
+      <p>Durante la partida vas a juntar cuatro tipos de recursos:</p>
+      <div class="resource-grid">
+        <div class="resource-card"><span class="emoji">❤️</span><strong>Amor</strong></div>
+        <div class="resource-card"><span class="emoji">👤</span><strong>Personalidad</strong></div>
+        <div class="resource-card"><span class="emoji">📖</span><strong>Conocimiento</strong></div>
+        <div class="resource-card"><span class="emoji">💰</span><strong>Dinero</strong></div>
+      </div>
+      <p>Los vas a necesitar para avanzar, formar pareja y alcanzar tus objetivos. Algunos se gastan y otros quedan guardados para mantener lo que conseguiste.</p>
+      <p>Al empezar elegís si sos Clarisa o Lucas, recibís una Carta de Afinidad y comenzás sin recursos.</p>
+
+      <h3>Ahora sí, ¿cómo jugás tu turno?</h3>
+      <p>Es bastante sencillo. Cada vez que te toca jugar, hacés lo siguiente:</p>
+      <div class="steps">
+        <div class="step"><strong>1. Tirás el dado</strong>Tirás un dado de seis caras y avanzás por el tablero la cantidad de casilleros que indica.<br><br>Algunos casilleros te dan recursos cuando pasás por ellos, aunque no termines ahí.</div>
+        <div class="step"><strong>2. Hacés lo que indica el casillero donde caíste</strong>Por ejemplo, si caés en un casillero de Carta de Situación, sacás una carta.<br><br>La carta te plantea una situación de la vida y te ofrece dos opciones. Elegís una y recibís sus consecuencias: podés ganar algunos recursos y perder otros.</div>
+        <div class="step"><strong>3. Podés interactuar con otros jugadores</strong>Si terminaste en un casillero donde hay otros jugadores, podés tener oportunidades para formar pareja, intercambiar recursos o disputar un duelo.<br><br>No es obligatorio interactuar.</div>
+        <div class="step"><strong>4. Podés intercambiar recursos con la banca</strong>Si tenés recursos que te sobran, podés convertirlos en otros que necesitás, siguiendo ciertas equivalencias.<br><br>También podés pagar para cambiar tu Carta de Afinidad, que será importante cuando quieras casarte.<br><br>Podés realizar como máximo una conversión bancaria y un cambio de Afinidad por turno.</div>
+        <div class="step"><strong>5. Terminaste tu turno</strong>Después de comprobar que mantenés los requisitos de tus logros, le pasás el dado al siguiente jugador.</div>
+      </div>
+      <p class="note">Hay algunas acciones especiales que podés realizar antes de tirar, como cambiar de personaje o volver a intentar un trámite. Te las explicaría cuando aparezcan durante la partida.</p>
+
+      <h3>Hagamos tu primer turno</h3>
+      <p>Estás jugando como Lucas. Tu ficha está en el casillero inicial de Infancia.</p>
+      <div class="example">
+        <div class="example-card"><span class="big">🎲 3</span>Sale un 3</div>
+        <div class="example-card"><span class="big">❤️ +3</span>Pasás por Amor</div>
+        <div class="example-card"><span class="big">🃏</span>Terminás en Situación</div>
+      </div>
+      <p>Como pasaste por el casillero de Amor, ganás 3 ❤️.</p>
+      <p>Después sacás una Carta de Situación de Infancia. Leés las dos opciones, elegís una y aplicás los recursos que ganás y perdés.</p>
+      <p>Si no hay otros jugadores con quienes interactuar y no querés realizar una conversión o cambiar Afinidad, tu turno terminó.</p>
+
+      <h3>¿Qué cambia más adelante?</h3>
+      <p>Cuando avances por las diferentes etapas, aparecerán nuevos desafíos.</p>
+      <p>En Juventud podrás cursar materias universitarias y realizar trámites para conseguir el pasaporte europeo.</p>
+      <p>También podrás formar pareja. Cuando eso ocurra, los dos se moverán juntos cada vez que juegue cualquiera de ustedes. Los dos reciben los recursos de los casilleros, pero sólo quien está jugando resuelve las cartas y los procedimientos individuales.</p>
+      <p>En Adultez podrás intentar comprar la casa y, cuando reúnan todos los requisitos, buscar el casamiento.</p>
+      <p><strong>Y una regla importante:</strong> si en un turno tenés varias acciones permitidas, podés aprovecharlas todas, respetando los requisitos y límites de cada una.</p>
+      <p>No hace falta memorizar ahora cómo funcionan los exámenes, la ciudadanía o la compra de la casa. Los irás aprendiendo cuando llegues a esos lugares del tablero.</p>
+      <p class="note"><strong>Idea principal:</strong> tirás, avanzás, conseguís recursos, tomás decisiones y tratás de progresar más rápido que las demás parejas.</p>
+    </div>
+  </section>
+</div>
+
 <script>
 const I=[
 ["I01","Trabajo grupal. El grupo no se pone de acuerdo.","Tomás el liderazgo: +4 PERSONALIDAD / -1 AMOR","Priorizás que todos estén conformes: +7 AMOR / -1 PERSONALIDAD"],
@@ -118,4 +180,11 @@ function draw(k,cards,title,mix){let s=state[k];if(s.c)s.q.push(s.c);s.c=s.q.shi
 const root=document.getElementById("decks");for(const[k,title,cards,mix]of defs){let el=document.createElement("article");el.className="panel deck";el.dataset.k=k;el.id="d-"+k;el.innerHTML='<div class="head"><div class="title">'+title+'</div><div class="count"></div></div><div class="body"></div><div class="actions"></div>';el.onclick=e=>{let a=e.target.closest("[data-a]");if(!a)return;if(a.dataset.a=="draw")draw(k,cards,title,mix);if(a.dataset.a=="mix"){state[k].q=shuf(state[k].q);save();render(k,title,cards,mix)}if(a.dataset.a=="reset"){state[k]={q:cards.map(x=>x[0]),c:null};save();render(k,title,cards,mix)}};root.appendChild(el);render(k,title,cards,mix)}
 const faces={1:"⚀",2:"⚁",3:"⚂",4:"⚃",5:"⚄",6:"⚅"};document.getElementById("die").onclick=()=>document.getElementById("die").textContent=faces[Math.floor(Math.random()*6)+1];
 document.getElementById("resetAll").onclick=()=>{if(confirm("¿Reiniciar todos los mazos?")){state=fresh();save();for(const d of defs)render(...d)}};
+const instructionsOverlay=document.getElementById("instructionsOverlay");
+function openInstructions(){instructionsOverlay.classList.add("open");instructionsOverlay.setAttribute("aria-hidden","false");document.body.style.overflow="hidden"}
+function closeInstructions(){instructionsOverlay.classList.remove("open");instructionsOverlay.setAttribute("aria-hidden","true");document.body.style.overflow=""}
+document.getElementById("openInstructions").onclick=openInstructions;
+document.getElementById("closeInstructions").onclick=closeInstructions;
+instructionsOverlay.addEventListener("click",e=>{if(e.target===instructionsOverlay)closeInstructions()});
+document.addEventListener("keydown",e=>{if(e.key==="Escape"&&instructionsOverlay.classList.contains("open"))closeInstructions()});
 </script></body></html>
