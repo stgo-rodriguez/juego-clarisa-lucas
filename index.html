@@ -30,9 +30,11 @@ h1{margin:4px 0;font-size:clamp(2rem,5vw,3.5rem);letter-spacing:-.05em}.eyebrow{
 }
 @keyframes diceLand{0%{transform:translateY(-7px) scale(1.06)}55%{transform:translateY(3px) scale(.97)}100%{transform:translateY(0) scale(1)}}
 .footer{display:flex;justify-content:space-between;gap:15px;margin-top:18px;color:var(--muted);font-size:.8rem}.linkbtn{background:none;border:0;color:var(--muted);text-decoration:underline;cursor:pointer}
-.instructions-overlay{position:fixed;inset:0;background:#000b;display:none;align-items:flex-start;justify-content:center;padding:22px;z-index:100;overflow:auto}.instructions-overlay.open{display:flex}.instructions-modal{width:min(860px,100%);background:#211a16;border:1px solid #564438;border-radius:22px;box-shadow:0 28px 80px #000a;margin:auto;overflow:hidden}.instructions-head{position:sticky;top:0;z-index:2;background:#211a16f2;backdrop-filter:blur(8px);display:flex;justify-content:space-between;align-items:center;padding:18px 20px;border-bottom:1px solid var(--line)}.instructions-head h2{margin:0;font-size:1.35rem}.close-btn{border:1px solid var(--line);background:#2c241f;color:#fff;width:38px;height:38px;border-radius:10px;cursor:pointer;font-size:1.2rem}.instructions-body{padding:22px 24px 30px;line-height:1.58;color:#eee3d9}.instructions-body h3{font-size:1.22rem;margin:26px 0 9px;color:#fff}.instructions-body h3:first-child{margin-top:0}.instructions-body p{margin:9px 0 14px}.resource-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:10px;margin:14px 0 18px}.resource-card{border:1px solid var(--line);border-radius:14px;padding:15px;text-align:center;background:#ffffff08}.resource-card .emoji{font-size:2rem;display:block;margin-bottom:5px}.steps{counter-reset:step;display:grid;gap:12px;margin:14px 0}.step{border:1px solid var(--line);background:#ffffff07;border-radius:14px;padding:14px 15px}.step strong{display:block;margin-bottom:5px;color:#fff}.example{display:grid;grid-template-columns:repeat(3,1fr);gap:10px;margin:14px 0}.example-card{border:1px solid var(--line);border-radius:14px;padding:16px;text-align:center;background:#ffffff08}.example-card .big{font-size:2rem;font-weight:900;display:block}.note{border-left:3px solid #f0b44d;padding:10px 14px;background:#f0b44d10;border-radius:0 10px 10px 0}
+.instructions-overlay{position:fixed;inset:0;background:#000b;display:none;align-items:flex-start;justify-content:center;padding:22px;z-index:100;overflow:auto}.instructions-overlay.open{display:flex}.instructions-modal{width:min(860px,100%);background:#211a16;border:1px solid #564438;border-radius:22px;box-shadow:0 28px 80px #000a;margin:auto;overflow:hidden}.instructions-head{position:sticky;top:0;z-index:3;background:#211a16f2;backdrop-filter:blur(8px);display:flex;justify-content:space-between;align-items:center;padding:18px 20px 12px;border-bottom:1px solid var(--line)}.instructions-head h2{margin:0;font-size:1.35rem}
+.instructions-tabs{position:sticky;top:69px;z-index:2;display:flex;gap:8px;padding:10px 20px;background:#211a16f2;backdrop-filter:blur(8px);border-bottom:1px solid var(--line)}.instructions-tab{border:1px solid var(--line);background:#2b221c;color:#cdbfb3;padding:8px 13px;border-radius:999px;font-weight:850;cursor:pointer}.instructions-tab.active{background:#f0b44d;color:#21170f;border-color:#f0b44d}.instructions-section{display:none}.instructions-section.active{display:block}.close-btn{border:1px solid var(--line);background:#2c241f;color:#fff;width:38px;height:38px;border-radius:10px;cursor:pointer;font-size:1.2rem}.instructions-body{padding:22px 24px 30px;line-height:1.58;color:#eee3d9}.instructions-body h3{font-size:1.22rem;margin:26px 0 9px;color:#fff}.instructions-body h3:first-child{margin-top:0}.instructions-body p{margin:9px 0 14px}.resource-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:10px;margin:14px 0 18px}.resource-card{border:1px solid var(--line);border-radius:14px;padding:15px;text-align:center;background:#ffffff08}.resource-card .emoji{font-size:2rem;display:block;margin-bottom:5px}.steps{counter-reset:step;display:grid;gap:12px;margin:14px 0}.step{border:1px solid var(--line);background:#ffffff07;border-radius:14px;padding:14px 15px}.step strong{display:block;margin-bottom:5px;color:#fff}.example{display:grid;grid-template-columns:repeat(3,1fr);gap:10px;margin:14px 0}.example-card{border:1px solid var(--line);border-radius:14px;padding:16px;text-align:center;background:#ffffff08}.example-card .big{font-size:2rem;font-weight:900;display:block}.note{border-left:3px solid #f0b44d;padding:10px 14px;background:#f0b44d10;border-radius:0 10px 10px 0}
 .rule-grid{display:grid;grid-template-columns:repeat(2,1fr);gap:10px;margin:12px 0 16px}.rule-card{border:1px solid var(--line);border-radius:14px;padding:14px;background:#ffffff07}.rule-card strong{display:block;color:#fff;margin-bottom:5px}.rule-icons{display:flex;align-items:center;justify-content:center;gap:12px;margin:12px 0}.rule-icons .big-rule{font-size:1.7rem;font-weight:900;border:1px solid var(--line);border-radius:13px;padding:10px 14px;background:#ffffff08}.arrow{color:#f0b44d;font-weight:900}.dice-results{display:grid;grid-template-columns:repeat(6,1fr);gap:7px;margin:12px 0}.dice-result{border:1px solid var(--line);border-radius:11px;padding:9px 6px;text-align:center;background:#ffffff07;font-size:.8rem}.dice-result strong{display:block;font-size:1.15rem}.dice-result.ok{border-color:#6fd68f55;background:#6fd68f10}.dice-result.fail{border-color:#ff787844;background:#ff78780b}.journey{display:grid;gap:10px;margin:12px 0 18px}.journey-card{border:1px solid var(--line);border-radius:14px;padding:14px;background:#ffffff07}.journey-card strong{display:block;margin-bottom:5px;color:#fff}
-@media(max-width:650px){.resource-grid,.example,.rule-grid{grid-template-columns:1fr 1fr}.dice-results{grid-template-columns:repeat(3,1fr)}.instructions-overlay{padding:8px}.instructions-body{padding:18px 16px 24px}}
+.milestone-intro{margin:0 0 14px;color:var(--muted)}.milestone-legend{display:flex;flex-wrap:wrap;gap:7px;margin:8px 0 16px}.m-tag{border:1px solid var(--line);background:#ffffff08;border-radius:999px;padding:6px 9px;font-size:.76rem;font-weight:800}.milestone-grid{display:grid;grid-template-columns:repeat(2,1fr);gap:11px}.milestone-card{border:1px solid var(--line);border-radius:16px;padding:14px;background:linear-gradient(145deg,#ffffff08,#ffffff04)}.milestone-title{font-size:1.02rem;font-weight:900;color:#fff;margin-bottom:9px}.m-row{display:grid;grid-template-columns:32px 1fr;gap:7px;align-items:start;padding:6px 0;border-top:1px solid #ffffff0f}.m-row:first-of-type{border-top:0;padding-top:0}.m-label{font-size:1.02rem;text-align:center}.m-content{font-size:.86rem;color:#eee3d9;line-height:1.3}.m-content strong{color:#fff}.m-chips{display:flex;gap:5px;flex-wrap:wrap}.m-chip{display:inline-flex;align-items:center;gap:4px;border-radius:999px;padding:4px 7px;font-size:.77rem;font-weight:850;background:#ffffff0a;border:1px solid #ffffff12}.m-chip.reserve{background:#7c68ff18;border-color:#8f7cff42}.m-chip.pay{background:#f0b44d18;border-color:#f0b44d45}.m-chip.place{background:#58c0aa18;border-color:#58c0aa44}.m-chip.test{background:#ff787812;border-color:#ff787840}.m-chip.other{background:#d96aa715;border-color:#d96aa740}.m-chip.notechip{background:#ffffff0a}.milestone-stage{margin:18px 0 9px;font-size:.78rem;letter-spacing:.12em;text-transform:uppercase;color:#f0b44d;font-weight:900}
+@media(max-width:650px){.resource-grid,.example,.rule-grid{grid-template-columns:1fr 1fr}.dice-results{grid-template-columns:repeat(3,1fr)}.milestone-grid{grid-template-columns:1fr}.instructions-overlay{padding:8px}.instructions-body{padding:18px 16px 24px}.instructions-tabs{top:69px;padding:8px 14px}}
 @media(max-width:900px){.dice,.decks{grid-column:1/-1}}@media(max-width:650px){header{flex-direction:column;align-items:start}.decks{grid-template-columns:1fr}.wrap{width:calc(100% - 16px)}}
 </style></head><body><div class="wrap">
 <header><div><div class="eyebrow">Soporte de partida</div><h1>Clarisa + Lucas</h1><div class="legend"><span class="chip">❤️ Amor</span><span class="chip">👤 Personalidad</span><span class="chip">📖 Conocimiento</span><span class="chip">💰 Dinero</span></div></div><div class="top-actions"><div class="sub">Dado D6 y mazos de Cartas de Situación. La carta anterior vuelve al fondo al sacar la siguiente.</div><button id="openInstructions" class="instructions-btn">📘 Instrucciones</button></div></header>
@@ -42,10 +44,15 @@ h1{margin:4px 0;font-size:clamp(2rem,5vw,3.5rem);letter-spacing:-.05em}.eyebrow{
 <div id="instructionsOverlay" class="instructions-overlay" aria-hidden="true">
   <section class="instructions-modal" role="dialog" aria-modal="true" aria-labelledby="instructionsTitle">
     <div class="instructions-head">
-      <h2 id="instructionsTitle">Instrucciones del juego · Intro</h2>
+      <h2 id="instructionsTitle">Instrucciones del juego</h2>
       <button id="closeInstructions" class="close-btn" aria-label="Cerrar instrucciones">×</button>
     </div>
+    <div class="instructions-tabs" role="tablist" aria-label="Secciones de instrucciones">
+      <button class="instructions-tab active" data-instructions-tab="intro" role="tab" aria-selected="true">Intro</button>
+      <button class="instructions-tab" data-instructions-tab="hitos" role="tab" aria-selected="false">🗂️ Hitos</button>
+    </div>
     <div class="instructions-body">
+      <div id="instructions-intro" class="instructions-section active">
       <h3>Primero, ¿de qué se trata el juego?</h3>
       <p>En este juego vas a vivir distintas etapas de la vida: la infancia, la juventud y la adultez.</p>
       <p>Tu objetivo es formar pareja, estudiar, conseguir el pasaporte europeo, comprar una casa y finalmente casarte.</p>
@@ -128,6 +135,114 @@ h1{margin:4px 0;font-size:clamp(2rem,5vw,3.5rem);letter-spacing:-.05em}.eyebrow{
       <h3>Antes de seguir</h3>
       <p>Los logros no están garantizados: las Cartas de Situación pueden ayudarte o perjudicarte, otros jugadores pueden desafiarte y algunos objetivos dependen de reservas que tenés que conservar.</p>
       <p class="note"><strong>La clave:</strong> no se trata sólo de tirar y avanzar. Tenés que decidir qué objetivo perseguir, cuándo invertir recursos y qué riesgo asumir. El resto de las reglas se aprende mejor cuando aparece cada situación durante la partida.</p>
+      </div>
+
+      <div id="instructions-hitos" class="instructions-section">
+        <p class="milestone-intro">Qué necesitás para cada objetivo, de una sola mirada.</p>
+
+        <div class="milestone-legend">
+          <span class="m-tag">🔒 Reserva</span>
+          <span class="m-tag">💸 Pago</span>
+          <span class="m-tag">📍 Casillero</span>
+          <span class="m-tag">🎲 Prueba</span>
+          <span class="m-tag">👥 Otros</span>
+          <span class="m-tag">📝 Clave</span>
+        </div>
+
+        <div class="milestone-stage">Infancia → Juventud</div>
+        <div class="milestone-grid">
+          <div class="milestone-card">
+            <div class="milestone-title">🎓 Ingreso UTN</div>
+            <div class="m-row"><span class="m-label">🔒</span><div class="m-content"><div class="m-chips"><span class="m-chip reserve">👤 2</span><span class="m-chip reserve">📖 1</span></div></div></div>
+            <div class="m-row"><span class="m-label">💸</span><div class="m-content">—</div></div>
+            <div class="m-row"><span class="m-label">📍</span><div class="m-content"><span class="m-chip place">Pasar / llegar a salida UTN</span></div></div>
+            <div class="m-row"><span class="m-label">🎲</span><div class="m-content"><span class="m-chip test">1–3 ❌</span> <span class="m-chip test">4–6 ✅</span></div></div>
+            <div class="m-row"><span class="m-label">📝</span><div class="m-content">Si fallás, quedás en UTN y reintentás.</div></div>
+          </div>
+        </div>
+
+        <div class="milestone-stage">Juventud</div>
+        <div class="milestone-grid">
+          <div class="milestone-card">
+            <div class="milestone-title">📘 Ingeniería I</div>
+            <div class="m-row"><span class="m-label">🔒</span><div class="m-content"><span class="m-chip reserve">📖 1</span></div></div>
+            <div class="m-row"><span class="m-label">📍</span><div class="m-content"><span class="m-chip place">Universidad</span></div></div>
+            <div class="m-row"><span class="m-label">📝</span><div class="m-content">Queda reservada.</div></div>
+          </div>
+
+          <div class="milestone-card">
+            <div class="milestone-title">📗 Ingeniería II</div>
+            <div class="m-row"><span class="m-label">🔒</span><div class="m-content"><span class="m-chip reserve">📖 2</span></div></div>
+            <div class="m-row"><span class="m-label">📍</span><div class="m-content"><span class="m-chip place">Universidad</span></div></div>
+            <div class="m-row"><span class="m-label">📝</span><div class="m-content">Queda reservada.</div></div>
+          </div>
+
+          <div class="milestone-card">
+            <div class="milestone-title">📕 Ingeniería III</div>
+            <div class="m-row"><span class="m-label">🔒</span><div class="m-content"><span class="m-chip reserve">📖 3</span></div></div>
+            <div class="m-row"><span class="m-label">📍</span><div class="m-content"><span class="m-chip place">Universidad</span></div></div>
+            <div class="m-row"><span class="m-label">📝</span><div class="m-content">Queda reservada.</div></div>
+          </div>
+
+          <div class="milestone-card">
+            <div class="milestone-title">🎓 Título universitario</div>
+            <div class="m-row"><span class="m-label">👥</span><div class="m-content"><span class="m-chip other">I + II + III</span></div></div>
+            <div class="m-row"><span class="m-label">💸</span><div class="m-content"><span class="m-chip pay">📖 extra a elección</span></div></div>
+            <div class="m-row"><span class="m-label">📍</span><div class="m-content"><span class="m-chip place">Caer en Universidad</span></div></div>
+            <div class="m-row"><span class="m-label">🎲</span><div class="m-content">Más 📖 → más chances.</div></div>
+          </div>
+
+          <div class="milestone-card">
+            <div class="milestone-title">📄 Documentación UE</div>
+            <div class="m-row"><span class="m-label">🔒</span><div class="m-content"><span class="m-chip reserve">Recursos del trámite</span></div></div>
+            <div class="m-row"><span class="m-label">📍</span><div class="m-content"><span class="m-chip place">Trámite · EU</span></div></div>
+            <div class="m-row"><span class="m-label">📝</span><div class="m-content">Primer paso hacia el pasaporte.</div></div>
+          </div>
+
+          <div class="milestone-card">
+            <div class="milestone-title">🛂 Pasaporte europeo</div>
+            <div class="m-row"><span class="m-label">👥</span><div class="m-content"><span class="m-chip other">Documentación validada</span></div></div>
+            <div class="m-row"><span class="m-label">💸</span><div class="m-content"><span class="m-chip pay">Pago pasaporte</span></div></div>
+            <div class="m-row"><span class="m-label">📍</span><div class="m-content"><span class="m-chip place">Trámite · EU</span></div></div>
+            <div class="m-row"><span class="m-label">🎲</span><div class="m-content"><span class="m-chip test">Validación / prueba</span></div></div>
+            <div class="m-row"><span class="m-label">📝</span><div class="m-content">👤 puede mejorar las chances.</div></div>
+          </div>
+
+          <div class="milestone-card">
+            <div class="milestone-title">💞 Formar pareja</div>
+            <div class="m-row"><span class="m-label">🔒</span><div class="m-content"><div class="m-chips"><span class="m-chip reserve">❤️ 5 c/u</span><span class="m-chip reserve">👤 3 c/u</span></div></div></div>
+            <div class="m-row"><span class="m-label">📍</span><div class="m-content"><span class="m-chip place">Mismo casillero</span></div></div>
+            <div class="m-row"><span class="m-label">👥</span><div class="m-content"><div class="m-chips"><span class="m-chip other">Clarisa + Lucas</span><span class="m-chip other">Ambos aceptan</span></div></div></div>
+          </div>
+
+          <div class="milestone-card">
+            <div class="milestone-title">✈️ Viaje a Dublín</div>
+            <div class="m-row"><span class="m-label">👥</span><div class="m-content"><div class="m-chips"><span class="m-chip other">🎓 Título</span><span class="m-chip other">🛂 Pasaporte</span><span class="m-chip other">Pareja</span></div></div></div>
+            <div class="m-row"><span class="m-label">💸</span><div class="m-content"><span class="m-chip pay">Recursos para Adultez</span></div></div>
+            <div class="m-row"><span class="m-label">📍</span><div class="m-content"><span class="m-chip place">Caer exacto en salida</span></div></div>
+          </div>
+        </div>
+
+        <div class="milestone-stage">Adultez</div>
+        <div class="milestone-grid">
+          <div class="milestone-card">
+            <div class="milestone-title">🏠 Casa</div>
+            <div class="m-row"><span class="m-label">🔒</span><div class="m-content"><span class="m-chip reserve">Requisitos de pareja</span></div></div>
+            <div class="m-row"><span class="m-label">💸</span><div class="m-content"><span class="m-chip pay">Precio de compra</span></div></div>
+            <div class="m-row"><span class="m-label">📍</span><div class="m-content"><span class="m-chip place">Casa</span></div></div>
+            <div class="m-row"><span class="m-label">🎲</span><div class="m-content"><span class="m-chip test">vs banca / pareja</span></div></div>
+            <div class="m-row"><span class="m-label">📝</span><div class="m-content"><span class="m-chip notechip">Única</span> <span class="m-chip notechip">Puede perderse</span></div></div>
+          </div>
+
+          <div class="milestone-card">
+            <div class="milestone-title">💍 Casamiento</div>
+            <div class="m-row"><span class="m-label">👥</span><div class="m-content"><div class="m-chips"><span class="m-chip other">🏠 Casa</span><span class="m-chip other">🎓 Títulos</span><span class="m-chip other">🛂 Pasaportes</span><span class="m-chip other">🎨 Afinidad igual</span></div></div></div>
+            <div class="m-row"><span class="m-label">💸</span><div class="m-content"><span class="m-chip pay">Recursos libres</span></div></div>
+            <div class="m-row"><span class="m-label">📍</span><div class="m-content"><span class="m-chip place">Caer exacto en Propuesta</span></div></div>
+            <div class="m-row"><span class="m-label">📝</span><div class="m-content"><strong>✅ Si cumple todo: gana la pareja.</strong></div></div>
+          </div>
+        </div>
+      </div>
     </div>
   </section>
 </div>
@@ -259,6 +374,20 @@ function openInstructions(){instructionsOverlay.classList.add("open");instructio
 function closeInstructions(){instructionsOverlay.classList.remove("open");instructionsOverlay.setAttribute("aria-hidden","true");document.body.style.overflow=""}
 document.getElementById("openInstructions").onclick=openInstructions;
 document.getElementById("closeInstructions").onclick=closeInstructions;
+const instructionTabs=[...document.querySelectorAll("[data-instructions-tab]")];
+function showInstructionsTab(name){
+  instructionTabs.forEach(tab=>{
+    const active=tab.dataset.instructionsTab===name;
+    tab.classList.toggle("active",active);
+    tab.setAttribute("aria-selected",active?"true":"false");
+  });
+  document.querySelectorAll(".instructions-section").forEach(section=>section.classList.remove("active"));
+  const target=document.getElementById("instructions-"+name);
+  if(target)target.classList.add("active");
+  const body=document.querySelector(".instructions-modal");
+  if(body)body.scrollTop=0;
+}
+instructionTabs.forEach(tab=>tab.addEventListener("click",()=>showInstructionsTab(tab.dataset.instructionsTab)));
 instructionsOverlay.addEventListener("click",e=>{if(e.target===instructionsOverlay)closeInstructions()});
 document.addEventListener("keydown",e=>{if(e.key==="Escape"&&instructionsOverlay.classList.contains("open"))closeInstructions()});
 </script></body></html>
