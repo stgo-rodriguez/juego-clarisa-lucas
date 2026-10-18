@@ -49,6 +49,7 @@ h1{margin:4px 0;font-size:clamp(2rem,5vw,3.5rem);letter-spacing:-.05em}.eyebrow{
 .milestone-table th:nth-child(3),.milestone-table td:nth-child(3){width:25%}
 .milestone-table th:nth-child(4),.milestone-table td:nth-child(4){width:37%}
 .m-cell-icons{font-weight:850;font-size:.96rem}.m-dash{color:#75675c}
+.roll-map{width:100%;border-collapse:collapse;margin-top:7px;font-size:.78rem}.roll-map td{padding:4px 6px!important;border:1px solid #ffffff12!important}.roll-map td:first-child{width:44%;font-weight:850;color:#f0b44d}.consume-note{display:block;margin-top:7px;color:#ffcf9a;font-size:.8rem;font-weight:800}
 @media(max-width:650px){.resource-grid,.example,.rule-grid{grid-template-columns:1fr 1fr}.dice-results{grid-template-columns:repeat(3,1fr)}.instructions-overlay{padding:8px}.instructions-body{padding:18px 16px 24px}.instructions-tabs{top:69px;padding:8px 14px}}
 @media(max-width:900px){.dice,.decks{grid-column:1/-1}}@media(max-width:650px){header{flex-direction:column;align-items:start}.decks{grid-template-columns:1fr}.wrap{width:calc(100% - 16px)}}
 </style></head><body><div class="wrap">
@@ -201,10 +202,21 @@ h1{margin:4px 0;font-size:clamp(2rem,5vw,3.5rem);letter-spacing:-.05em}.eyebrow{
           <div class="milestone-table-wrap"><table class="milestone-table">
             <thead><tr><th>Reserva</th><th>Paga</th><th>Estar en Casillero</th><th>Observaciones</th></tr></thead>
             <tbody><tr>
-              <td>Ingeniería I + II + III completas</td>
-              <td class="m-cell-icons">📖 adicional elegido</td>
-              <td>Caer en Universidad</td>
-              <td>🎲 Cuanto más 📖 entregás, mayor es la probabilidad de aprobar. El 📖 entregado se consume.</td>
+              <td>Ingeniería I + II + III completas<br><strong>6 📖 reservados</strong></td>
+              <td class="m-cell-icons">1–6 📖 libres</td>
+              <td><strong>Caer exacto</strong> en Universidad</td>
+              <td>
+                🎲 Resultado según 📖 entregado:
+                <table class="roll-map">
+                  <tr><td>1 📖</td><td>6</td></tr>
+                  <tr><td>2 📖</td><td>5–6</td></tr>
+                  <tr><td>3 📖</td><td>4–6</td></tr>
+                  <tr><td>4 📖</td><td>3–6</td></tr>
+                  <tr><td>5 📖</td><td>2–6</td></tr>
+                  <tr><td>6 📖</td><td>✅ Automático</td></tr>
+                </table>
+                <span class="consume-note">El 📖 entregado se consume aunque desapruebe.</span>
+              </td>
             </tr></tbody>
           </table></div>
         </div>
@@ -216,10 +228,34 @@ h1{margin:4px 0;font-size:clamp(2rem,5vw,3.5rem);letter-spacing:-.05em}.eyebrow{
           <div class="milestone-table-wrap"><table class="milestone-table">
             <thead><tr><th>Reserva</th><th>Paga</th><th>Estar en Casillero</th><th>Observaciones</th></tr></thead>
             <tbody><tr>
-              <td>Recursos exigidos por la documentación</td>
+              <td class="m-cell-icons">❤️ 5 + 👤 2</td>
               <td class="m-dash">—</td>
-              <td>Trámite · EU</td>
-              <td>Es el paso previo a presentar y validar el trámite.</td>
+              <td>Pasar o caer en Trámite · EU</td>
+              <td>La reserva es permanente y sostiene Documentación, Ciudadanía y Pasaporte.</td>
+            </tr></tbody>
+          </table></div>
+        </div>
+
+        <div class="milestone-table-card">
+          <div class="milestone-table-title">🇪🇺 Validación de Ciudadanía</div>
+          <div class="milestone-table-wrap"><table class="milestone-table">
+            <thead><tr><th>Reserva</th><th>Paga</th><th>Estar en Casillero</th><th>Observaciones</th></tr></thead>
+            <tbody><tr>
+              <td class="m-cell-icons">❤️ 5 + 👤 2<br><small>se mantiene</small></td>
+              <td class="m-cell-icons">1–6 👤 libres propias</td>
+              <td><strong>Primera vez:</strong> caer exacto en Trámite · EU.<br><strong>Reintentos:</strong> no hace falta volver a caer.</td>
+              <td>
+                🎲 Resultado según 👤 invertida:
+                <table class="roll-map">
+                  <tr><td>1 👤</td><td>6</td></tr>
+                  <tr><td>2 👤</td><td>5–6</td></tr>
+                  <tr><td>3 👤</td><td>4–6</td></tr>
+                  <tr><td>4 👤</td><td>3–6</td></tr>
+                  <tr><td>5 👤</td><td>2–6</td></tr>
+                  <tr><td>6 👤</td><td>✅ Automático</td></tr>
+                </table>
+                <span class="consume-note">La 👤 invertida se consume aunque falle. Si falla, conserva documentación y reserva y queda EN TRÁMITE.</span>
+              </td>
             </tr></tbody>
           </table></div>
         </div>
@@ -229,10 +265,10 @@ h1{margin:4px 0;font-size:clamp(2rem,5vw,3.5rem);letter-spacing:-.05em}.eyebrow{
           <div class="milestone-table-wrap"><table class="milestone-table">
             <thead><tr><th>Reserva</th><th>Paga</th><th>Estar en Casillero</th><th>Observaciones</th></tr></thead>
             <tbody><tr>
-              <td>Documentación validada</td>
-              <td>Pago del pasaporte</td>
+              <td class="m-cell-icons">❤️ 5 + 👤 2<br><small>se mantiene</small></td>
+              <td class="m-cell-icons">💰 2</td>
               <td>Trámite · EU</td>
-              <td>🎲 Requiere validación/prueba. La 👤 puede mejorar las probabilidades.</td>
+              <td><strong>No tiene tirada propia.</strong> Cuando ya tenés la Ciudadanía aprobada y realizaste el pago de 2 💰, obtenés el Pasaporte Europeo. Los 2 💰 se consumen.</td>
             </tr></tbody>
           </table></div>
         </div>
