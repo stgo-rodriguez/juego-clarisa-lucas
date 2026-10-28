@@ -49,112 +49,129 @@ h1{margin:4px 0;font-size:clamp(2rem,5vw,3.5rem);letter-spacing:-.05em}.eyebrow{
 .milestone-table th:nth-child(3),.milestone-table td:nth-child(3){width:25%}
 .milestone-table th:nth-child(4),.milestone-table td:nth-child(4){width:37%}
 .m-cell-icons{font-weight:850;font-size:.96rem}.m-dash{color:#75675c}
+.data-table-wrap{overflow-x:auto;margin:10px 0 16px}.data-table{width:100%;border-collapse:collapse;min-width:650px;border:1px solid var(--line);border-radius:14px;overflow:hidden}.data-table th{padding:9px 10px;text-align:left;font-size:.75rem;text-transform:uppercase;letter-spacing:.04em;color:#f0b44d;background:#17131088;border:1px solid #ffffff12}.data-table td{padding:9px 10px;border:1px solid #ffffff0d;vertical-align:top;font-size:.88rem;line-height:1.35}.status-line{display:flex;gap:7px;flex-wrap:wrap;margin:10px 0 16px}.status-pill{border:1px solid var(--line);border-radius:999px;padding:6px 9px;background:#ffffff08;font-size:.78rem;font-weight:800}
 .roll-map{width:100%;border-collapse:collapse;margin-top:7px;font-size:.78rem}.roll-map td{padding:4px 6px!important;border:1px solid #ffffff12!important}.roll-map td:first-child{width:44%;font-weight:850;color:#f0b44d}.consume-note{display:block;margin-top:7px;color:#ffcf9a;font-size:.8rem;font-weight:800}
 @media(max-width:650px){.resource-grid,.example,.rule-grid{grid-template-columns:1fr 1fr}.dice-results{grid-template-columns:repeat(3,1fr)}.instructions-overlay{padding:8px}.instructions-body{padding:18px 16px 24px}.instructions-tabs{top:69px;padding:8px 14px}}
 @media(max-width:900px){.dice,.decks{grid-column:1/-1}}@media(max-width:650px){header{flex-direction:column;align-items:start}.decks{grid-template-columns:1fr}.wrap{width:calc(100% - 16px)}}
 </style></head><body><div class="wrap">
-<header><div><div class="eyebrow">Soporte de partida</div><h1>Clarisa + Lucas</h1><div class="legend"><span class="chip">❤️ Amor</span><span class="chip">👤 Personalidad</span><span class="chip">📖 Conocimiento</span><span class="chip">💰 Dinero</span></div></div><div class="top-actions"><div class="sub">Dado D6 y mazos de Cartas de Situación. La carta anterior vuelve al fondo al sacar la siguiente.</div><button id="openInstructions" class="instructions-btn">📘 Instrucciones</button></div></header>
+<header><div><div class="eyebrow">Soporte de partida · reglas v1.3</div><h1>Clarisa + Lucas</h1><div class="legend"><span class="chip">❤️ Amor</span><span class="chip">👤 Personalidad</span><span class="chip">📖 Conocimiento</span><span class="chip">💰 Dinero</span></div></div><div class="top-actions"><div class="sub">Dado D6 y mazos de Cartas de Situación. La carta anterior vuelve al fondo al sacar la siguiente.</div><button id="openInstructions" class="instructions-btn">📘 Instrucciones</button></div></header>
 <main class="grid"><section class="panel dice"><strong>🎲 Dado D6</strong><div class="diebox"><button id="die" class="diebtn">?</button></div><div class="hint" id="diceHint">Hacé click sobre el dado para tirar.</div></section><section id="decks" class="decks"></section></main>
 <div class="footer"><span>El estado de los mazos se guarda en este dispositivo.</span><button id="resetAll" class="linkbtn">Reiniciar todos</button></div></div>
 
 <div id="instructionsOverlay" class="instructions-overlay" aria-hidden="true">
   <section class="instructions-modal" role="dialog" aria-modal="true" aria-labelledby="instructionsTitle">
     <div class="instructions-head">
-      <h2 id="instructionsTitle">Instrucciones del juego</h2>
+      <h2 id="instructionsTitle">Instrucciones del juego · v1.3</h2>
       <button id="closeInstructions" class="close-btn" aria-label="Cerrar instrucciones">×</button>
     </div>
     <div class="instructions-tabs" role="tablist" aria-label="Secciones de instrucciones">
       <button class="instructions-tab active" data-instructions-tab="intro" role="tab" aria-selected="true">Intro</button>
+      <button class="instructions-tab" data-instructions-tab="proyectos" role="tab" aria-selected="false">🪪 Perfil y proyectos</button>
       <button class="instructions-tab" data-instructions-tab="hitos" role="tab" aria-selected="false">🗂️ Hitos</button>
     </div>
+
     <div class="instructions-body">
       <div id="instructions-intro" class="instructions-section active">
-      <h3>Primero, ¿de qué se trata el juego?</h3>
-      <p>En este juego vas a vivir distintas etapas de la vida: la infancia, la juventud y la adultez.</p>
-      <p>Tu objetivo es formar pareja, estudiar, conseguir el pasaporte europeo, comprar una casa y finalmente casarte.</p>
-      <p>Pero no podés casarte con cualquiera: las parejas tienen que estar formadas por una Clarisa y un Lucas.</p>
-      <p><strong>La primera pareja que consigue casarse gana el juego y termina la partida.</strong></p>
+        <h3>¿De qué se trata?</h3>
+        <p>Vivís tres etapas: Infancia, Juventud y Adultez. El objetivo es formar una pareja Clarisa + Lucas, conseguir Título y Pasaporte, comprar la Casa y llegar al Casamiento.</p>
+        <p><strong>Gana la primera pareja que cumple todo y cae exactamente en Propuesta de Casamiento.</strong> La afinidad sólo importa para casarse, no para formar pareja.</p>
 
-      <h3>¿Qué necesitás para conseguirlo?</h3>
-      <p>Durante la partida vas a juntar cuatro tipos de recursos:</p>
-      <div class="resource-grid">
-        <div class="resource-card"><span class="emoji">❤️</span><strong>Amor</strong></div>
-        <div class="resource-card"><span class="emoji">👤</span><strong>Personalidad</strong></div>
-        <div class="resource-card"><span class="emoji">📖</span><strong>Conocimiento</strong></div>
-        <div class="resource-card"><span class="emoji">💰</span><strong>Dinero</strong></div>
+        <h3>Recursos</h3>
+        <div class="resource-grid">
+          <div class="resource-card"><span class="emoji">❤️</span><strong>Amor</strong></div>
+          <div class="resource-card"><span class="emoji">👤</span><strong>Personalidad</strong></div>
+          <div class="resource-card"><span class="emoji">📖</span><strong>Conocimiento</strong></div>
+          <div class="resource-card"><span class="emoji">💰</span><strong>Dinero</strong></div>
+        </div>
+        <div class="status-line">
+          <span class="status-pill">Libre</span><span class="status-pill">Requisito puntual</span><span class="status-pill">Reservado</span><span class="status-pill">Invertido</span><span class="status-pill">Consumido</span>
+        </div>
+        <p>Empezás con <strong>0 recursos</strong> y sin Carta de Perfil‑Afinidad. La primera se obtiene al aprobar UTN.</p>
+
+        <h3>Cómo jugás tu turno</h3>
+        <div class="steps">
+          <div class="step"><strong>1. Inicio</strong>Resolvé acciones que deban hacerse antes de tirar, como cambiar de personaje.</div>
+          <div class="step"><strong>2. Tirás y avanzás</strong>Movete paso a paso con D6. Cobrás recursos al pasar o caer y también la producción de tu Perfil si cruzás la marca de vuelta.</div>
+          <div class="step"><strong>3. Resolvé el casillero final</strong>Carta de Situación, adjudicación de un proyecto, Casa o Casamiento, según corresponda.</div>
+          <div class="step"><strong>4. Interacciones</strong>Podés negociar, formar pareja o iniciar un Duelo si la posición lo habilita.</div>
+          <div class="step"><strong>5. Inversiones</strong>Podés financiar subhitos de proyectos habilitados. No hace falta estar sobre Universidad o Trámite.</div>
+          <div class="step"><strong>6. Cierre</strong>Podés hacer una conversión con la banca y terminar el turno.</div>
+        </div>
+        <p class="note">Límites principales: 1 Duelo iniciado, 1 intento de adjudicación, 1 conversión bancaria y 1 cambio voluntario de Perfil por turno.</p>
+
+        <h3>Banco</h3>
+        <p>Una vez por turno podés convertir recursos libres a razón de <strong>2 → 1</strong> entre recursos adyacentes de la cadena ❤️ ↔ 👤 ↔ 📖 ↔ 💰. En una conversión elegís un único par y una única dirección.</p>
+
+        <h3>Primer gran objetivo: UTN</h3>
+        <p>Al alcanzar o pasar la posición 5 de Infancia, cobrás primero <strong>+2 👤</strong>. Si en ese momento tenés <strong>2 👤 + 1 📖 libres</strong>, podés salir a Ingreso UTN. Es un <strong>requisito puntual</strong>: no se paga ni se reserva.</p>
+        <div class="dice-results">
+          <div class="dice-result fail"><strong>1</strong>Fallás</div><div class="dice-result fail"><strong>2</strong>Fallás</div><div class="dice-result fail"><strong>3</strong>Fallás</div>
+          <div class="dice-result ok"><strong>4</strong>Aprobás</div><div class="dice-result ok"><strong>5</strong>Aprobás</div><div class="dice-result ok"><strong>6</strong>Aprobás</div>
+        </div>
+        <p>Si fallás, quedás en UTN y rendís de nuevo en tu siguiente turno. Si aprobás, el ingreso queda adquirido para siempre y recibís tu primera <strong>Carta de Perfil‑Afinidad</strong>.</p>
+
+        <h3>Qué cambia después</h3>
+        <p>En Juventud construís proyectos de <strong>Título</strong> y <strong>Pasaporte</strong>, podés formar pareja y empezás a producir recursos con tu Perfil cada vez que completás una vuelta. En Adultez aparece la Casa. El final exige Casa, Título, Pasaporte, reservas vigentes, pagos de Casamiento y Perfil‑Afinidad compatible.</p>
       </div>
-      <p>Los vas a necesitar para avanzar, formar pareja y alcanzar tus objetivos. Algunos se gastan y otros quedan guardados para mantener lo que conseguiste.</p>
-      <p>Al empezar elegís si sos Clarisa o Lucas, recibís una Carta de Afinidad y comenzás sin recursos.</p>
 
-      <h3>Ahora sí, ¿cómo jugás tu turno?</h3>
-      <p>Es bastante sencillo. Cada vez que te toca jugar, hacés lo siguiente:</p>
-      <div class="steps">
-        <div class="step"><strong>1. Tirás el dado</strong>Tirás un dado de seis caras y avanzás por el tablero la cantidad de casilleros que indica.<br><br>Algunos casilleros te dan recursos cuando pasás por ellos, aunque no termines ahí.</div>
-        <div class="step"><strong>2. Hacés lo que indica el casillero donde caíste</strong>Por ejemplo, si caés en un casillero de Carta de Situación, sacás una carta.<br><br>La carta te plantea una situación de la vida y te ofrece dos opciones. Elegís una y recibís sus consecuencias: podés ganar algunos recursos y perder otros.</div>
-        <div class="step"><strong>3. Podés interactuar con otros jugadores</strong>Si terminaste en un casillero donde hay otros jugadores, podés tener oportunidades para formar pareja, intercambiar recursos o disputar un duelo.<br><br>No es obligatorio interactuar.</div>
-        <div class="step"><strong>4. Podés intercambiar recursos con la banca</strong>Si tenés recursos que te sobran, podés convertirlos en otros que necesitás, siguiendo ciertas equivalencias.<br><br>También podés pagar para cambiar tu Carta de Afinidad, que será importante cuando quieras casarte.<br><br>Podés realizar como máximo una conversión bancaria y un cambio de Afinidad por turno.</div>
-        <div class="step"><strong>5. Terminaste tu turno</strong>Después de comprobar que mantenés los requisitos de tus logros, le pasás el dado al siguiente jugador.</div>
-      </div>
-      <p class="note">Hay algunas acciones especiales que podés realizar antes de tirar, como cambiar de personaje o volver a intentar un trámite. Te las explicaría cuando aparezcan durante la partida.</p>
+      <div id="instructions-proyectos" class="instructions-section">
+        <h3>🪪 Perfil‑Afinidad</h3>
+        <p>Tenés una sola carta activa. Combina <strong>personaje + perfil productivo + elemento de afinidad + producción por vuelta</strong>. La afinidad sólo se compara al casarse.</p>
+        <p>La primera carta se obtiene al aprobar UTN. Cada vuelta completa produce exactamente <strong>6 recursos</strong> según el perfil activo.</p>
 
-      <h3>Hagamos tu primer turno</h3>
-      <p>Estás jugando como Lucas. Tu ficha está en el casillero inicial de Infancia.</p>
-      <div class="example">
-        <div class="example-card"><span class="big">🎲 3</span>Sale un 3</div>
-        <div class="example-card"><span class="big">❤️ +3</span>Pasás por Amor</div>
-        <div class="example-card"><span class="big">🃏</span>Terminás en Situación</div>
-      </div>
-      <p>Como pasaste por el casillero de Amor, ganás 3 ❤️.</p>
-      <p>Después sacás una Carta de Situación de Infancia. Leés las dos opciones, elegís una y aplicás los recursos que ganás y perdés.</p>
-      <p>Si no hay otros jugadores con quienes interactuar y no querés realizar una conversión o cambiar Afinidad, tu turno terminó.</p>
+        <div class="data-table-wrap"><table class="data-table">
+          <thead><tr><th>Perfil</th><th>❤️</th><th>👤</th><th>📖</th><th>💰</th></tr></thead>
+          <tbody>
+            <tr><td>Clarisa · Consultora BI</td><td>2</td><td>1</td><td>2</td><td>1</td></tr>
+            <tr><td>Clarisa · Consultora Senior / Líder BI</td><td>2</td><td>1</td><td>1</td><td>2</td></tr>
+            <tr><td>Clarisa · Líder de Inteligencia de Negocios</td><td>1</td><td>1</td><td>1</td><td>3</td></tr>
+            <tr><td>Clarisa · Ingeniería de Datos / Ciencia de Decisiones</td><td>1</td><td>0</td><td>1</td><td>4</td></tr>
+            <tr><td>Lucas · Profesional inicial</td><td>2</td><td>2</td><td>1</td><td>1</td></tr>
+            <tr><td>Lucas · Especialista</td><td>2</td><td>1</td><td>1</td><td>2</td></tr>
+            <tr><td>Lucas · Coordinador / Líder</td><td>1</td><td>1</td><td>1</td><td>3</td></tr>
+            <tr><td>Lucas · Gerente / Director</td><td>1</td><td>0</td><td>1</td><td>4</td></tr>
+          </tbody>
+        </table></div>
+        <p class="note">Valores de producción provisionales de v1.3: sirven para simulación y todavía no representan balance definitivo.</p>
 
-      <h3>1. ¿Para qué juntás recursos?</h3>
-      <p>No gana quien más acumula: los recursos sirven para alcanzar objetivos. Vas a necesitarlos para entrar a la universidad, formar pareja, completar trámites y comprar la casa.</p>
-      <p>También podés convertirlos en la banca. Por ejemplo:</p>
-      <div class="rule-icons"><span class="big-rule">2 ❤️</span><span class="arrow">→</span><span class="big-rule">1 👤</span></div>
-      <p>Podés hacer <strong>una conversión bancaria por turno</strong>, así que vas a decidir entre guardar recursos o transformarlos.</p>
+        <h3>Mercado y cambio de Perfil</h3>
+        <p>Cada personaje tiene un mazo tapado y una pila visible. Al cambiar Perfil elegís la carta superior visible o la superior del mazo tapado y decidís dónde devolver la carta anterior.</p>
+        <p><strong>Cambio voluntario:</strong> máximo 1 por turno. Cuesta <strong>3 ❤️ + 3 👤 + 3 📖 + 3 💰</strong>, consumidos.</p>
+        <p><strong>Duelo por Perfil:</strong> sólo contra otro jugador del mismo personaje si terminás exactamente en su casillero. El defensor tira primero; si el retador lo supera estrictamente, intercambian cartas.</p>
 
-      <h3>2. Primer objetivo: entrar a la UTN</h3>
-      <p>Desde Infancia, cuando llegues o pases por el casillero que habilita la salida hacia UTN, podés intentar ingresar si tenés:</p>
-      <div class="rule-grid">
-        <div class="rule-card"><strong>👤 2 Personalidad</strong>Se reservan.</div>
-        <div class="rule-card"><strong>📖 1 Conocimiento</strong>Se reserva.</div>
-      </div>
-      <p>Esos recursos no se pierden: quedan comprometidos para sostener el ingreso. Después rendís el examen con el dado:</p>
-      <div class="dice-results">
-        <div class="dice-result fail"><strong>1</strong>Fallás</div><div class="dice-result fail"><strong>2</strong>Fallás</div><div class="dice-result fail"><strong>3</strong>Fallás</div>
-        <div class="dice-result ok"><strong>4</strong>Aprobás</div><div class="dice-result ok"><strong>5</strong>Aprobás</div><div class="dice-result ok"><strong>6</strong>Aprobás</div>
-      </div>
-      <p>Si aprobás, avanzás a Juventud en tu próximo turno. Si fallás, <strong>te quedás en Ingreso UTN</strong> y volvés a rendir en el siguiente.</p>
+        <h3>Proyectos de hitos</h3>
+        <p>Título y Pasaporte se construyen como proyectos numerados. Sus subhitos se financian completos y en orden. La inversión queda protegida hasta la adjudicación.</p>
 
-      <h3>3. En Juventud tenés dos grandes objetivos</h3>
-      <div class="journey">
-        <div class="journey-card"><strong>🎓 Terminar la universidad</strong>Completás tres materias reservando 1 📖, luego 2 📖 y finalmente 3 📖. Después rendís el examen final: podés invertir Conocimiento adicional para mejorar tus posibilidades.</div>
-        <div class="journey-card"><strong>🇪🇺 Conseguir el pasaporte europeo</strong>En los casilleros de Trámite reunís documentación, la validás y pagás el pasaporte. La validación incluye azar y podés invertir más Personalidad para mejorar tus posibilidades.</div>
-      </div>
-      <p>No necesitás terminar un objetivo antes de empezar el otro: podés avanzar con ambos en paralelo.</p>
+        <div class="data-table-wrap"><table class="data-table">
+          <thead><tr><th>Proyecto</th><th>Subhito 1</th><th>Subhito 2</th><th>Subhito 3</th><th>Total</th></tr></thead>
+          <tbody>
+            <tr><td>🎓 Título</td><td>Ingeniería I · 1 📖</td><td>Ingeniería II · 2 📖</td><td>Ingeniería III · 3 📖</td><td>6 📖</td></tr>
+            <tr><td>🛂 Pasaporte integrado</td><td>Documentación 1 · 2 👤</td><td>Documentación 2 · 3 👤</td><td>Pasaporte · 2 💰</td><td>5 👤 + 2 💰</td></tr>
+          </tbody>
+        </table></div>
+        <p>Podés financiar como máximo <strong>un subhito del mismo proyecto por turno</strong>, pero podés aportar a varios proyectos distintos. No se permiten pagos parciales ni anticipar subhitos.</p>
 
-      <h3>4. Formar pareja cambia la forma de jugar</h3>
-      <p>Si una Clarisa y un Lucas terminan en el mismo casillero, pueden formar pareja si ambos aceptan y cada uno puede reservar <strong>5 ❤️ y 3 👤</strong>.</p>
-      <div class="rule-icons"><span class="big-rule">👩 Clarisa</span><span class="arrow">+</span><span class="big-rule">👨 Lucas</span></div>
-      <p>Desde entonces mantienen turnos individuales, pero se mueven juntos. Los dos reciben los recursos automáticos del recorrido; sólo el jugador activo resuelve cartas y procedimientos individuales.</p>
-      <p>Pueden ayudarse intercambiando recursos, pero deben conservar las reservas que sostienen la relación. Si dejan de cumplirlas, la pareja se rompe.</p>
+        <h3>Adjudicación</h3>
+        <p>Cuando un proyecto está completo, un inversor habilitado puede intentar adjudicarlo: <strong>Universidad para Título</strong> y <strong>Trámite para Pasaporte</strong>. Máximo un intento de adjudicación por turno.</p>
+        <div class="data-table-wrap"><table class="data-table">
+          <thead><tr><th>Pago</th><th>Resultado que aprueba</th><th>Probabilidad</th></tr></thead>
+          <tbody>
+            <tr><td>1 recurso</td><td>6</td><td>1/6</td></tr>
+            <tr><td>2</td><td>5–6</td><td>2/6</td></tr>
+            <tr><td>3</td><td>4–6</td><td>3/6</td></tr>
+            <tr><td>4</td><td>3–6</td><td>4/6</td></tr>
+            <tr><td>5</td><td>2–6</td><td>5/6</td></tr>
+            <tr><td>6</td><td>Automático</td><td>6/6</td></tr>
+          </tbody>
+        </table></div>
+        <p>Para Título pagás 📖; para Pasaporte pagás 👤. <strong>El pago se consume aunque desapruebes.</strong> Si fallás, el proyecto sigue completo y protegido para otro intento.</p>
 
-      <h3>5. De Juventud a Adultez</h3>
-      <p>Para viajar a Dublín y llegar a Adultez, los dos deben haber terminado la universidad, tener el pasaporte europeo y cumplir los recursos exigidos. Además, tienen que terminar exactamente en un casillero que habilite el viaje.</p>
-      <p>En Adultez aparece el gran objetivo compartido: <strong>la única casa del juego</strong>. No alcanza con pagarla; deberán ganar una disputa con dados contra la banca o contra la pareja que ya la tenga.</p>
-
-      <h3>6. ¿Cómo se gana?</h3>
-      <p>Para casarse, la pareja debe conservar la casa, títulos y pasaportes, reunir los recursos libres necesarios y tener Cartas de Afinidad del mismo color.</p>
-      <p>Después debe caer exactamente en el casillero de <strong>Propuesta de Casamiento</strong>. Si cumple todo, se casa y la partida termina inmediatamente.</p>
-
-      <h3>Antes de seguir</h3>
-      <p>Los logros no están garantizados: las Cartas de Situación pueden ayudarte o perjudicarte, otros jugadores pueden desafiarte y algunos objetivos dependen de reservas que tenés que conservar.</p>
-      <p class="note"><strong>La clave:</strong> no se trata sólo de tirar y avanzar. Tenés que decidir qué objetivo perseguir, cuándo invertir recursos y qué riesgo asumir. El resto de las reglas se aprende mejor cuando aparece cada situación durante la partida.</p>
+        <h3>Cambio de personaje</h3>
+        <p>Al comienzo del turno podés cambiar Clarisa ↔ Lucas pagando <strong>3 👤</strong>. Si tenés Perfil, lo sustituís por uno del nuevo personaje. Si ya tenés Pasaporte, cambia automáticamente a la nacionalidad compatible; el Título no cambia.</p>
       </div>
 
       <div id="instructions-hitos" class="instructions-section">
-        <p class="milestone-intro">Cada hito muestra siempre lo mismo: qué queda reservado, qué se paga, dónde tenés que estar y qué condición especial aplica.</p>
+        <p class="milestone-intro">Resumen operativo v1.3. “Reserva” inmoviliza y debe mantenerse. “Paga” se consume. Los requisitos puntuales aparecen en Observaciones.</p>
 
         <div class="milestone-stage">Infancia → Juventud</div>
 
@@ -163,112 +180,64 @@ h1{margin:4px 0;font-size:clamp(2rem,5vw,3.5rem);letter-spacing:-.05em}.eyebrow{
           <div class="milestone-table-wrap"><table class="milestone-table">
             <thead><tr><th>Reserva</th><th>Paga</th><th>Estar en Casillero</th><th>Observaciones</th></tr></thead>
             <tbody><tr>
-              <td class="m-cell-icons">👤 2 &nbsp; 📖 1</td>
               <td class="m-dash">—</td>
-              <td>Pasar o llegar a la salida hacia UTN</td>
-              <td>🎲 1–3 falla · 4–6 aprueba. Si falla, queda en UTN y vuelve a rendir.</td>
+              <td class="m-dash">—</td>
+              <td>Alcanzar o pasar posición 5 de Infancia</td>
+              <td><strong>Requisito puntual:</strong> 2 👤 + 1 📖 libres después de cobrar +2 👤. 🎲 4–6 aprueba. No se reserva ni se consume. Al aprobar, UTN queda permanente y recibís Perfil‑Afinidad.</td>
             </tr></tbody>
           </table></div>
         </div>
 
-        <div class="milestone-stage">Juventud · Universidad</div>
+        <div class="milestone-stage">Juventud · Proyectos</div>
 
         <div class="milestone-table-card">
-          <div class="milestone-table-title">📘 Ingeniería I</div>
-          <div class="milestone-table-wrap"><table class="milestone-table">
-            <thead><tr><th>Reserva</th><th>Paga</th><th>Estar en Casillero</th><th>Observaciones</th></tr></thead>
-            <tbody><tr><td class="m-cell-icons">📖 1</td><td class="m-dash">—</td><td>Universidad</td><td>El 📖 queda reservado para la materia.</td></tr></tbody>
-          </table></div>
-        </div>
-
-        <div class="milestone-table-card">
-          <div class="milestone-table-title">📗 Ingeniería II</div>
-          <div class="milestone-table-wrap"><table class="milestone-table">
-            <thead><tr><th>Reserva</th><th>Paga</th><th>Estar en Casillero</th><th>Observaciones</th></tr></thead>
-            <tbody><tr><td class="m-cell-icons">📖 2</td><td class="m-dash">—</td><td>Universidad</td><td>Los 📖 quedan reservados para la materia.</td></tr></tbody>
-          </table></div>
-        </div>
-
-        <div class="milestone-table-card">
-          <div class="milestone-table-title">📕 Ingeniería III</div>
-          <div class="milestone-table-wrap"><table class="milestone-table">
-            <thead><tr><th>Reserva</th><th>Paga</th><th>Estar en Casillero</th><th>Observaciones</th></tr></thead>
-            <tbody><tr><td class="m-cell-icons">📖 3</td><td class="m-dash">—</td><td>Universidad</td><td>Los 📖 quedan reservados para la materia.</td></tr></tbody>
-          </table></div>
-        </div>
-
-        <div class="milestone-table-card">
-          <div class="milestone-table-title">🎓 Título universitario</div>
+          <div class="milestone-table-title">🏗️ Construir proyecto de Título</div>
           <div class="milestone-table-wrap"><table class="milestone-table">
             <thead><tr><th>Reserva</th><th>Paga</th><th>Estar en Casillero</th><th>Observaciones</th></tr></thead>
             <tbody><tr>
-              <td>Ingeniería I + II + III completas<br><strong>6 📖 reservados</strong></td>
-              <td class="m-cell-icons">1–6 📖 libres</td>
+              <td class="m-dash">—</td>
+              <td class="m-dash">—</td>
+              <td>No requiere casillero</td>
+              <td><strong>Inversión protegida:</strong> Ingeniería I = 1 📖 → II = 2 📖 → III = 3 📖. Se financian completos y en orden. Máx. 1 subhito del mismo proyecto por turno.</td>
+            </tr></tbody>
+          </table></div>
+        </div>
+
+        <div class="milestone-table-card">
+          <div class="milestone-table-title">🎓 Adjudicar Título</div>
+          <div class="milestone-table-wrap"><table class="milestone-table">
+            <thead><tr><th>Reserva</th><th>Paga</th><th>Estar en Casillero</th><th>Observaciones</th></tr></thead>
+            <tbody><tr>
+              <td class="m-dash">—</td>
+              <td>1–6 📖 libres</td>
               <td><strong>Caer exacto</strong> en Universidad</td>
-              <td>
-                🎲 Resultado según 📖 entregado:
-                <table class="roll-map">
-                  <tr><td>1 📖</td><td>6</td></tr>
-                  <tr><td>2 📖</td><td>5–6</td></tr>
-                  <tr><td>3 📖</td><td>4–6</td></tr>
-                  <tr><td>4 📖</td><td>3–6</td></tr>
-                  <tr><td>5 📖</td><td>2–6</td></tr>
-                  <tr><td>6 📖</td><td>✅ Automático</td></tr>
-                </table>
-                <span class="consume-note">El 📖 entregado se consume aunque desapruebe.</span>
-              </td>
+              <td>Debés ser inversor habilitado de un proyecto completo. 🎲 1→6 · 2→5–6 · 3→4–6 · 4→3–6 · 5→2–6 · 6→automático. El pago se consume aunque falles. Si aprobás, recibís el Título sin reserva posterior.</td>
             </tr></tbody>
           </table></div>
         </div>
 
-        <div class="milestone-stage">Juventud · Trámites y pareja</div>
-
         <div class="milestone-table-card">
-          <div class="milestone-table-title">📄 Documentación UE</div>
+          <div class="milestone-table-title">🏗️ Construir proyecto de Pasaporte</div>
           <div class="milestone-table-wrap"><table class="milestone-table">
             <thead><tr><th>Reserva</th><th>Paga</th><th>Estar en Casillero</th><th>Observaciones</th></tr></thead>
             <tbody><tr>
-              <td class="m-cell-icons">❤️ 5 + 👤 2</td>
               <td class="m-dash">—</td>
-              <td>Pasar o caer en Trámite · EU</td>
-              <td>La reserva es permanente y sostiene Documentación, Ciudadanía y Pasaporte.</td>
+              <td class="m-dash">—</td>
+              <td>No requiere casillero</td>
+              <td><strong>Inversión protegida:</strong> Documentación 1 = 2 👤 → Documentación 2 = 3 👤 → Pasaporte = 2 💰. Los dos primeros aportes deben ser de un jugador del personaje/nacionalidad correspondiente.</td>
             </tr></tbody>
           </table></div>
         </div>
 
         <div class="milestone-table-card">
-          <div class="milestone-table-title">🇪🇺 Validación de Ciudadanía</div>
+          <div class="milestone-table-title">🛂 Adjudicar Pasaporte</div>
           <div class="milestone-table-wrap"><table class="milestone-table">
             <thead><tr><th>Reserva</th><th>Paga</th><th>Estar en Casillero</th><th>Observaciones</th></tr></thead>
             <tbody><tr>
-              <td class="m-cell-icons">❤️ 5 + 👤 2<br><small>se mantiene</small></td>
-              <td class="m-cell-icons">1–6 👤 libres propias</td>
-              <td><strong>Primera vez:</strong> caer exacto en Trámite · EU.<br><strong>Reintentos:</strong> no hace falta volver a caer.</td>
-              <td>
-                🎲 Resultado según 👤 invertida:
-                <table class="roll-map">
-                  <tr><td>1 👤</td><td>6</td></tr>
-                  <tr><td>2 👤</td><td>5–6</td></tr>
-                  <tr><td>3 👤</td><td>4–6</td></tr>
-                  <tr><td>4 👤</td><td>3–6</td></tr>
-                  <tr><td>5 👤</td><td>2–6</td></tr>
-                  <tr><td>6 👤</td><td>✅ Automático</td></tr>
-                </table>
-                <span class="consume-note">La 👤 invertida se consume aunque falle. Si falla, conserva documentación y reserva y queda EN TRÁMITE.</span>
-              </td>
-            </tr></tbody>
-          </table></div>
-        </div>
-
-        <div class="milestone-table-card">
-          <div class="milestone-table-title">🛂 Pasaporte europeo</div>
-          <div class="milestone-table-wrap"><table class="milestone-table">
-            <thead><tr><th>Reserva</th><th>Paga</th><th>Estar en Casillero</th><th>Observaciones</th></tr></thead>
-            <tbody><tr>
-              <td class="m-cell-icons">❤️ 5 + 👤 2<br><small>se mantiene</small></td>
-              <td class="m-cell-icons">💰 2</td>
-              <td>Trámite · EU</td>
-              <td><strong>No tiene tirada propia.</strong> Cuando ya tenés la Ciudadanía aprobada y realizaste el pago de 2 💰, obtenés el Pasaporte Europeo. Los 2 💰 se consumen.</td>
+              <td class="m-dash">—</td>
+              <td>1–6 👤 libres</td>
+              <td><strong>Caer exacto</strong> en Trámite</td>
+              <td>Debés ser inversor habilitado y tener nacionalidad compatible. Misma escala D6 que Título. El 👤 pagado se consume aunque falles. Si aprobás, recibís el Pasaporte sin reserva posterior.</td>
             </tr></tbody>
           </table></div>
         </div>
@@ -278,10 +247,10 @@ h1{margin:4px 0;font-size:clamp(2rem,5vw,3.5rem);letter-spacing:-.05em}.eyebrow{
           <div class="milestone-table-wrap"><table class="milestone-table">
             <thead><tr><th>Reserva</th><th>Paga</th><th>Estar en Casillero</th><th>Observaciones</th></tr></thead>
             <tbody><tr>
-              <td class="m-cell-icons">❤️ 5 + 👤 3 <strong>cada uno</strong></td>
+              <td><strong>❤️ 5 cada uno</strong></td>
               <td class="m-dash">—</td>
-              <td>El jugador activo debe <strong>caer</strong> en un casillero ocupado por un jugador del personaje opuesto.</td>
-              <td>Clarisa + Lucas. Ambos deben aceptar. La propuesta puede hacerse aunque uno o ambos ya tengan pareja; si aceptan, las parejas anteriores se rompen primero. La reserva de ❤️ 5 + 👤 3 por integrante debe mantenerse para sostener la pareja.</td>
+              <td>El jugador activo debe caer exactamente sobre el posible compañero</td>
+              <td>Clarisa + Lucas y aceptación de ambos. <strong>No requiere 👤 ni afinidad.</strong> La reserva de ❤️ 5 por integrante sostiene la pareja.</td>
             </tr></tbody>
           </table></div>
         </div>
@@ -291,10 +260,10 @@ h1{margin:4px 0;font-size:clamp(2rem,5vw,3.5rem);letter-spacing:-.05em}.eyebrow{
           <div class="milestone-table-wrap"><table class="milestone-table">
             <thead><tr><th>Reserva</th><th>Paga</th><th>Estar en Casillero</th><th>Observaciones</th></tr></thead>
             <tbody><tr>
-              <td class="m-cell-icons">📖 5 + 💰 5 <strong>cada uno</strong></td>
+              <td>❤️ 5 de Pareja cada uno</td>
               <td class="m-dash">—</td>
-              <td><strong>Caer exacto</strong> en Trámite de Juventud, posición 2 o 5.</td>
-              <td>La pareja debe estar formada y mantener su reserva. Ambos deben tener 🎓 Título Universitario y 🛂 Pasaporte Europeo. Al caer, cada uno recibe primero +2 👤; luego se verifican los requisitos y, si cumplen, pasan a Adultez.</td>
+              <td><strong>Caer exacto</strong> en Trámite, posición 2 o 5</td>
+              <td>Ambos deben tener Título + Pasaporte compatible y <strong>5 📖 + 5 💰 libres cada uno como requisito puntual</strong>. No se consumen ni se reservan. Una vez en Adultez, gastar esos recursos no provoca regreso.</td>
             </tr></tbody>
           </table></div>
         </div>
@@ -306,10 +275,10 @@ h1{margin:4px 0;font-size:clamp(2rem,5vw,3.5rem);letter-spacing:-.05em}.eyebrow{
           <div class="milestone-table-wrap"><table class="milestone-table">
             <thead><tr><th>Reserva</th><th>Paga</th><th>Estar en Casillero</th><th>Observaciones</th></tr></thead>
             <tbody><tr>
-              <td class="m-cell-icons">❤️ 8 + 👤 5 <strong>cada uno</strong></td>
-              <td class="m-cell-icons">1.º: 💰 15 c/u<br>2.º: 💰 20 c/u<br>3.º: 💰 25 c/u<br>Luego +💰 5 c/u</td>
-              <td><strong>Caer</strong> en 🏠 Casa, posición 4 o 5 de Adultez.</td>
-              <td>Hay una sola Casa. Banca: 🎲🎲; pareja: 🎲 + 🎲. La pareja gana sólo si su suma es mayor; empate = derrota. Los reintentos son en el mismo turno. <strong>Sólo se paga la oferta ganadora</strong> y recién entonces se constituye la reserva de Casa. Además, cada jugador debe conservar 💰 5 reservados para Adultez. Si la Casa ya tiene dueño, se disputa contra esa pareja.</td>
+              <td><strong>❤️ 8 + 👤 5 cada uno</strong><br>Se constituye sólo si ganan.</td>
+              <td>Oferta inicial: <strong>💰 15 cada uno</strong><br>Reintentos: +💰 5 cada uno</td>
+              <td>Casa, posición 4 o 5</td>
+              <td>2D6 pareja vs 2D6 banca/propietarios. La pareja debe superar estrictamente; empate pierde. Sólo se paga la oferta ganadora. <strong>No existe reserva permanente de 💰 5 de Adultez.</strong></td>
             </tr></tbody>
           </table></div>
         </div>
@@ -319,10 +288,10 @@ h1{margin:4px 0;font-size:clamp(2rem,5vw,3.5rem);letter-spacing:-.05em}.eyebrow{
           <div class="milestone-table-wrap"><table class="milestone-table">
             <thead><tr><th>Reserva</th><th>Paga</th><th>Estar en Casillero</th><th>Observaciones</th></tr></thead>
             <tbody><tr>
-              <td>Todas las reservas previas deben seguir <strong>íntegras</strong>.</td>
-              <td class="m-cell-icons">❤️ 12 + 👤 10 + 💰 5 <strong>cada uno</strong><br><small>Total pareja: ❤️ 24 + 👤 20 + 💰 10</small></td>
-              <td><strong>Caer exacto</strong> en 💍 Propuesta de Casamiento, posición 7 de Adultez.</td>
-              <td>Debe ser pareja Clarisa + Lucas, poseer y mantener 🏠 Casa, conservar ambos 🎓 Títulos y 🛂 Pasaportes, y revelar Cartas de Afinidad del mismo color. Los recursos del casamiento deben estar libres y se consumen. Si cumplen todo, se casan y termina la partida.</td>
+              <td>❤️ 5 Pareja + ❤️ 8 y 👤 5 Casa <strong>por integrante</strong></td>
+              <td><strong>❤️ 12 + 👤 10 + 💰 5 cada uno</strong></td>
+              <td><strong>Caer exacto</strong> en Propuesta de Casamiento, posición 7</td>
+              <td>Clarisa + Lucas, Casa, Título y Pasaporte vigentes de ambos y <strong>Perfil‑Afinidad con el mismo elemento</strong>. Los pagos deben ser recursos libres. Si cumplen todo, termina la partida.</td>
             </tr></tbody>
           </table></div>
         </div>
