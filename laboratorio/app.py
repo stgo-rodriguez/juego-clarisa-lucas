@@ -129,7 +129,11 @@ def mostrar_detalle(baseline: dict, experiment: dict, *, modo_enfoque: bool = Fa
         if modo_enfoque:
             encabezado, volver = st.columns([5, 1], vertical_alignment="center")
             with encabezado:
-                st.markdown("**Análisis de una partida**")
+                _lado_actual = st.session_state.get("detalle_lado", "Base")
+                _mesa_actual = baseline if _lado_actual == "Base" else experiment
+                st.markdown(
+                    f"**Análisis de una partida · "
+                    f"{_mesa_actual['escenario']['jugadores']} jugadores**")
             with volver:
                 if st.button("Salir de pantalla de análisis", key="salir_enfoque"):
                     st.session_state["modo_enfoque"] = False
@@ -152,13 +156,15 @@ def mostrar_detalle(baseline: dict, experiment: dict, *, modo_enfoque: bool = Fa
             numero_detalle = st.selectbox(
                 "Partida seleccionada", options=opciones_detalle, key="detalle_numero",
                 format_func=lambda n: (
-                    f"Partida {n} · semilla {elegido_detalle['filas'][n-1]['semilla']} "
+                    f"Partida {n} · {elegido_detalle['escenario']['jugadores']} jugadores "
+                    f"· semilla {elegido_detalle['filas'][n-1]['semilla']} "
                     f"· {elegido_detalle['filas'][n-1]['rondas_observadas']} rondas "
                     f"· {'concluida' if int(elegido_detalle['filas'][n-1]['terminada']) else 'sin concluir'}"))
         fila_detalle = elegido_detalle["filas"][numero_detalle - 1]
         if not modo_enfoque:
-            st.caption(f"**Selección actual:** {lado_detalle} · partida {numero_detalle} · "
-                       f"semilla {fila_detalle['semilla']}. "
+            st.caption(f"**Selección actual:** {lado_detalle} · "
+                       f"{elegido_detalle['escenario']['jugadores']} jugadores · "
+                       f"partida {numero_detalle} · semilla {fila_detalle['semilla']}. "
                        "Los cuatro análisis se actualizan automáticamente.")
     firma_detalle = json.dumps({
         "escenario": elegido_detalle["escenario"],
