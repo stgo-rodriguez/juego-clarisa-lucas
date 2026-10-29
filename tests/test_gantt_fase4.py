@@ -213,6 +213,33 @@ class TestStreamlitGantt(unittest.TestCase):
 
 
 class TestSelectorCompartido(unittest.TestCase):
+    def test_vista_ampliada_mantiene_selector_y_oculta_configuracion(self):
+        try:
+            from streamlit.testing.v1 import AppTest
+        except ImportError:
+            self.skipTest('Streamlit solo disponible en CI')
+        from laboratorio.ejecucion import ROOT
+        app = AppTest.from_file(str(ROOT / 'laboratorio/app.py'), default_timeout=120).run()
+        app.button[0].click().run(timeout=120)
+        self.assertFalse(app.exception, str(app.exception))
+        self.assertEqual(len(app.tabs), 4)
+        next(x for x in app.button if x.label == 'Pantalla de análisis').click().run(timeout=120)
+        self.assertFalse(app.exception, str(app.exception))
+        self.assertEqual(len(app.tabs), 4)
+        self.assertEqual(len(app.form), 0)
+        self.assertEqual(len([x for x in app.selectbox if x.label == 'Partida seleccionada']), 1)
+        self.assertTrue(any(x.label == 'Volver al laboratorio' for x in app.button))
+        next(x for x in app.selectbox if x.label == 'Partida seleccionada').set_value(2).run(timeout=120)
+        self.assertFalse(app.exception, str(app.exception))
+        for clave in ('gantt_ultimo', 'economia_ultima',
+                      'interacciones_ultimas', 'turnos_ultimos'):
+            self.assertEqual(app.session_state[clave][1]['partida'], 2)
+        next(x for x in app.button if x.label == 'Volver al laboratorio').click().run(timeout=120)
+        self.assertFalse(app.exception, str(app.exception))
+        self.assertGreaterEqual(len(app.form), 1)
+        self.assertTrue(any(x.label == 'Pantalla de análisis' for x in app.button))
+
+
     def test_las_cuatro_vistas_usen_misma_partida_y_escenario(self):
         try:
             from streamlit.testing.v1 import AppTest
@@ -233,26 +260,19 @@ class TestSelectorCompartido(unittest.TestCase):
         self.assertFalse(app.exception, str(app.exception))
         self.assertEqual(app.session_state['gantt_ultimo'][1]['partida'], 3)
 
-        for texto, clave in (
-            ('Reconstruir economía y auditar recursos', 'economia_ultima'),
-            ('Reconstruir y auditar interacciones', 'interacciones_ultimas'),
-            ('Reconstruir actividad de turnos', 'turnos_ultimos'),
-        ):
-            next(x for x in app.button if x.label == texto).click().run(timeout=120)
-            self.assertFalse(app.exception, str(app.exception))
+        for clave in ('economia_ultima', 'interacciones_ultimas', 'turnos_ultimos'):
             self.assertEqual(app.session_state[clave][1]['partida'], 3)
 
         # Una nueva selección reconstruye el Gantt y oculta auditorías previas.
         next(x for x in app.selectbox if x.label == 'Partida seleccionada').set_value(4).run(timeout=120)
         self.assertFalse(app.exception, str(app.exception))
         self.assertEqual(app.session_state['gantt_ultimo'][1]['partida'], 4)
-        self.assertFalse(any('Economía verificada' in m.value for m in app.success))
-        self.assertFalse(any('Interacciones verificadas' in m.value for m in app.success))
-        self.assertFalse(any('Actividad validada' in m.value for m in app.success))
-
-        next(x for x in app.button if x.label == 'Reconstruir economía y auditar recursos').click().run(timeout=120)
-        self.assertFalse(app.exception, str(app.exception))
         self.assertEqual(app.session_state['economia_ultima'][1]['partida'], 4)
+        self.assertEqual(app.session_state['interacciones_ultimas'][1]['partida'], 4)
+        self.assertEqual(app.session_state['turnos_ultimos'][1]['partida'], 4)
+        self.assertTrue(any('Economía verificada' in m.value for m in app.success))
+        self.assertTrue(any('Interacciones verificadas' in m.value for m in app.success))
+        self.assertTrue(any('Actividad validada' in m.value for m in app.success))
 
         next(x for x in app.radio if x.label == 'Escenario de la partida').set_value('Experimento').run(timeout=120)
         self.assertFalse(app.exception, str(app.exception))
