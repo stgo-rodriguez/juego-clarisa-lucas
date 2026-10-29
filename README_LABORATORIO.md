@@ -74,3 +74,9 @@ seleccionar una partida, reconstruir su economía con el mismo motor y consultar
 entradas, pagos, inversiones, pérdidas, transferencias, stock libre y reservas.
 La auditoría incluye exportación JSON y verificación de todos los movimientos
 por jugador y recurso. Más detalles en `docs/FASE4_2_ECONOMIA.md`.
+
+### Fase 4.3 — Interacciones y conflictos
+
+Tras simular los dos escenarios, la sección **6. Interacciones: Duelos, negociación, Pareja y Casa** muestra los contadores reales de los CSV por partida. Seleccioná una partida (de Base o Experimento) y pulsá **Reconstruir y auditar interacciones** para ver modalidades y resultados de Duelos, retiros, compras y traspasos de Casa, cesiones de comprobantes, rupturas e intercambio de recursos, con participantes, etapa, ronda y turno. La ayuda automática entre miembros de una pareja se muestra aparte y **no** cuenta como negociación.
+
+Descargá el JSON para inspeccionar cada evento y su origen. El observador comprueba igualdad de semilla, resumen por partida y contadores del motor. Más detalles en `docs/FASE4_3_INTERACCIONES.md`; muestra de control en `docs/DIAGNOSTICO_INTERACCIONES_FASE4_3.json`. **Sin cambios en las reglas ni los bots.**

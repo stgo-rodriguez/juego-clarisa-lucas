@@ -1,0 +1,157 @@
+{
+  "muestras": 150,
+  "lotes": [
+    {
+      "jugadores": 6,
+      "escenario": "base",
+      "partidas": 25,
+      "finalizadas": 25,
+      "duelos": 70,
+      "eventos": 672,
+      "por_categoria": {
+        "Pareja": 81,
+        "Redistribución": 264,
+        "Conflicto": 70,
+        "Casa": 213,
+        "Negociación": 44
+      },
+      "por_evento": {
+        "formacion_pareja": 77,
+        "transfer_pair": 264,
+        "duelo_retirada": 21,
+        "duelo": 49,
+        "compra_casa": 213,
+        "venta_comprobante": 44,
+        "ruptura": 4
+      },
+      "inconsistencias": []
+    },
+    {
+      "jugadores": 6,
+      "escenario": "restrictiva",
+      "partidas": 25,
+      "finalizadas": 25,
+      "duelos": 58,
+      "eventos": 947,
+      "por_categoria": {
+        "Pareja": 165,
+        "Redistribución": 474,
+        "Negociación": 62,
+        "Conflicto": 58,
+        "Casa": 188
+      },
+      "por_evento": {
+        "formacion_pareja": 114,
+        "transfer_pair": 474,
+        "ruptura": 51,
+        "venta_comprobante": 62,
+        "duelo": 45,
+        "compra_casa": 187,
+        "perdida_casa": 1,
+        "duelo_retirada": 13
+      },
+      "inconsistencias": []
+    },
+    {
+      "jugadores": 6,
+      "escenario": "abundante",
+      "partidas": 25,
+      "finalizadas": 25,
+      "duelos": 58,
+      "eventos": 388,
+      "por_categoria": {
+        "Pareja": 77,
+        "Redistribución": 92,
+        "Conflicto": 58,
+        "Negociación": 40,
+        "Casa": 121
+      },
+      "por_evento": {
+        "formacion_pareja": 76,
+        "transfer_pair": 92,
+        "duelo": 42,
+        "venta_comprobante": 40,
+        "duelo_retirada": 16,
+        "compra_casa": 121,
+        "ruptura": 1
+      },
+      "inconsistencias": []
+    },
+    {
+      "jugadores": 10,
+      "escenario": "base",
+      "partidas": 25,
+      "finalizadas": 25,
+      "duelos": 234,
+      "eventos": 1143,
+      "por_categoria": {
+        "Conflicto": 234,
+        "Pareja": 135,
+        "Redistribución": 337,
+        "Negociación": 127,
+        "Casa": 310
+      },
+      "por_evento": {
+        "duelo_retirada": 70,
+        "formacion_pareja": 129,
+        "transfer_pair": 337,
+        "venta_comprobante": 127,
+        "duelo": 164,
+        "compra_casa": 310,
+        "ruptura": 6
+      },
+      "inconsistencias": []
+    },
+    {
+      "jugadores": 10,
+      "escenario": "restrictiva",
+      "partidas": 25,
+      "finalizadas": 25,
+      "duelos": 199,
+      "eventos": 1923,
+      "por_categoria": {
+        "Conflicto": 199,
+        "Pareja": 321,
+        "Redistribución": 723,
+        "Negociación": 190,
+        "Casa": 490
+      },
+      "por_evento": {
+        "duelo": 147,
+        "formacion_pareja": 215,
+        "transfer_pair": 723,
+        "venta_comprobante": 190,
+        "duelo_retirada": 52,
+        "ruptura": 106,
+        "compra_casa": 488,
+        "perdida_casa": 2
+      },
+      "inconsistencias": []
+    },
+    {
+      "jugadores": 10,
+      "escenario": "abundante",
+      "partidas": 25,
+      "finalizadas": 25,
+      "duelos": 235,
+      "eventos": 810,
+      "por_categoria": {
+        "Pareja": 125,
+        "Negociación": 107,
+        "Conflicto": 235,
+        "Casa": 224,
+        "Redistribución": 119
+      },
+      "por_evento": {
+        "formacion_pareja": 125,
+        "venta_comprobante": 107,
+        "duelo_retirada": 72,
+        "duelo": 163,
+        "compra_casa": 224,
+        "transfer_pair": 119
+      },
+      "inconsistencias": []
+    }
+  ],
+  "inconsistencias": 0
+}

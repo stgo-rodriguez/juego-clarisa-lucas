@@ -277,3 +277,100 @@ else:
                            mime='application/json', key='descargar_economia')
     elif previo_ec is not None:
         st.caption('Cambiaste de partida o escenario. Volvé a reconstruir para actualizar los datos.')
+
+    st.divider()
+    st.subheader('6. Interacciones: Duelos, negociación, Pareja y Casa')
+    st.caption('El lote completo muestra contadores por partida. Para conocer modalidad, '
+               'participantes, resultado, ronda y etapa, reconstruí una partida específica '
+               'con la misma semilla y compará su resultado exacto con el motor.')
+    from laboratorio.interacciones import (resumen_lote_interacciones,
+                                           trazar_interacciones)
+    from laboratorio.graficos_interacciones import (figura_interacciones_por_tipo,
+                                                    figura_interacciones_por_ronda)
+
+    with st.expander('Interacciones agregadas de los dos escenarios'):
+        tb = pd.DataFrame(resumen_lote_interacciones(baseline['filas']))
+        te = pd.DataFrame(resumen_lote_interacciones(experiment['filas']))
+        if not tb.empty and not te.empty:
+            comp_int = tb.merge(te, on=['Métrica', 'Código'],
+                                suffixes=(' base', ' experimento'))
+            comp_int['Diferencia media'] = (
+                comp_int['Promedio por partida experimento'] -
+                comp_int['Promedio por partida base']).round(3)
+            st.dataframe(comp_int.drop(columns='Código'),
+                         use_container_width=True, hide_index=True)
+            st.caption('Totales y promedios reales de los CSV; no se atribuyen '
+                       'rondas, participantes ni causas que los CSV no registran.')
+
+    lado_int = st.radio('Escenario de interacciones', ['Base', 'Experimento'],
+                        horizontal=True, key='interacciones_lado')
+    elegido_int = baseline if lado_int == 'Base' else experiment
+    numero_int = st.selectbox(
+        'Partida para reconstruir interacciones',
+        list(range(1, len(elegido_int['filas']) + 1)),
+        key='interacciones_numero',
+        format_func=lambda n: (
+            f"Partida {n} · semilla {elegido_int['filas'][n-1]['semilla']} "
+            f"· {elegido_int['filas'][n-1]['rondas_observadas']} rondas"))
+    marca_int = json.dumps({'escenario': elegido_int['escenario'],
+                             'partida': numero_int}, sort_keys=True, ensure_ascii=False)
+    if st.button('Reconstruir y auditar interacciones', key='interacciones_reconstruir'):
+        try:
+            with st.spinner('Reejecutando partida y conciliando los eventos con los contadores…'):
+                detalle_int = trazar_interacciones(
+                    escenario_desde_dict(elegido_int['escenario']), numero_int,
+                    elegido_int['filas'][numero_int - 1])
+            st.session_state['interacciones_ultimas'] = (marca_int, detalle_int)
+        except Exception as exc:
+            st.session_state.pop('interacciones_ultimas', None)
+            st.error(f'Falló la reconstrucción de interacciones: {exc}')
+    anterior_int = st.session_state.get('interacciones_ultimas')
+    if anterior_int and anterior_int[0] == marca_int:
+        detalle_int = anterior_int[1]
+        st.success('Interacciones verificadas: cada evento y los contadores coinciden con el motor.')
+        c1, c2, c3, c4 = st.columns(4)
+        c1.metric('Duelos iniciados', detalle_int['duelos'])
+        c2.metric('Retiradas', detalle_int['retiradas'])
+        c3.metric('Defensas sin perder', detalle_int['defensas_sin_perder'])
+        c4.metric('Comprobantes cedidos', detalle_int['cesiones_comprobante'])
+        st.plotly_chart(figura_interacciones_por_tipo(detalle_int), use_container_width=True)
+        st.plotly_chart(figura_interacciones_por_ronda(detalle_int), use_container_width=True)
+        a, b = st.columns(2)
+        with a:
+            st.markdown('**Resultados de Duelos**')
+            st.dataframe(pd.DataFrame(detalle_int['por_resultado']),
+                         hide_index=True, use_container_width=True)
+            st.markdown('**Modalidades de Duelo**')
+            st.dataframe(pd.DataFrame(detalle_int['por_modalidad']),
+                         hide_index=True, use_container_width=True)
+        with b:
+            st.markdown('**Duelos iniciados y recibidos por jugador**')
+            st.dataframe(pd.DataFrame(detalle_int['duelos_por_jugador']),
+                         hide_index=True, use_container_width=True)
+            st.markdown('**Interacciones por etapa**')
+            st.dataframe(pd.DataFrame(detalle_int['por_etapa']),
+                         hide_index=True, use_container_width=True)
+        eventos_int = detalle_int['eventos']
+        categorias_int = sorted({e['categoria'] for e in eventos_int})
+        filtros_int = st.multiselect('Filtrar por categorías', categorias_int,
+                                     default=categorias_int,
+                                     key='interacciones_categorias')
+        participantes_int = st.multiselect('Filtrar por participantes',
+                                           list(range(1, detalle_int['jugadores'] + 1)),
+                                           default=list(range(1, detalle_int['jugadores'] + 1)),
+                                           key='interacciones_jugadores')
+        eventos_filtrados = [e for e in eventos_int if e['categoria'] in filtros_int and
+                            any(pid in participantes_int for pid in e['participantes'])]
+        st.dataframe(pd.DataFrame([{
+            'Ronda': e['ronda'], 'Turno': e['turno'], 'Tipo': e['tipo'],
+            'Categoría': e['categoria'], 'Jugadores': ', '.join(map(str,e['participantes'])),
+            'Modalidad': e['modalidad'], 'Resultado': e['resultado'],
+            'Detalles': json.dumps(e['detalle'], ensure_ascii=False)
+        } for e in eventos_filtrados]), hide_index=True, use_container_width=True)
+        st.info(detalle_int['advertencia'])
+        st.download_button('Descargar auditoría de interacciones (JSON)',
+                           data=json.dumps(detalle_int, ensure_ascii=False, indent=2).encode('utf-8'),
+                           file_name=f'interacciones_partida_{numero_int}_{lado_int.lower()}.json',
+                           mime='application/json', key='descargar_interacciones')
+    elif anterior_int is not None:
+        st.caption('Cambiaste de partida o escenario. Reconstruí la partida para actualizar el detalle.')
