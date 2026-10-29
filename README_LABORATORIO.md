@@ -58,32 +58,37 @@ El panel ejecuta dos escenarios con semillas apareadas y permite descargar datos
 
 ## Fase 4.1 — Gantt de hitos
 
-Después de ejecutar los dos escenarios, seleccioná un escenario y una
-partida **concluida** en «4. Cronología de hitos» y presioná
-**Ver cronología y verificar partida**. El Gantt considera solamente
-los dos integrantes ganadores, separa primera consecución de hito vigente
-y reconstruye pérdidas y recuperaciones. Comprueba igualdad de `summary()`
-por semilla antes de mostrarlo. Más información:
-`docs/FASE4_1_GANTT.md`.
+Después de ejecutar los escenarios, abrí **Detalle de una partida · selección
+común** y elegí **Base o Experimento** y la **partida** una sola vez. Las cuatro
+pestañas —Cronología, Economía, Interacciones y Actividad de turnos— usan esa
+misma selección. La cronología se reconstruye y verifica automáticamente;
+las auditorías detalladas de las otras pestañas permanecen a demanda.
+Las partidas censuradas también son seleccionables, aunque no tienen pareja
+ganadora para el Gantt.
+
+El Gantt utiliza inversiones reales desde el primer aporte al proyecto
+adjudicado hasta la obtención de Título o Pasaporte, y registra pérdidas y
+recuperaciones. La reejecución verifica igualdad de `summary()`.
+Más información: `docs/FASE4_1_GANTT.md`.
 
 ### Fase 4.2 — Economía de recursos
 
 En la aplicación, tras ejecutar escenarios, la sección **5. Economía de recursos**
 permite comparar flujos medios del lote sin atribución ficticia de etapas,
-seleccionar una partida, reconstruir su economía con el mismo motor y consultar:
+reconstruir la partida del selector común con el mismo motor y consultar:
 entradas, pagos, inversiones, pérdidas, transferencias, stock libre y reservas.
 La auditoría incluye exportación JSON y verificación de todos los movimientos
 por jugador y recurso. Más detalles en `docs/FASE4_2_ECONOMIA.md`.
 
 ### Fase 4.3 — Interacciones y conflictos
 
-Tras simular los dos escenarios, la sección **6. Interacciones: Duelos, negociación, Pareja y Casa** muestra los contadores reales de los CSV por partida. Seleccioná una partida (de Base o Experimento) y pulsá **Reconstruir y auditar interacciones** para ver modalidades y resultados de Duelos, retiros, compras y traspasos de Casa, cesiones de comprobantes, rupturas e intercambio de recursos, con participantes, etapa, ronda y turno. La ayuda automática entre miembros de una pareja se muestra aparte y **no** cuenta como negociación.
+Tras simular los dos escenarios, la sección **6. Interacciones: Duelos, negociación, Pareja y Casa** muestra los contadores reales de los CSV por partida. Usá la partida del selector común y pulsá **Reconstruir y auditar interacciones** para ver modalidades y resultados de Duelos, retiros, compras y traspasos de Casa, cesiones de comprobantes, rupturas e intercambio de recursos, con participantes, etapa, ronda y turno. La ayuda automática entre miembros de una pareja se muestra aparte y **no** cuenta como negociación.
 
 Descargá el JSON para inspeccionar cada evento y su origen. El observador comprueba igualdad de semilla, resumen por partida y contadores del motor. Más detalles en `docs/FASE4_3_INTERACCIONES.md`; muestra de control en `docs/DIAGNOSTICO_INTERACCIONES_FASE4_3.json`. **Sin cambios en las reglas ni los bots.**
 
 ### Fase 4.4 — Actividad y calidad de turnos (medidas descriptivas)
 
-Después de ejecutar escenarios, abrí **«7. Actividad de turnos y oportunidades detectadas»**, seleccioná escenario y partida, y presioná **Reconstruir actividad de turnos**. Obtendrás conteos de decisiones realmente ejecutadas, consecuencias automáticas y diez familias de acciones disponibles en checkpoints del motor, con distribución por etapa, bot y turno individual. Exportación JSON disponible.
+Después de ejecutar escenarios, abrí **«7. Actividad de turnos y oportunidades detectadas»**, usá la selección común de escenario y partida, y presioná **Reconstruir actividad de turnos**. Obtendrás conteos de decisiones realmente ejecutadas, consecuencias automáticas y diez familias de acciones disponibles en checkpoints del motor, con distribución por etapa, bot y turno individual. Exportación JSON disponible.
 
 **Interpretación:** no es una medida objetiva de diversión ni un censo de todas las alternativas legales. Las ofertas no formuladas y las opciones humanas no pueden inferirse desde el bot. Documentación: `docs/FASE4_4_TURNOS.md`; auditoría de 150 partidas: `docs/DIAGNOSTICO_TURNOS_FASE4_4.json`. Ningún cambio en reglas, bots ni RNG.
 
