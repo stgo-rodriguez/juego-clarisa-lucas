@@ -80,3 +80,9 @@ por jugador y recurso. Más detalles en `docs/FASE4_2_ECONOMIA.md`.
 Tras simular los dos escenarios, la sección **6. Interacciones: Duelos, negociación, Pareja y Casa** muestra los contadores reales de los CSV por partida. Seleccioná una partida (de Base o Experimento) y pulsá **Reconstruir y auditar interacciones** para ver modalidades y resultados de Duelos, retiros, compras y traspasos de Casa, cesiones de comprobantes, rupturas e intercambio de recursos, con participantes, etapa, ronda y turno. La ayuda automática entre miembros de una pareja se muestra aparte y **no** cuenta como negociación.
 
 Descargá el JSON para inspeccionar cada evento y su origen. El observador comprueba igualdad de semilla, resumen por partida y contadores del motor. Más detalles en `docs/FASE4_3_INTERACCIONES.md`; muestra de control en `docs/DIAGNOSTICO_INTERACCIONES_FASE4_3.json`. **Sin cambios en las reglas ni los bots.**
+
+### Fase 4.4 — Actividad y calidad de turnos (medidas descriptivas)
+
+Después de ejecutar escenarios, abrí **«7. Actividad de turnos y oportunidades detectadas»**, seleccioná escenario y partida, y presioná **Reconstruir actividad de turnos**. Obtendrás conteos de decisiones realmente ejecutadas, consecuencias automáticas y diez familias de acciones disponibles en checkpoints del motor, con distribución por etapa, bot y turno individual. Exportación JSON disponible.
+
+**Interpretación:** no es una medida objetiva de diversión ni un censo de todas las alternativas legales. Las ofertas no formuladas y las opciones humanas no pueden inferirse desde el bot. Documentación: `docs/FASE4_4_TURNOS.md`; auditoría de 150 partidas: `docs/DIAGNOSTICO_TURNOS_FASE4_4.json`. Ningún cambio en reglas, bots ni RNG.

@@ -1,0 +1,79 @@
+{
+  "reporte": "Fase 4.4 - observación pasiva",
+  "total_partidas": 150,
+  "total_errores": 0,
+  "escenarios": [
+    {
+      "escenario": "base_6j",
+      "jugadores": 6,
+      "partidas": 25,
+      "errores": [],
+      "eventos_no_clasificados": {},
+      "turnos": 4230,
+      "turnos_con_decision": 2811,
+      "decisiones_ejecutadas": 4471,
+      "familias_disponibles_media": 2.465,
+      "censuradas": 0
+    },
+    {
+      "escenario": "base_10j",
+      "jugadores": 10,
+      "partidas": 25,
+      "errores": [],
+      "eventos_no_clasificados": {},
+      "turnos": 6433,
+      "turnos_con_decision": 4286,
+      "decisiones_ejecutadas": 7148,
+      "familias_disponibles_media": 2.72,
+      "censuradas": 0
+    },
+    {
+      "escenario": "escasa_6j",
+      "jugadores": 6,
+      "partidas": 25,
+      "errores": [],
+      "eventos_no_clasificados": {},
+      "turnos": 7902,
+      "turnos_con_decision": 4746,
+      "decisiones_ejecutadas": 6578,
+      "familias_disponibles_media": 1.975,
+      "censuradas": 0
+    },
+    {
+      "escenario": "escasa_10j",
+      "jugadores": 10,
+      "partidas": 25,
+      "errores": [],
+      "eventos_no_clasificados": {},
+      "turnos": 13057,
+      "turnos_con_decision": 7948,
+      "decisiones_ejecutadas": 11135,
+      "familias_disponibles_media": 2.202,
+      "censuradas": 0
+    },
+    {
+      "escenario": "abundante_6j",
+      "jugadores": 6,
+      "partidas": 25,
+      "errores": [],
+      "eventos_no_clasificados": {},
+      "turnos": 3081,
+      "turnos_con_decision": 1999,
+      "decisiones_ejecutadas": 3479,
+      "familias_disponibles_media": 2.587,
+      "censuradas": 0
+    },
+    {
+      "escenario": "abundante_10j",
+      "jugadores": 10,
+      "partidas": 25,
+      "errores": [],
+      "eventos_no_clasificados": {},
+      "turnos": 5313,
+      "turnos_con_decision": 3343,
+      "decisiones_ejecutadas": 5676,
+      "familias_disponibles_media": 2.824,
+      "censuradas": 0
+    }
+  ]
+}

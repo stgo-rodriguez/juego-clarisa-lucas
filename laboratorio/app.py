@@ -374,3 +374,83 @@ else:
                            mime='application/json', key='descargar_interacciones')
     elif anterior_int is not None:
         st.caption('Cambiaste de partida o escenario. Reconstruí la partida para actualizar el detalle.')
+
+    st.divider()
+    st.subheader('7. Actividad de turnos y oportunidades detectadas')
+    st.caption('Medición descriptiva de bots: distingue desenlaces automáticos, '
+               'acciones ejecutadas y familias de acciones disponibles en checkpoints. '
+               'No es una puntuación de diversión, calidad o profundidad estratégica.')
+    from laboratorio.turnos import trazar_turnos
+    from laboratorio.graficos_turnos import figura_etapas, figura_familias
+
+    lado_turno = st.radio('Escenario de actividad', ['Base', 'Experimento'],
+                          horizontal=True, key='turnos_lado')
+    elegido_turno = baseline if lado_turno == 'Base' else experiment
+    numero_turno = st.selectbox(
+        'Partida para auditar turnos',
+        list(range(1, len(elegido_turno['filas']) + 1)),
+        key='turnos_numero',
+        format_func=lambda n: (
+            f"Partida {n} · semilla {elegido_turno['filas'][n-1]['semilla']} "
+            f"· {elegido_turno['filas'][n-1]['turnos_individuales']} turnos"))
+    marca_turno = json.dumps({'escenario': elegido_turno['escenario'],
+                               'partida': numero_turno},sort_keys=True,ensure_ascii=False)
+    if st.button('Reconstruir actividad de turnos', key='turnos_reconstruir'):
+        try:
+            with st.spinner('Auditando decisiones, eventos y checkpoints de oportunidades…'):
+                detalle_turno = trazar_turnos(
+                    escenario_desde_dict(elegido_turno['escenario']), numero_turno,
+                    elegido_turno['filas'][numero_turno - 1])
+                if detalle_turno['errores_auditoria'] or detalle_turno['errores_motor']:
+                    raise AssertionError(str(detalle_turno['errores_auditoria'] + detalle_turno['errores_motor']))
+            st.session_state['turnos_ultimos'] = (marca_turno, detalle_turno)
+        except Exception as exc:
+            st.session_state.pop('turnos_ultimos', None)
+            st.error(f'Falló la auditoría de turnos: {exc}')
+    previo_turno = st.session_state.get('turnos_ultimos')
+    if previo_turno is not None and previo_turno[0] == marca_turno:
+        dt = previo_turno[1]
+        st.success('Actividad validada: los contadores por decisión y el resultado coinciden con el motor.')
+        a1,a2,a3,a4 = st.columns(4)
+        a1.metric('Turnos individuales', dt['turnos'])
+        a2.metric('Con alguna decisión de bot',dt['turnos_con_decision'])
+        a3.metric('Sin decisión registrada',dt['turnos_solo_automaticos'])
+        a4.metric('Familias disponibles por turno',dt['familias_disponibles_por_turno'])
+        st.plotly_chart(figura_etapas(dt), use_container_width=True)
+        st.plotly_chart(figura_familias(dt), use_container_width=True)
+        st.caption('Cada barra compara turnos con una familia de acción disponible y '
+                   'turnos donde hubo alguna ejecución o resolución de esa familia. '
+                   'No cuenta todas las jugadas legales ni registra intentos rechazados.')
+        x1,x2=st.columns(2)
+        with x1:
+            st.markdown('**Actividad por etapa al comenzar el turno**')
+            st.dataframe(pd.DataFrame(dt['por_etapa']),hide_index=True,use_container_width=True)
+        with x2:
+            st.markdown('**Actividad por política de bot**')
+            st.dataframe(pd.DataFrame(dt['por_bot']),hide_index=True,use_container_width=True)
+        jugadores_turnos = st.multiselect('Jugadores del detalle',
+                                          list(range(1, dt['jugadores']+1)),
+                                          default=list(range(1,dt['jugadores']+1)),
+                                          key='turnos_jugadores')
+        etapas_turnos = st.multiselect('Etapas al comenzar el turno',
+                                       sorted({t['etapa_inicio'] for t in dt['turnos_detalle']}),
+                                       default=sorted({t['etapa_inicio'] for t in dt['turnos_detalle']}),
+                                       key='turnos_etapas')
+        filtrados = [t for t in dt['turnos_detalle'] if t['jugador'] in jugadores_turnos
+                     and t['etapa_inicio'] in etapas_turnos]
+        st.dataframe(pd.DataFrame([{
+            'Ronda':t['ronda'],'Turno':t['turno'],'Jugador':t['jugador'],
+            'Etapa':t['etapa_inicio'],'Bot':t['bot'],
+            'Familias disponibles':t['familias_disponibles'],
+            'Decisiones':t['decisiones_ejecutadas'],
+            'Eventos automáticos':t['eventos_automaticos'],
+            'Oportunidades':', '.join(t['oportunidades']),
+            'Acciones de bot':', '.join(t['decisiones'])
+        } for t in filtrados]),hide_index=True,use_container_width=True)
+        st.info(dt['advertencia'])
+        st.download_button('Descargar actividad de turnos (JSON)',
+                           data=json.dumps(dt,ensure_ascii=False,indent=2).encode('utf-8'),
+                           file_name=f'turnos_partida_{numero_turno}_{lado_turno.lower()}.json',
+                           mime='application/json',key='descargar_turnos')
+    elif previo_turno is not None:
+        st.caption('Cambiaste de partida o escenario. Reconstruí la actividad para actualizar el panel.')
