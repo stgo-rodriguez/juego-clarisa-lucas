@@ -108,8 +108,17 @@ def ejecutar() -> None:
             pagina.goto(URL)
             pagina.get_by_role("button", name="Ejecutar y comparar escenarios").click()
             pagina.get_by_role("button", name="Pantalla de análisis").click()
-            pagina.get_by_role("tab", name="Actividad de turnos").click()
-            pagina.wait_for_timeout(900)
+            pagina.locator(".st-key-selector_analisis").wait_for(state="visible")
+            pagina.wait_for_timeout(2000)
+            tab_actividad = pagina.get_by_role("tab", name="Actividad de turnos")
+            # Streamlit puede re-renderizar las solapas inmediatamente al entrar
+            # a la vista; esperar selección real en vez de asumir el click.
+            for intento in range(6):
+                tab_actividad.click()
+                pagina.wait_for_timeout(1000)
+                if tab_actividad.get_attribute("aria-selected") == "true":
+                    break
+                print("Reintentando activar solapa tras render:", intento + 1, flush=True)
             pagina.screenshot(path=str(CAPTURES / "antes_de_validar.png"), full_page=False)
             print("SELECTORES:", pagina.locator('[role="tab"]').evaluate_all(
                 "(all) => all.map(e => [e.textContent, e.getAttribute('aria-selected')])"),
