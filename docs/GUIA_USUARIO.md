@@ -49,7 +49,7 @@ cd ~/Documents/juego-clarisa-lucas
 1. En **Configuración común**, elegí **6 jugadores / 20 partidas** para la primera prueba. Mantené la semilla inicial original y las condiciones económicas al 100%.
 2. Pulsá **Ejecutar y comparar escenarios**. Base y experimento idénticos deben producir diferencia cero.
 3. Modificá **Ganancias por cartas = 90%** y **Pérdidas por cartas = 110%**; volvé a ejecutar. Interpretá con cuidado censura e incertidumbre.
-4. Desde los resultados podés reconstruir **una partida elegida**: cronología de hitos (con vista opcional de vigencia), economía, interacciones y actividad de turnos. Esas reconstrucciones reejecutan solo esa partida y comprueban los resultados.
+4. En **Detalle de una partida · selección común**, elegí una sola vez **Base o Experimento** y la **partida**. Las pestañas **Cronología**, **Economía**, **Interacciones** y **Actividad de turnos** utilizan siempre esa selección. El Gantt aparece automáticamente al cambiar de partida; para las demás auditorías, pulsá el botón de reconstrucción de su pestaña. Cada reconstrucción verifica la partida contra el motor. Las partidas no concluidas no tienen Gantt de pareja ganadora, pero sí se pueden auditar en otros módulos.
 5. **Historial de experimentos (Fase 5)**: guardá las comparaciones en tu Mac, importá antiguos ZIP o recuperá dos experimentos para compararlos sin volver a simular.
 6. **Sensibilidad e incertidumbre (Fase 6)**: elegí dos parámetros y una cuadrícula. Usá pocas partidas para explorar; ampliá únicamente los escenarios prometedores. Límite de 3.000 partidas presupuestadas por matriz.
 
