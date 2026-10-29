@@ -191,6 +191,7 @@ def construir_cronologia(juego: JuegoObservado) -> dict:
     for inv in juego.inversiones_proyectos:
         primera_inversion.setdefault(inv['proyecto'], inv)
     trabajos = []
+    documentados = set()
     for periodo in periodos:
         if not periodo['clave'].startswith(('titulo_', 'pasaporte_')):
             continue
@@ -198,6 +199,11 @@ def construir_cronologia(juego: JuegoObservado) -> dict:
         inversion = primera_inversion.get(proyecto)
         if inversion is None or inversion['turno'] > periodo['turno_inicio']:
             continue
+        # Una recuperación del mismo proyecto no reinicia su obra original.
+        identificador = (periodo['clave'], proyecto)
+        if identificador in documentados:
+            continue
+        documentados.add(identificador)
         trabajos.append({
             'clave': periodo['clave'], 'hito': periodo['hito'],
             'proyecto': proyecto,
