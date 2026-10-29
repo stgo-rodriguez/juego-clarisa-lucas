@@ -21,6 +21,8 @@ from simulador.economia import EconomyConfig, ScenarioConfig
 from laboratorio.comparacion import (comparar, escenario_base, escenario_desde_dict,
                                      ejecutar, exportar_zip, signature)
 from laboratorio.visualizaciones import tabla_distribucion, metricas_comparadas
+from laboratorio.historial import (crear_archivo, cargar_archivo, guardar_local,
+                                  listar_local, abrir_local, comparar_guardados)
 from laboratorio.trazabilidad import trazar_partida
 from laboratorio.gantt import grafico_gantt
 
@@ -97,6 +99,83 @@ if submit:
     except Exception as exc:
         st.error(f"No se pudo ejecutar la simulación: {exc}")
         st.session_state.pop("ultima_comparacion", None)
+
+# Historial persistente solo en este equipo. La carpeta se excluye de Git.
+HISTORIAL = ROOT / '.laboratorio' / 'historial'
+st.divider()
+st.subheader('Historial de experimentos · Fase 5')
+st.caption('Guardá resultados completos en esta computadora y recuperalos sin volver a simular. '
+           'El historial NO se sincroniza automáticamente con GitHub ni con otros equipos.')
+archivos_historial = listar_local(HISTORIAL)
+st.caption(f'{len(archivos_historial)} comparaciones guardadas en {HISTORIAL}')
+
+if 'ultima_comparacion' in st.session_state:
+    actual_base, actual_variante, actual_comparacion = st.session_state['ultima_comparacion']
+    nombre_exp = st.text_input('Nombre del experimento', value='Comparación económica',
+                               max_chars=100, key='historial_nombre')
+    try:
+        zip_actual = crear_archivo(actual_base, actual_variante, nombre=nombre_exp)
+        csave, cexport = st.columns(2)
+        with csave:
+            if st.button('Guardar comparación en este equipo', key='historial_guardar'):
+                ruta = guardar_local(HISTORIAL, zip_actual, nombre=nombre_exp)
+                st.success(f'Experimento guardado: {ruta.name}')
+                st.rerun()
+        with cexport:
+            st.download_button('Descargar experimento completo (ZIP)', data=zip_actual,
+                               file_name='clarisa_lucas_experimento.zip',
+                               mime='application/zip', key='historial_descargar')
+    except Exception as exc:
+        st.error(f'No se puede guardar la comparación: {exc}')
+
+subido = st.file_uploader('Importar experimento exportado (Fase 3 o Fase 5)',
+                          type=['zip'], key='historial_subir')
+if subido is not None and st.button('Validar e incorporar archivo importado',
+                                     key='historial_importar'):
+    try:
+        original = cargar_archivo(subido.getvalue())
+        canonico = crear_archivo(original['base'], original['variante'],
+                                nombre=original['meta']['nombre'])
+        ruta = guardar_local(HISTORIAL, canonico, nombre=original['meta']['nombre'])
+        st.session_state['historial_aviso_importado'] = (
+            f'Importado correctamente: {ruta.name}', original['meta']['advertencias'])
+        st.rerun()
+    except Exception as exc:
+        st.error(f'No se pudo importar el ZIP: {exc}')
+if 'historial_aviso_importado' in st.session_state:
+    mensaje, avisos = st.session_state.pop('historial_aviso_importado')
+    st.success(mensaje)
+    for aviso in avisos:
+        st.warning(aviso)
+
+if archivos_historial:
+    st.markdown('**Recuperar y comparar resultados guardados**')
+    izquierda, derecha = st.columns(2)
+    opciones = [x.name for x in archivos_historial]
+    with izquierda:
+        archivo_a = st.selectbox('Experimento A', opciones, key='historial_izquierdo')
+        variante_a = st.selectbox('Escenario A', ['Base', 'Experimento'],
+                                  key='historial_tipo_a')
+    with derecha:
+        archivo_b = st.selectbox('Experimento B', opciones, key='historial_derecho')
+        variante_b = st.selectbox('Escenario B', ['Experimento', 'Base'],
+                                  key='historial_tipo_b')
+    if st.button('Cargar y comparar sin simular', key='historial_comparar'):
+        try:
+            aa = cargar_archivo(abrir_local(HISTORIAL, archivo_a))
+            bb = cargar_archivo(abrir_local(HISTORIAL, archivo_b))
+            left = aa['base'] if variante_a == 'Base' else aa['variante']
+            right = bb['base'] if variante_b == 'Base' else bb['variante']
+            diff = comparar_guardados(left, right)
+            st.session_state['ultima_comparacion'] = (left, right, diff)
+            st.session_state['historial_recuperado'] = (archivo_a, archivo_b)
+            st.success('Comparación cargada desde archivos verificados, sin repetir partidas.')
+        except Exception as exc:
+            st.error(f'No se pueden comparar estos resultados guardados: {exc}')
+    if 'historial_recuperado' in st.session_state:
+        a, b = st.session_state['historial_recuperado']
+        st.caption(f'Última selección recuperada: {a} / {b}. '
+                   'Los gráficos de las secciones siguientes usan estos datos almacenados.')
 
 if "ultima_comparacion" not in st.session_state:
     st.markdown("**Ejecución pendiente.** Ajustá los controles y seleccioná «Ejecutar y comparar escenarios».")

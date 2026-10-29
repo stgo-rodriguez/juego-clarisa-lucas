@@ -86,3 +86,31 @@ Descargá el JSON para inspeccionar cada evento y su origen. El observador compr
 Después de ejecutar escenarios, abrí **«7. Actividad de turnos y oportunidades detectadas»**, seleccioná escenario y partida, y presioná **Reconstruir actividad de turnos**. Obtendrás conteos de decisiones realmente ejecutadas, consecuencias automáticas y diez familias de acciones disponibles en checkpoints del motor, con distribución por etapa, bot y turno individual. Exportación JSON disponible.
 
 **Interpretación:** no es una medida objetiva de diversión ni un censo de todas las alternativas legales. Las ofertas no formuladas y las opciones humanas no pueden inferirse desde el bot. Documentación: `docs/FASE4_4_TURNOS.md`; auditoría de 150 partidas: `docs/DIAGNOSTICO_TURNOS_FASE4_4.json`. Ningún cambio en reglas, bots ni RNG.
+
+### Fase 5 — Historial local e intercambio de experimentos
+
+El panel **Historial de experimentos · Fase 5** aparece antes de los resultados. Después de
+simular se puede:
+
+- **Guardar comparación en este equipo:** se escribe un ZIP completo y verificable en
+  `.laboratorio/historial/` (ignorado por Git), con nombre y fecha. Persiste tras cerrar
+  Streamlit. No se sube ni sincroniza con GitHub.
+- **Descargar experimento completo (ZIP):** conserva resultados de todas las partidas,
+  semillas, configuraciones, resúmenes, eventos de muestra, motor y mazo (SHA-256).
+- **Importar:** admite ZIPs actuales y el formato de comparación de Fase 3. Este último
+  únicamente proporcionaba SHA-256 de CSV; se informa la limitación al importar.
+- **Comparar sin simular:** elegí cualquiera de los dos escenarios de dos archivos
+  guardados. Deben coincidir **tamaño de mesa, semillas, cantidad de partidas,
+  horizonte, mezcla de bots y huella de código/mazo**; no se fuerzan comparaciones
+  incompatibles. El resultado recuperado alimenta los gráficos anteriores.
+
+La recuperación del historial **no ejecuta el simulador**. Las reconstrucciones
+por partida de las secciones Gantt/Economía/Interacciones/Turnos sí vuelven a
+simular *solo la partida seleccionada* para obtener eventos detallados que no
+están presentes para todas las partidas del lote; la semilla y resultado se auditan.
+
+Para trasladar experimentos a otra computadora, descargá los ZIP y usá **Importar**.
+Los ZIP tienen límites de tamaño y validación de rutas e integridad, pero los hashes
+no son firmas criptográficas de procedencia. No cargues archivos de origen dudoso.
+
+Especificación y pruebas: `docs/FASE5_HISTORIAL.md` y `tests/test_historial_fase5.py`.
