@@ -88,6 +88,38 @@ def validar_vista(page, ancho: int, alto: int) -> None:
     page.screenshot(path=str(CAPTURES / f"actividad_{ancho}x{alto}.png"), full_page=False)
 
 
+
+def activar_solapa(page, titulo: str) -> None:
+    tab = page.get_by_role("tab", name=titulo)
+    for intento in range(6):
+        tab.click()
+        page.wait_for_timeout(650)
+        if tab.get_attribute("aria-selected") == "true":
+            return
+    raise AssertionError(f"No se activó la solapa {titulo!r}")
+
+
+def validar_cuatro_solapas(page) -> None:
+    page.set_viewport_size({"width": 1600, "height": 900})
+    for titulo in ("Cronología", "Economía", "Interacciones", "Actividad de turnos"):
+        activar_solapa(page, titulo)
+        panel = geometria(page, '[data-testid="stTabs"] [role="tabpanel"]:visible')
+        assert panel["bottom"] >= 892, f"{titulo}: el panel termina antes del pie: {panel}"
+        assert panel["height"] > 680, f"{titulo}: el panel es demasiado bajo: {panel}"
+        assert panel["overflowY"] in ("auto", "scroll"), titulo
+        pagina_panel = page.locator('[data-testid="stTabs"] [role="tabpanel"]:visible')
+        if panel["scrollHeight"] > panel["clientHeight"] + 100:
+            pagina_panel.evaluate("(el) => { el.scrollTop = el.scrollHeight; }")
+            assert pagina_panel.evaluate("(el) => el.scrollTop") > 50, (
+                f"{titulo}: no se puede llegar al final")
+        if titulo == "Interacciones":
+            tablas = pagina_panel.locator('[data-testid="stDataFrame"]')
+            assert tablas.count() >= 4, "Interacciones: faltan tablas completas"
+            anchos = [tablas.nth(i).bounding_box()["width"] for i in range(4)]
+            assert min(anchos) >= panel["width"] * .76, f"Tablas cortadas: {anchos}"
+        page.screenshot(path=str(CAPTURES / f"{titulo.replace(' ', '_').lower()}.png"),
+                        full_page=False)
+
 def ejecutar() -> None:
     env = os.environ.copy()
     env["STREAMLIT_BROWSER_GATHER_USAGE_STATS"] = "false"
@@ -131,6 +163,7 @@ def ejecutar() -> None:
                 state="visible", timeout=15000)
             validar_vista(pagina, 1600, 900)
             validar_vista(pagina, 1280, 720)
+            validar_cuatro_solapas(pagina)
             navegador.close()
         print("OK: navegador real · encabezado fijo · scroll al pie · tablas a ancho completo.")
     finally:
