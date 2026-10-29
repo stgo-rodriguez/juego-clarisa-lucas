@@ -190,7 +190,7 @@ def mostrar_detalle(baseline: dict, experiment: dict, *, modo_enfoque: bool = Fa
     }, sort_keys=True, ensure_ascii=False)
     paneles_detalle = st.tabs(["Cronología", "Economía", "Interacciones", "Actividad de turnos"])
     with paneles_detalle[0]:
-        with st.container(height=520 if modo_enfoque else None,
+        with st.container(height=520 if modo_enfoque else "content",
                           border=False, key="scroll_cronologia"):
             if not modo_enfoque:
                 st.subheader("4. Cronología de hitos de la pareja ganadora")
@@ -273,7 +273,7 @@ def mostrar_detalle(baseline: dict, experiment: dict, *, modo_enfoque: bool = Fa
                         key="descargar_gantt")
 
     with paneles_detalle[1]:
-        with st.container(height=520 if modo_enfoque else None,
+        with st.container(height=520 if modo_enfoque else "content",
                           border=False, key="scroll_economia"):
             st.subheader("5. Economía de recursos por origen, etapa y jugador")
             st.caption("El lote completo aporta flujos agregados por fuente y recurso. "
@@ -364,7 +364,7 @@ def mostrar_detalle(baseline: dict, experiment: dict, *, modo_enfoque: bool = Fa
                                    mime='application/json', key='descargar_economia')
 
     with paneles_detalle[2]:
-        with st.container(height=520 if modo_enfoque else None,
+        with st.container(height=520 if modo_enfoque else "content",
                           border=False, key="scroll_interacciones"):
             st.subheader('6. Interacciones: Duelos, negociación, Pareja y Casa')
             st.caption('El lote completo muestra contadores por partida. Para conocer modalidad, '
@@ -455,7 +455,7 @@ def mostrar_detalle(baseline: dict, experiment: dict, *, modo_enfoque: bool = Fa
                                    mime='application/json', key='descargar_interacciones')
 
     with paneles_detalle[3]:
-        with st.container(height=520 if modo_enfoque else None,
+        with st.container(height=520 if modo_enfoque else "content",
                           border=False, key="scroll_turnos"):
             st.subheader('7. Actividad de turnos y oportunidades detectadas')
             st.caption('Medición descriptiva de bots: distingue desenlaces automáticos, '
