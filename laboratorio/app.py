@@ -24,7 +24,7 @@ from laboratorio.visualizaciones import tabla_distribucion, metricas_comparadas
 from laboratorio.historial import (crear_archivo, cargar_archivo, guardar_local,
                                   listar_local, abrir_local, comparar_guardados)
 from laboratorio.trazabilidad import trazar_partida
-from laboratorio.gantt import grafico_gantt, grafico_vigencia
+from laboratorio.gantt import grafico_gantt, intervalos_entre_hitos, grafico_vigencia
 
 st.set_page_config(page_title="Laboratorio de Balance · Clarisa & Lucas", page_icon="⚖️", layout="wide")
 
@@ -262,10 +262,28 @@ else:
             st.success("Partida reconstruida y comprobada: todos los indicadores coinciden con el motor original.")
             nombres = " + ".join(f"{x['personaje']} #{x['id']}" for x in trazado['ganadores'])
             st.markdown(f"**Pareja ganadora:** {nombres} · **Casamiento:** ronda {trazado['ronda_casamiento']}")
-            st.caption('**Cómo leerlo:** cada círculo indica la ronda en que se obtuvo un hito por primera vez; '
-                       'un rombo hueco indica recuperación y una cruz roja, pérdida. '
-                       'El eje horizontal muestra el avance de las rondas, no el tiempo de posesión.')
+            st.caption('**Cómo leerlo:** cada barra muestra las rondas transcurridas desde '
+                       'el hito anterior del mismo personaje o de la pareja. '
+                       '**No es tiempo de ejecución ni posesión del hito.** '
+                       'El círculo señala su primera obtención; rombo hueco, recuperación; '
+                       'cruz roja, pérdida. Las barras más largas están destacadas.')
             st.plotly_chart(grafico_gantt(trazado), use_container_width=True)
+            esperas = intervalos_entre_hitos(trazado)
+            for grupo_espera, titulo in [
+                (trazado['ganadores'][0]['personaje'] + ' #' + str(trazado['ganadores'][0]['id']),
+                 'Mayor intervalo de Clarisa/Lucas'),
+                ('Pareja', 'Mayor intervalo de la pareja'),
+            ]:
+                if grupo_espera == 'Pareja':
+                    candidatos = [e for e in esperas if e['grupo'] == 'Pareja']
+                else:
+                    candidatos = [e for e in esperas if e['grupo'] != 'Pareja']
+                if candidatos:
+                    mayor = max(candidatos, key=lambda e: e['rondas'])
+                    st.caption(f"**{titulo}:** {mayor['grupo']}: {mayor['desde']} "
+                               f"(R{mayor['ronda_desde']}) → {mayor['hasta']} "
+                               f"(R{mayor['ronda_hasta']}) · {mayor['rondas']} rondas. "
+                               'Indica un intervalo entre eventos, no su causa.')
             with st.expander('Ver períodos de vigencia y pérdidas (detalle técnico)'):
                 st.caption('En esta vista alternativa, cada barra indica durante cuánto tiempo '
                            'se conservó efectivamente el hito. No representa el tiempo '
