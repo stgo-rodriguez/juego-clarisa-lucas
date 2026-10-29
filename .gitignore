@@ -8,3 +8,6 @@ __pycache__/
 # Resultados temporales locales
 /tmp/
 *.log
+
+# Historial local del Laboratorio (no subir experimentos)
+.laboratorio/
