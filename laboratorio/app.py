@@ -103,7 +103,6 @@ def mostrar_detalle(baseline: dict, experiment: dict, *, modo_enfoque: bool = Fa
            Una única barra de desplazamiento: el tab-panel de Streamlit. */
         div[data-testid="stTabs"] [role="tabpanel"],
         div[data-testid="stTabs"] div[data-baseweb="tab-panel"] {
-            display: block !important;
             flex: 1 1 0 !important;
             height: auto !important;
             max-height: none !important;
