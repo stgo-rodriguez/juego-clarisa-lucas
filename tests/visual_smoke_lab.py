@@ -113,8 +113,10 @@ def validar_cuatro_solapas(page) -> None:
             assert pagina_panel.evaluate("(el) => el.scrollTop") > 50, (
                 f"{titulo}: no se puede llegar al final")
         if titulo == "Interacciones":
-            tablas = pagina_panel.locator('[data-testid="stDataFrame"]')
-            assert tablas.count() >= 4, "Interacciones: faltan tablas completas"
+            # El resumen agregado está dentro de un expander cerrado y por
+            # tanto su ancho es 0; solo validar tablas efectivamente visibles.
+            tablas = pagina_panel.locator('[data-testid="stDataFrame"]:visible')
+            assert tablas.count() >= 4, "Interacciones: faltan tablas visibles completas"
             anchos = [tablas.nth(i).bounding_box()["width"] for i in range(4)]
             assert min(anchos) >= panel["width"] * .76, f"Tablas cortadas: {anchos}"
         page.screenshot(path=str(CAPTURES / f"{titulo.replace(' ', '_').lower()}.png"),
