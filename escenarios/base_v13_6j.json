@@ -1,0 +1,17 @@
+{
+  "id": "base_v13_solo_infancia_6j",
+  "jugadores": 6,
+  "partidas": 1000,
+  "seed": 131028,
+  "incremento_seed": 103,
+  "max_rondas": 120,
+  "bot": "mixed",
+  "economia": {
+    "perfiles_pct": 100,
+    "cartas_ganancias_pct": 100,
+    "cartas_perdidas_pct": 100,
+    "infancia_pct": 100,
+    "juventud_pct": 0,
+    "adultez_pct": 0
+  }
+}
