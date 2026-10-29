@@ -32,3 +32,26 @@ SHA-256 esperados de `resultados_6j.csv` y `resultados_10j.csv` en `referencias/
 ## Fase 2
 
 Se incorporaron controles adicionales de invariantes, extremos y RNG. Véase `docs/FASE2_CALIDAD.md` y `docs/DIAGNOSTICO_EXTREMOS_FASE2.json`. No se modificaron reglas ni bots.
+
+## Fase 3: interfaz web local (Streamlit)
+
+Requiere Python 3.11 o superior. En macOS/Linux, desde la raíz del repositorio:
+
+```bash
+python3 -m venv .venv
+source .venv/bin/activate
+python -m pip install --upgrade pip
+python -m pip install -r requirements.txt
+python -m streamlit run laboratorio/app.py
+```
+
+La interfaz abrirá en `http://localhost:8501` (salvo que el puerto esté ocupado).
+Usá **Ctrl+C** para detener el servidor. Para volver a ejecutarla otro día:
+
+```bash
+cd juego-clarisa-lucas
+source .venv/bin/activate
+python -m streamlit run laboratorio/app.py
+```
+
+El panel ejecuta dos escenarios con semillas apareadas y permite descargar datos y configuraciones. Se mantiene el sitio público existente (`index.html`) intacto. El análisis completo de incertidumbre, sensibilidad y Gantt corresponde a fases posteriores.

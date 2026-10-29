@@ -1,0 +1,10 @@
+# Entornos virtuales y cachés Python
+.venv/
+__pycache__/
+*.py[cod]
+.pytest_cache/
+.streamlit/secrets.toml
+
+# Resultados temporales locales
+/tmp/
+*.log

@@ -1,2 +1,5 @@
-# Fase 1: Python >=3.11, sin dependencias de terceros para motor y CLI.
-# Streamlit y otras bibliotecas se agregarán después de validar fases 1-2.
+# Reglas y simulación: biblioteca estándar de Python (3.11+).
+# Interfaz web local (Fase 3):
+streamlit>=1.39,<2
+pandas>=2.0,<3
+plotly>=5.22,<7
