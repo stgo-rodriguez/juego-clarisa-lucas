@@ -109,7 +109,17 @@ def ejecutar() -> None:
             pagina.get_by_role("button", name="Ejecutar y comparar escenarios").click()
             pagina.get_by_role("button", name="Pantalla de análisis").click()
             pagina.get_by_role("tab", name="Actividad de turnos").click()
-            pagina.get_by_text("Actividad validada", exact=False).first.wait_for(state="visible")
+            pagina.wait_for_timeout(900)
+            pagina.screenshot(path=str(CAPTURES / "antes_de_validar.png"), full_page=False)
+            print("SELECTORES:", pagina.locator('[role="tab"]').evaluate_all(
+                "(all) => all.map(e => [e.textContent, e.getAttribute('aria-selected')])"),
+                flush=True)
+            print("PANELES:", pagina.locator('[role="tabpanel"]').evaluate_all(
+                "(all) => all.map(e => [e.getAttribute('aria-hidden'), "
+                "getComputedStyle(e).display, getComputedStyle(e).visibility])"),
+                flush=True)
+            pagina.get_by_text("Actividad validada", exact=False).first.wait_for(
+                state="visible", timeout=15000)
             validar_vista(pagina, 1600, 900)
             validar_vista(pagina, 1280, 720)
             navegador.close()
