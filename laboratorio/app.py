@@ -91,19 +91,25 @@ def mostrar_detalle(baseline: dict, experiment: dict, *, modo_enfoque: bool = Fa
             min-height: 0 !important;
             background: var(--background-color, #fff) !important;
             padding: 0 .6rem !important;
-            display: flex !important;
-            flex-direction: column !important;
+            display: block !important;
             overflow: hidden !important;
         }
         div[data-testid="stTabs"] div[data-baseweb="tab-list"] {
-            flex: 0 0 auto !important;
+            position: relative !important;
+            z-index: 1 !important;
             background: var(--background-color, #fff) !important;
         }
-        /* El contenido completo de la solapa, sin altura interna de 520 px.
-           Una única barra de desplazamiento: el tab-panel de Streamlit. */
+        /* El tab-panel no crece mediante flex en la estructura real de
+           Streamlit: Chromium mostró solo 45 px para 2526 px de contenido.
+           Anclamos el panel al borde inferior del viewport y mantenemos la
+           lista de solapas encima (40 px de alto). */
         div[data-testid="stTabs"] [role="tabpanel"],
         div[data-testid="stTabs"] div[data-baseweb="tab-panel"] {
-            flex: 1 1 0 !important;
+            position: absolute !important;
+            top: 40px !important;
+            bottom: 0 !important;
+            left: 0 !important;
+            right: 0 !important;
             height: auto !important;
             max-height: none !important;
             min-height: 0 !important;
