@@ -17,3 +17,5 @@ jobs:
         run: python -m unittest discover -s tests -p 'test_*.py' -v
       - name: CSV de referencia y semillas
         run: python -m laboratorio.verificar_baseline
+      - name: Regresión completa de 2.000 partidas
+        run: python -m laboratorio.verificar_baseline --full

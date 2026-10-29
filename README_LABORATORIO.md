@@ -1,4 +1,4 @@
-# Laboratorio de Balance de Clarisa & Lucas (fase 1)
+# Laboratorio de Balance de Clarisa & Lucas (fases 1–2)
 
 Branch independiente; no modificar `index.html`, `README.md` ni `.github/workflows/pages.yml`.
 
@@ -8,6 +8,7 @@ Requiere Python 3.11 o posterior. En raíz del repositorio:
 
 ```bash
 python -m unittest discover -s tests -p 'test_*.py' -v
+python -m laboratorio.verificar_baseline --full
 python -m laboratorio.ejecucion --escenario escenarios/base_v13_6j.json --out /tmp/balance_6j
 python -m laboratorio.ejecucion --escenario escenarios/base_v13_10j.json --out /tmp/balance_10j
 ```
@@ -27,3 +28,7 @@ SHA-256 esperados de `resultados_6j.csv` y `resultados_10j.csv` en `referencias/
 **Limitación intencional:** las políticas de bot permanecen temporalmente dentro del motor congelado. Extraerlas en `bots.py` implicaría un refactor de reglas/rutas RNG y requiere su propia prueba de equivalencia. La separación lógica de economía se alcanza con el adaptador; la separación física de bots es futura.
 
 **Nota:** los multiplicadores afectan la economía, no los costos de hitos. En cartas se escalan antes de elegir el desenlace para que el bot observe los importes efectivos. El redondeo es estocástico sobre enteros y reproduce exactamente el motor original a 100% sin consumir RNG extra.
+
+## Fase 2
+
+Se incorporaron controles adicionales de invariantes, extremos y RNG. Véase `docs/FASE2_CALIDAD.md` y `docs/DIAGNOSTICO_EXTREMOS_FASE2.json`. No se modificaron reglas ni bots.

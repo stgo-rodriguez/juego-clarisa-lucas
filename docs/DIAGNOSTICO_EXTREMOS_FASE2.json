@@ -1,0 +1,157 @@
+{
+  "advertencia": "Bateria técnica para invariantes, no concluye balance",
+  "escenarios": {
+    "6j_restriccion_maxima": {
+      "jugadores": 6,
+      "config": {
+        "perfiles_pct": 50,
+        "cartas_ganancias_pct": 50,
+        "cartas_perdidas_pct": 150,
+        "infancia_pct": 50,
+        "juventud_pct": 0,
+        "adultez_pct": 0
+      },
+      "partidas": 25,
+      "terminadas": 25,
+      "censuradas": 0,
+      "media_rondas_terminadas": 58.88,
+      "mediana_rondas_terminadas": 57,
+      "errores_integridad": 0,
+      "semilla_inicial": 31060,
+      "incremento_seed": 103
+    },
+    "6j_abundancia_maxima": {
+      "jugadores": 6,
+      "config": {
+        "perfiles_pct": 150,
+        "cartas_ganancias_pct": 150,
+        "cartas_perdidas_pct": 50,
+        "infancia_pct": 150,
+        "juventud_pct": 0,
+        "adultez_pct": 0
+      },
+      "partidas": 25,
+      "terminadas": 25,
+      "censuradas": 0,
+      "media_rondas_terminadas": 21.64,
+      "mediana_rondas_terminadas": 21,
+      "errores_integridad": 0,
+      "semilla_inicial": 32060,
+      "incremento_seed": 103
+    },
+    "6j_ingresos_juventud": {
+      "jugadores": 6,
+      "config": {
+        "perfiles_pct": 100,
+        "cartas_ganancias_pct": 100,
+        "cartas_perdidas_pct": 100,
+        "infancia_pct": 100,
+        "juventud_pct": 100,
+        "adultez_pct": 0
+      },
+      "partidas": 25,
+      "terminadas": 25,
+      "censuradas": 0,
+      "media_rondas_terminadas": 22.84,
+      "mediana_rondas_terminadas": 21,
+      "errores_integridad": 0,
+      "semilla_inicial": 33060,
+      "incremento_seed": 103
+    },
+    "6j_ingresos_adultez": {
+      "jugadores": 6,
+      "config": {
+        "perfiles_pct": 100,
+        "cartas_ganancias_pct": 100,
+        "cartas_perdidas_pct": 100,
+        "infancia_pct": 100,
+        "juventud_pct": 0,
+        "adultez_pct": 100
+      },
+      "partidas": 25,
+      "terminadas": 25,
+      "censuradas": 0,
+      "media_rondas_terminadas": 24.08,
+      "mediana_rondas_terminadas": 22,
+      "errores_integridad": 0,
+      "semilla_inicial": 34060,
+      "incremento_seed": 103
+    },
+    "10j_restriccion_maxima": {
+      "jugadores": 10,
+      "config": {
+        "perfiles_pct": 50,
+        "cartas_ganancias_pct": 50,
+        "cartas_perdidas_pct": 150,
+        "infancia_pct": 50,
+        "juventud_pct": 0,
+        "adultez_pct": 0
+      },
+      "partidas": 25,
+      "terminadas": 25,
+      "censuradas": 0,
+      "media_rondas_terminadas": 55.72,
+      "mediana_rondas_terminadas": 55,
+      "errores_integridad": 0,
+      "semilla_inicial": 31100,
+      "incremento_seed": 103
+    },
+    "10j_abundancia_maxima": {
+      "jugadores": 10,
+      "config": {
+        "perfiles_pct": 150,
+        "cartas_ganancias_pct": 150,
+        "cartas_perdidas_pct": 50,
+        "infancia_pct": 150,
+        "juventud_pct": 0,
+        "adultez_pct": 0
+      },
+      "partidas": 25,
+      "terminadas": 25,
+      "censuradas": 0,
+      "media_rondas_terminadas": 20.88,
+      "mediana_rondas_terminadas": 20,
+      "errores_integridad": 0,
+      "semilla_inicial": 32100,
+      "incremento_seed": 103
+    },
+    "10j_ingresos_juventud": {
+      "jugadores": 10,
+      "config": {
+        "perfiles_pct": 100,
+        "cartas_ganancias_pct": 100,
+        "cartas_perdidas_pct": 100,
+        "infancia_pct": 100,
+        "juventud_pct": 100,
+        "adultez_pct": 0
+      },
+      "partidas": 25,
+      "terminadas": 25,
+      "censuradas": 0,
+      "media_rondas_terminadas": 22.84,
+      "mediana_rondas_terminadas": 23,
+      "errores_integridad": 0,
+      "semilla_inicial": 33100,
+      "incremento_seed": 103
+    },
+    "10j_ingresos_adultez": {
+      "jugadores": 10,
+      "config": {
+        "perfiles_pct": 100,
+        "cartas_ganancias_pct": 100,
+        "cartas_perdidas_pct": 100,
+        "infancia_pct": 100,
+        "juventud_pct": 0,
+        "adultez_pct": 100
+      },
+      "partidas": 25,
+      "terminadas": 25,
+      "censuradas": 0,
+      "media_rondas_terminadas": 25.48,
+      "mediana_rondas_terminadas": 25,
+      "errores_integridad": 0,
+      "semilla_inicial": 34100,
+      "incremento_seed": 103
+    }
+  }
+}
