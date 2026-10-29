@@ -65,10 +65,15 @@ misma selección. **Los cuatro análisis se reconstruyen y verifican
 automáticamente** al cambiar escenario o partida. Se reutilizan cuando
 la selección no cambia; no hay botones de reconstrucción.
 
-**Pantalla de análisis** abre una vista ampliada que oculta formularios y
-resúmenes generales. El selector se mantiene visible al recorrer gráficos
-y se puede volver al laboratorio con el botón correspondiente. No es
-necesario activar el modo de pantalla completa del navegador.
+**Pantalla de análisis** abre un tablero de una sola pantalla: el encabezado
+con los selectores de escenario y partida queda **fijo, superpuesto**, y las
+cuatro solapas ocupan el resto del navegador. Solo el contenido de cada
+solapa se desplaza internamente, sin perder los selectores. La cronología
+aparece primero, con un Gantt de mayor área útil y explicaciones secundarias
+debajo. Se vuelve al laboratorio con **Salir de pantalla de análisis**.
+No se utiliza el modo de pantalla completa propio de Plotly, que ocultaría
+los controles de la aplicación. El diseño debe verificarse visualmente en
+el navegador del usuario; las pruebas de Streamlit no emulan su disposición CSS.
 Las partidas censuradas también son seleccionables, aunque no tienen pareja
 ganadora para el Gantt.
 
