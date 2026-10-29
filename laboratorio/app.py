@@ -100,7 +100,8 @@ def mostrar_detalle(baseline: dict, experiment: dict, *, modo_enfoque: bool = Fa
             z-index: 1 !important;
             background: var(--background-color, #fff) !important;
         }
-        div[data-testid="stTabs"] div[data-baseweb="tab-panel"] {
+        div[data-testid="stTabs"] div[data-baseweb="tab-panel"],
+        div[data-testid="stTabs"] [role="tabpanel"] {
             flex: 1 1 auto !important;
             min-height: 0 !important;
             overflow-y: auto !important;
