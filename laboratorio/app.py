@@ -230,9 +230,9 @@ else:
 
     st.divider()
     st.subheader("4. Cronología de hitos de la pareja ganadora")
-    st.caption("Elegí una partida concluida de cualquiera de los escenarios. "
-               "El laboratorio vuelve a ejecutar solamente esa semilla con observación pasiva "
-               "y comprueba que el resultado completo sea idéntico al de la simulación original.")
+    st.caption("La cronología se carga automáticamente al elegir una partida o escenario. "
+               "Se reconstruye únicamente esa semilla con observación pasiva, "
+               "verificando que el resultado sea idéntico al de la simulación original.")
     lado = st.radio("Escenario del Gantt", ["Base", "Experimento"], horizontal=True,
                     key="gantt_lado")
     resultado = baseline if lado == "Base" else experiment
@@ -245,17 +245,24 @@ else:
             format_func=lambda n: (f"Partida {n} · semilla {resultado['filas'][n-1]['semilla']} "
                                    f"· casamiento en ronda {resultado['filas'][n-1]['rondas_observadas']}")
         )
-        identificador = json.dumps({"escenario": resultado["escenario"], "partida": numero},
-                                   sort_keys=True, ensure_ascii=False)
-        if st.button("Ver cronología y verificar partida", key="gantt_reconstruir"):
+        # Carga automática al entrar en la sección o cambiar partida/escenario.
+        # Se conserva la última reconstrucción mientras la selección sea idéntica;
+        # no se reejecuta en cada interacción con otros paneles de Streamlit.
+        identificador = json.dumps({
+            "escenario": resultado["escenario"], "partida": numero,
+            "fila_esperada": resultado["filas"][numero - 1],
+        }, sort_keys=True, ensure_ascii=False)
+        previo = st.session_state.get("gantt_ultimo")
+        if previo is None or previo[0] != identificador:
+            st.session_state.pop("gantt_ultimo", None)
             try:
-                with st.spinner(f"Reejecutando únicamente la partida {numero} para reconstruir sus hitos…"):
-                    trazado = trazar_partida(escenario_desde_dict(resultado["escenario"]),
-                                             numero, resultado["filas"][numero - 1])
+                with st.spinner(f"Verificando y reconstruyendo la partida {numero}…"):
+                    trazado = trazar_partida(
+                        escenario_desde_dict(resultado["escenario"]),
+                        numero, resultado["filas"][numero - 1])
                 st.session_state["gantt_ultimo"] = (identificador, trazado)
             except Exception as exc:
-                st.session_state.pop("gantt_ultimo", None)
-                st.error(f"No se pudo validar el Gantt: {exc}")
+                st.error(f"No se pudo validar la cronología: {exc}")
         previo = st.session_state.get("gantt_ultimo")
         if previo is not None and previo[0] == identificador:
             trazado = previo[1]
@@ -297,8 +304,6 @@ else:
                 mime="application/json",
                 file_name=f"gantt_partida_{numero}_{lado.lower()}.json",
                 key="descargar_gantt")
-        elif previo is not None:
-            st.caption("Seleccionaste otra partida o escenario. Elegí «Construir Gantt» para actualizar el gráfico.")
 
     st.divider()
     st.subheader("5. Economía de recursos por origen, etapa y jugador")
