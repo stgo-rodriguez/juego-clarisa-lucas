@@ -49,28 +49,72 @@ def mostrar_detalle(baseline: dict, experiment: dict, *, modo_enfoque: bool = Fa
     if modo_enfoque:
         st.markdown("""
         <style>
-        /* Vista ampliada: los controles siguen visibles durante el desplazamiento. */
-        .block-container { max-width:100% !important; padding-top:.5rem !important; }
+        /* Modo tablero: sin desplazamiento de la página principal. */
+        html, body, #root, [data-testid="stApp"] {
+            height: 100dvh !important;
+            overflow: hidden !important;
+        }
+        [data-testid="stHeader"] { display: none !important; }
+        [data-testid="stMain"] { overflow: hidden !important; }
+        .block-container {
+            max-width: 100% !important;
+            padding: 0 !important;
+        }
+        /* Controles realmente flotantes: sticky no funciona dentro del
+           contenedor desplazable de Streamlit en todas las versiones. */
         .st-key-selector_analisis {
-            position: sticky; top: 0; z-index: 999;
-            background: var(--background-color, #fff);
-            padding: .45rem .8rem .25rem;
-            box-shadow: 0 2px 12px rgba(0,0,0,.09);
-            border-radius: .5rem;
+            position: fixed !important;
+            top: 0 !important;
+            left: 0 !important;
+            right: 0 !important;
+            z-index: 10010 !important;
+            padding: .35rem 1.4rem .5rem !important;
+            background: var(--background-color, #fff) !important;
+            border-bottom: 1px solid rgba(127,127,127,.22);
+            box-shadow: 0 2px 12px rgba(0,0,0,.10);
+        }
+        .st-key-selector_analisis [data-testid="stVerticalBlock"] {
+            gap: .25rem !important;
+        }
+        .st-key-selector_analisis [data-testid="stMarkdownContainer"] p {
+            margin-bottom: 0 !important;
+        }
+        /* Las solapas y su contenido ocupan el resto de la pantalla.
+           Solo el contenido de la solapa tiene scroll independiente. */
+        div[data-testid="stTabs"] {
+            position: fixed !important;
+            top: 122px !important;
+            bottom: 0 !important;
+            left: 0 !important;
+            right: 0 !important;
+            z-index: 10000 !important;
+            background: var(--background-color, #fff) !important;
+            padding: 0 .9rem !important;
+            display: flex !important;
+            flex-direction: column !important;
+            overflow: hidden !important;
         }
         div[data-testid="stTabs"] div[data-baseweb="tab-list"] {
-            position: sticky; top: 145px; z-index: 998;
-            background: var(--background-color, #fff);
+            flex: 0 0 auto !important;
+            position: relative !important;
+            z-index: 1 !important;
+            background: var(--background-color, #fff) !important;
+        }
+        div[data-testid="stTabs"] div[data-baseweb="tab-panel"] {
+            flex: 1 1 auto !important;
+            min-height: 0 !important;
+            overflow-y: auto !important;
+            overflow-x: hidden !important;
+            scrollbar-gutter: stable;
+            overscroll-behavior: contain;
+            padding: .15rem .75rem 1rem !important;
+        }
+        @media (max-width: 800px) {
+            .st-key-selector_analisis { padding: .3rem .55rem !important; }
+            div[data-testid="stTabs"] { top: 145px !important; padding: 0 .3rem !important; }
         }
         </style>
         """, unsafe_allow_html=True)
-        cabecera, volver = st.columns([5, 1])
-        with cabecera:
-            st.markdown("### Análisis de una partida")
-        with volver:
-            if st.button("Volver al laboratorio", key="salir_enfoque"):
-                st.session_state["modo_enfoque"] = False
-                st.rerun()
     else:
         st.divider()
         encabezado, ampliar = st.columns([4, 1])
@@ -81,12 +125,22 @@ def mostrar_detalle(baseline: dict, experiment: dict, *, modo_enfoque: bool = Fa
                 st.session_state["modo_enfoque"] = True
                 st.rerun()
     with st.container(key="selector_analisis"):
-        st.caption("Un escenario y una partida para Cronología, Economía, "
-                   "Interacciones y Actividad de turnos.")
-        col_escenario, col_partida = st.columns([1, 3])
+        if modo_enfoque:
+            encabezado, volver = st.columns([5, 1], vertical_alignment="center")
+            with encabezado:
+                st.markdown("**Análisis de una partida**")
+            with volver:
+                if st.button("Salir de pantalla de análisis", key="salir_enfoque"):
+                    st.session_state["modo_enfoque"] = False
+                    st.rerun()
+        else:
+            st.caption("Un escenario y una partida para Cronología, Economía, "
+                       "Interacciones y Actividad de turnos.")
+        col_escenario, col_partida = st.columns([1, 3], vertical_alignment="bottom")
         with col_escenario:
             lado_detalle = st.radio("Escenario de la partida", ["Base", "Experimento"],
-                                    horizontal=True, key="detalle_lado")
+                                    horizontal=True, key="detalle_lado",
+                                    label_visibility="visible")
         elegido_detalle = baseline if lado_detalle == "Base" else experiment
         opciones_detalle = list(range(1, len(elegido_detalle["filas"]) + 1))
         if st.session_state.get("detalle_numero") not in opciones_detalle:
@@ -101,9 +155,10 @@ def mostrar_detalle(baseline: dict, experiment: dict, *, modo_enfoque: bool = Fa
                     f"· {elegido_detalle['filas'][n-1]['rondas_observadas']} rondas "
                     f"· {'concluida' if int(elegido_detalle['filas'][n-1]['terminada']) else 'sin concluir'}"))
         fila_detalle = elegido_detalle["filas"][numero_detalle - 1]
-        st.caption(f"**Selección actual:** {lado_detalle} · partida {numero_detalle} · "
-                   f"semilla {fila_detalle['semilla']}. "
-                   "Los cuatro análisis se actualizan automáticamente.")
+        if not modo_enfoque:
+            st.caption(f"**Selección actual:** {lado_detalle} · partida {numero_detalle} · "
+                       f"semilla {fila_detalle['semilla']}. "
+                       "Los cuatro análisis se actualizan automáticamente.")
     firma_detalle = json.dumps({
         "escenario": elegido_detalle["escenario"],
         "partida": numero_detalle,
