@@ -34,3 +34,18 @@ jobs:
       - name: Regresión completa de 2.000 partidas
         if: matrix.python-version == '3.11'
         run: python -m laboratorio.verificar_baseline --full
+      - name: Preparar navegador para prueba visual real
+        if: matrix.python-version == '3.11'
+        run: |
+          python -m pip install playwright
+          google-chrome --version
+      - name: Verificar pantalla, scroll y tablas en Chromium
+        if: matrix.python-version == '3.11'
+        run: python tests/visual_smoke_lab.py
+      - name: Guardar capturas de validación visual
+        if: always() && matrix.python-version == '3.11'
+        uses: actions/upload-artifact@v4
+        with:
+          name: capturas-laboratorio-visual
+          path: test-results/browser/
+          if-no-files-found: ignore
