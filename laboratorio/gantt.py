@@ -61,12 +61,53 @@ def _filas(cronologia: dict) -> list[dict]:
     return filas
 
 
-def grafico_gantt(cronologia: dict) -> go.Figure:
-    """Vista principal: cuándo se alcanzó cada hito, no cuánto tiempo se tuvo.
 
-    Punto relleno = primera obtención; rombo hueco = recuperación;
-    cruz roja = pérdida entre episodios. La posición distingue turnos
-    dentro de una misma ronda; el tooltip informa ronda/turno exactos.
+def intervalos_entre_hitos(cronologia: dict) -> list[dict]:
+    """Distancias entre primeras consecuciones sucesivas por actor.
+
+    No son períodos de inversión, posesión ni actividad exclusiva. Se preserva
+    el orden cronológico exacto (ronda, turno) incluso si los hitos se obtienen
+    en un orden distinto del mostrado en las reglas o comparten ronda.
+    """
+    if not cronologia.get('finalizada'):
+        return []
+    anteriores: dict[str, dict] = {}
+    resultado = []
+    for fila in sorted(
+        (f for f in _filas(cronologia) if f['episodios']),
+        key=lambda f: (f['episodios'][0]['ronda_inicio'],
+                       f['episodios'][0]['turno_inicio'],
+                       f['pos'] * -1),
+    ):
+        episodio = fila['episodios'][0]
+        actor = 'Pareja' if fila['grupo'] == 'Final' else fila['grupo']
+        previo = anteriores.get(actor)
+        if previo is not None:
+            anterior = previo['episodios'][0]
+            diferencia = episodio['ronda_inicio'] - anterior['ronda_inicio']
+            resultado.append({
+                'grupo': actor,
+                'desde': previo['etiqueta'],
+                'hasta': fila['etiqueta'],
+                'ronda_desde': anterior['ronda_inicio'],
+                'ronda_hasta': episodio['ronda_inicio'],
+                'turno_desde': anterior['turno_inicio'],
+                'turno_hasta': episodio['turno_inicio'],
+                'rondas': diferencia,
+                'x_inicio': anterior['x_inicio'],
+                'x_fin': episodio['x_inicio'],
+                'pos': fila['pos'],
+                'color': fila['color'],
+            })
+        anteriores[actor] = fila
+    return resultado
+
+
+def grafico_gantt(cronologia: dict) -> go.Figure:
+    """Vista híbrida: barras entre logros y puntos en la ronda exacta.
+
+    La barra expresa tiempo transcurrido, no posesión ni duración de una tarea.
+    La vista de vigencia sigue disponible como detalle técnico separado.
     """
     fig = go.Figure()
     if not cronologia.get('finalizada') or not cronologia.get('periodos'):
@@ -85,6 +126,42 @@ def grafico_gantt(cronologia: dict) -> go.Figure:
         fig.add_hrect(y0=minimo, y1=maximo, fillcolor=fondo, line_width=0, layer='below')
     for y in [11.25, 7.25, 1.25]:
         fig.add_hline(y=y, line_color='#BBC2CD', line_width=1, opacity=0.65)
+
+    # Barras del tipo Gantt: intervalo ENTRE dos logros observados del mismo
+    # personaje o de la pareja. Nunca intervalos de posesión ni tareas inventadas.
+    intervalos = intervalos_entre_hitos(cronologia)
+    max_espera = max((t['rondas'] for t in intervalos), default=0)
+    for tramo in intervalos:
+        # Los hitos ocurridos en una misma ronda solo necesitan sus puntos.
+        if tramo['rondas'] <= 0:
+            continue
+        destacar = max_espera > 0 and tramo['rondas'] == max_espera
+        datos = [[tramo['desde'], tramo['hasta'], tramo['ronda_desde'],
+                  tramo['ronda_hasta'], tramo['rondas'], tramo['grupo']]] * 2
+        fig.add_trace(go.Scatter(
+            name='Mayor intervalo' if destacar else 'Entre hitos',
+            showlegend=False, mode='lines',
+            x=[tramo['x_inicio'], tramo['x_fin']],
+            y=[tramo['pos'], tramo['pos']],
+            line=dict(color=tramo['color'], width=21 if destacar else 15),
+            opacity=0.85 if destacar else 0.48,
+            customdata=datos,
+            hovertemplate=('<b>%{customdata[5]} · entre hitos</b>'
+                           '<br>Desde: %{customdata[0]} (ronda %{customdata[2]})'
+                           '<br>Hasta: %{customdata[1]} (ronda %{customdata[3]})'
+                           '<br>Transcurrieron %{customdata[4]} rondas.'
+                           '<br>No implica dedicación exclusiva al hito.'
+                           '<extra></extra>'),
+        ))
+        if destacar:
+            fig.add_annotation(
+                x=(tramo['x_inicio'] + tramo['x_fin']) / 2,
+                y=tramo['pos'] + 0.36,
+                text=f"<b>{tramo['rondas']} rondas</b>",
+                showarrow=False, font=dict(size=11, color=tramo['color']),
+                bgcolor='rgba(255,255,255,.85)',
+                borderpad=2,
+            )
 
     groups = {}
     recoveries = []
@@ -160,7 +237,7 @@ def grafico_gantt(cronologia: dict) -> go.Figure:
                        showarrow=False, font=dict(size=12, color=COLOR_FINAL),
                        xanchor='right', yanchor='bottom')
     fig.update_layout(
-        title=dict(text='¿En qué ronda alcanzaron cada hito?', x=0, xanchor='left'),
+        title=dict(text='Camino hacia el casamiento · intervalos entre hitos', x=0, xanchor='left'),
         height=650, hovermode='closest',
         legend=dict(orientation='h', x=0, y=-0.13, yanchor='top',
                     title=None, font=dict(size=11)),
