@@ -98,26 +98,41 @@ def mostrar_detalle(baseline: dict, experiment: dict, *, modo_enfoque: bool = Fa
             flex: 0 0 auto !important;
             background: var(--background-color, #fff) !important;
         }
-        /* Altura explícita: el flex:1 anterior no daba un área scrollable.
-           Cada solapa tiene además su scroll NATIVO con st.container(height=...). */
+        /* El panel usa la altura libre. El único scroll vertical se produce
+           dentro de la solapa, no en el cuerpo de la aplicación. */
         div[data-testid="stTabs"] div[data-baseweb="tab-panel"],
         div[data-testid="stTabs"] [role="tabpanel"] {
             height: calc(100dvh - 118px) !important;
             max-height: calc(100dvh - 118px) !important;
             min-height: 0 !important;
-            overflow-y: auto !important;
-            overflow-x: hidden !important;
-            scrollbar-gutter: stable;
+            overflow: hidden !important;
             overscroll-behavior: contain;
-            padding: .1rem .5rem 1rem !important;
+            padding: 0 .35rem !important;
         }
-        /* También asegurar desplazamiento independiente si Streamlit cambia
-           el DOM interno: el contenedor nativo tiene overflow propio. */
+        /* IMPORTANTE: el alto fijo inicial de Streamlit (520 px) debe
+           reemplazarse con height, no solamente con max-height.
+           Se incluyen los wrappers internos que pueden recibir el alto
+           del contenedor según la versión de Streamlit. */
         .st-key-scroll_cronologia, .st-key-scroll_economia,
         .st-key-scroll_interacciones, .st-key-scroll_turnos {
-            max-height: calc(100dvh - 116px) !important;
+            box-sizing: border-box !important;
+            height: calc(100dvh - 120px) !important;
+            max-height: calc(100dvh - 120px) !important;
+            min-height: 0 !important;
+            overflow-x: hidden !important;
             overflow-y: auto !important;
             overscroll-behavior: contain;
+            scrollbar-gutter: stable;
+            padding-bottom: 12px !important;
+        }
+        .st-key-scroll_cronologia > [data-testid="stVerticalBlockBorderWrapper"],
+        .st-key-scroll_economia > [data-testid="stVerticalBlockBorderWrapper"],
+        .st-key-scroll_interacciones > [data-testid="stVerticalBlockBorderWrapper"],
+        .st-key-scroll_turnos > [data-testid="stVerticalBlockBorderWrapper"] {
+            height: 100% !important;
+            max-height: 100% !important;
+            min-height: 0 !important;
+            overflow-y: auto !important;
         }
         @media (max-width: 950px) {
             .st-key-selector_analisis { padding: .2rem .4rem !important; }
@@ -125,6 +140,11 @@ def mostrar_detalle(baseline: dict, experiment: dict, *, modo_enfoque: bool = Fa
             div[data-testid="stTabs"] [role="tabpanel"] {
                 height: calc(100dvh - 143px) !important;
                 max-height: calc(100dvh - 143px) !important;
+            }
+            .st-key-scroll_cronologia, .st-key-scroll_economia,
+            .st-key-scroll_interacciones, .st-key-scroll_turnos {
+                height: calc(100dvh - 145px) !important;
+                max-height: calc(100dvh - 145px) !important;
             }
         }
         </style>
