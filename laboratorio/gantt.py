@@ -62,52 +62,11 @@ def _filas(cronologia: dict) -> list[dict]:
 
 
 
-def intervalos_entre_hitos(cronologia: dict) -> list[dict]:
-    """Distancias entre primeras consecuciones sucesivas por actor.
-
-    No son períodos de inversión, posesión ni actividad exclusiva. Se preserva
-    el orden cronológico exacto (ronda, turno) incluso si los hitos se obtienen
-    en un orden distinto del mostrado en las reglas o comparten ronda.
-    """
-    if not cronologia.get('finalizada'):
-        return []
-    anteriores: dict[str, dict] = {}
-    resultado = []
-    for fila in sorted(
-        (f for f in _filas(cronologia) if f['episodios']),
-        key=lambda f: (f['episodios'][0]['ronda_inicio'],
-                       f['episodios'][0]['turno_inicio'],
-                       f['pos'] * -1),
-    ):
-        episodio = fila['episodios'][0]
-        actor = 'Pareja' if fila['grupo'] == 'Final' else fila['grupo']
-        previo = anteriores.get(actor)
-        if previo is not None:
-            anterior = previo['episodios'][0]
-            diferencia = episodio['ronda_inicio'] - anterior['ronda_inicio']
-            resultado.append({
-                'grupo': actor,
-                'desde': previo['etiqueta'],
-                'hasta': fila['etiqueta'],
-                'ronda_desde': anterior['ronda_inicio'],
-                'ronda_hasta': episodio['ronda_inicio'],
-                'turno_desde': anterior['turno_inicio'],
-                'turno_hasta': episodio['turno_inicio'],
-                'rondas': diferencia,
-                'x_inicio': anterior['x_inicio'],
-                'x_fin': episodio['x_inicio'],
-                'pos': fila['pos'],
-                'color': fila['color'],
-            })
-        anteriores[actor] = fila
-    return resultado
-
-
 def grafico_gantt(cronologia: dict) -> go.Figure:
-    """Vista híbrida: barras entre logros y puntos en la ronda exacta.
+    """Vista híbrida: proyectos financiados y hitos conseguidos.
 
-    La barra expresa tiempo transcurrido, no posesión ni duración de una tarea.
-    La vista de vigencia sigue disponible como detalle técnico separado.
+    Barras solo para inversiones en proyectos Título/Pasaporte adjudicados;
+    los demás hitos permanecen como puntos si no hay inicio observable.
     """
     fig = go.Figure()
     if not cronologia.get('finalizada') or not cronologia.get('periodos'):
@@ -127,40 +86,49 @@ def grafico_gantt(cronologia: dict) -> go.Figure:
     for y in [11.25, 7.25, 1.25]:
         fig.add_hline(y=y, line_color='#BBC2CD', line_width=1, opacity=0.65)
 
-    # Barras del tipo Gantt: intervalo ENTRE dos logros observados del mismo
-    # personaje o de la pareja. Nunca intervalos de posesión ni tareas inventadas.
-    intervalos = intervalos_entre_hitos(cronologia)
-    max_espera = max((t['rondas'] for t in intervalos), default=0)
-    for tramo in intervalos:
-        # Los hitos ocurridos en una misma ronda solo necesitan sus puntos.
-        if tramo['rondas'] <= 0:
+    # Gantt real: primera INVERSIÓN en el proyecto que posteriormente otorga
+    # Título o Pasaporte. No conectar puntos a otros hitos ni inferir trabajos.
+    por_clave = {f['clave']: f for f in filas}
+    trabajos = cronologia.get('tramos_trabajo') or []
+    max_duracion = max((t['rondas_transcurridas'] for t in trabajos), default=0)
+    for trabajo in trabajos:
+        fila = por_clave.get(trabajo['clave'])
+        if not fila:
             continue
-        destacar = max_espera > 0 and tramo['rondas'] == max_espera
-        datos = [[tramo['desde'], tramo['hasta'], tramo['ronda_desde'],
-                  tramo['ronda_hasta'], tramo['rondas'], tramo['grupo']]] * 2
+        inicio, fin_trabajo = trabajo['x_inicio'], trabajo['x_fin']
+        destacar = max_duracion > 0 and trabajo['rondas_transcurridas'] == max_duracion
+        # Un inicio y una adjudicación en el mismo turno se muestran como punto.
         fig.add_trace(go.Scatter(
-            name='Mayor intervalo' if destacar else 'Entre hitos',
-            showlegend=False, mode='lines',
-            x=[tramo['x_inicio'], tramo['x_fin']],
-            y=[tramo['pos'], tramo['pos']],
-            line=dict(color=tramo['color'], width=21 if destacar else 15),
-            opacity=0.85 if destacar else 0.48,
-            customdata=datos,
-            hovertemplate=('<b>%{customdata[5]} · entre hitos</b>'
-                           '<br>Desde: %{customdata[0]} (ronda %{customdata[2]})'
-                           '<br>Hasta: %{customdata[1]} (ronda %{customdata[3]})'
-                           '<br>Transcurrieron %{customdata[4]} rondas.'
-                           '<br>No implica dedicación exclusiva al hito.'
-                           '<extra></extra>'),
+            name='Proyecto: primera inversión → adjudicación',
+            showlegend=False, mode='lines+markers',
+            x=[inicio, max(fin_trabajo, inicio + 0.04)],
+            y=[fila['pos'], fila['pos']],
+            marker=dict(size=[9, 0], symbol=['diamond', 'circle'],
+                        color=fila['color']),
+            line=dict(color=fila['color'], width=21 if destacar else 15),
+            opacity=0.9 if destacar else 0.52,
+            customdata=[[
+                trabajo['hito'], trabajo['proyecto'],
+                trabajo['ronda_inicio'], trabajo['ronda_fin'],
+                trabajo['rondas_transcurridas'], trabajo['inversor_inicial'],
+                trabajo['recurso_inicial'], trabajo['importe_inicial'],
+            ]] * 2,
+            hovertemplate=(
+                '<b>%{customdata[0]} · proyecto %{customdata[1]}</b>'
+                '<br>Primera inversión: ronda %{customdata[2]}'
+                '<br>Primer inversor: jugador %{customdata[5]}'
+                '<br>Aporte inicial: %{customdata[7]} %{customdata[6]}'
+                '<br>Obtención del hito: ronda %{customdata[3]}'
+                '<br>Plazo transcurrido: %{customdata[4]} rondas'
+                '<br>El primer inversor puede no ser el adjudicatario.'
+                '<extra></extra>'),
         ))
-        if destacar:
+        if destacar and trabajo['rondas_transcurridas'] > 0:
             fig.add_annotation(
-                x=(tramo['x_inicio'] + tramo['x_fin']) / 2,
-                y=tramo['pos'] + 0.36,
-                text=f"<b>{tramo['rondas']} rondas</b>",
-                showarrow=False, font=dict(size=11, color=tramo['color']),
-                bgcolor='rgba(255,255,255,.85)',
-                borderpad=2,
+                x=(inicio + fin_trabajo) / 2, y=fila['pos'] + 0.37,
+                text=f"<b>{trabajo['rondas_transcurridas']} rondas</b>",
+                showarrow=False, font=dict(size=11, color=fila['color']),
+                bgcolor='rgba(255,255,255,.85)', borderpad=2,
             )
 
     groups = {}
@@ -237,7 +205,7 @@ def grafico_gantt(cronologia: dict) -> go.Figure:
                        showarrow=False, font=dict(size=12, color=COLOR_FINAL),
                        xanchor='right', yanchor='bottom')
     fig.update_layout(
-        title=dict(text='Camino hacia el casamiento · intervalos entre hitos', x=0, xanchor='left'),
+        title=dict(text='Camino hacia el casamiento · primera inversión hasta adjudicación', x=0, xanchor='left'),
         height=650, hovermode='closest',
         legend=dict(orientation='h', x=0, y=-0.13, yanchor='top',
                     title=None, font=dict(size=11)),
