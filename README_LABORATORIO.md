@@ -55,3 +55,13 @@ python -m streamlit run laboratorio/app.py
 ```
 
 El panel ejecuta dos escenarios con semillas apareadas y permite descargar datos y configuraciones. Se mantiene el sitio público existente (`index.html`) intacto. El análisis completo de incertidumbre, sensibilidad y Gantt corresponde a fases posteriores.
+
+## Fase 4.1 — Gantt de hitos
+
+Después de ejecutar los dos escenarios, seleccioná un escenario y una
+partida **concluida** en «4. Cronología de hitos» y presioná
+**Construir Gantt y verificar partida**. El Gantt considera solamente
+los dos integrantes ganadores, separa primera consecución de hito vigente
+y reconstruye pérdidas y recuperaciones. Comprueba igualdad de `summary()`
+por semilla antes de mostrarlo. Más información:
+`docs/FASE4_1_GANTT.md`.

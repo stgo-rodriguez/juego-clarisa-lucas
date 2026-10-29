@@ -1,0 +1,12 @@
+{
+  "fase": "4.1",
+  "sha256": {
+    "simulador/motor_v13_base.py": "9ea6c0b19c8ff7f76e07bf13ab8831b5d48e373a57c7e3fb2ea3d1d349f8ef32",
+    "simulador/motor.py": "628fe4a6d06944ba40898ff3430372861afe0db9a1ce941df891aad27b5541fd",
+    "simulador/economia.py": "6b5058660ee793857ae598b8aa83163dafac228097bce0797106b9a726477e3a",
+    "simulador/cards_v13_effects.txt": "cc337a84d4b37af7d329784e1fa34d0b13652a6c26408885f56dde7ee65f784e",
+    "laboratorio/app.py": "e2615a2ee54d6d2cadb3258758d83f37b507b26d992772d6349ffe0da145bfde",
+    "laboratorio/trazabilidad.py": "d7797f5eea7d9d2ed52d5f8d24028ee18c247546378f41a098b3158214616f28",
+    "laboratorio/gantt.py": "971e80cfb35c99f668f3e662b2d83d28c1c02f06195af948b127986552988678"
+  }
+}

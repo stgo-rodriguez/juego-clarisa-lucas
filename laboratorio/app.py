@@ -21,6 +21,8 @@ from simulador.economia import EconomyConfig, ScenarioConfig
 from laboratorio.comparacion import (comparar, escenario_base, escenario_desde_dict,
                                      ejecutar, exportar_zip, signature)
 from laboratorio.visualizaciones import tabla_distribucion, metricas_comparadas
+from laboratorio.trazabilidad import trazar_partida
+from laboratorio.gantt import grafico_gantt
 
 st.set_page_config(page_title="Laboratorio de Balance · Clarisa & Lucas", page_icon="⚖️", layout="wide")
 
@@ -130,3 +132,52 @@ else:
     with st.expander("Configuraciones reproducibles y huellas del motor"):
         st.json({"base": baseline["escenario"], "experimento": experiment["escenario"],
                  "firmas": baseline["codigo"]})
+
+    st.divider()
+    st.subheader("4. Cronología de hitos de la pareja ganadora (Gantt)")
+    st.caption("Elegí una partida concluida de cualquiera de los escenarios. "
+               "El laboratorio vuelve a ejecutar solamente esa semilla con observación pasiva "
+               "y comprueba que el resultado completo sea idéntico al de la simulación original.")
+    lado = st.radio("Escenario del Gantt", ["Base", "Experimento"], horizontal=True,
+                    key="gantt_lado")
+    resultado = baseline if lado == "Base" else experiment
+    opciones = [i + 1 for i, fila in enumerate(resultado["filas"]) if int(fila["terminada"])]
+    if not opciones:
+        st.info("No hay partidas concluidas en este escenario; no existe pareja ganadora que graficar.")
+    else:
+        numero = st.selectbox(
+            "Partida concluida", options=opciones, key="gantt_numero",
+            format_func=lambda n: (f"Partida {n} · semilla {resultado['filas'][n-1]['semilla']} "
+                                   f"· casamiento en ronda {resultado['filas'][n-1]['rondas_observadas']}")
+        )
+        identificador = json.dumps({"escenario": resultado["escenario"], "partida": numero},
+                                   sort_keys=True, ensure_ascii=False)
+        if st.button("Construir Gantt y verificar partida", key="gantt_reconstruir"):
+            try:
+                with st.spinner(f"Reejecutando únicamente la partida {numero} para reconstruir sus hitos…"):
+                    trazado = trazar_partida(escenario_desde_dict(resultado["escenario"]),
+                                             numero, resultado["filas"][numero - 1])
+                st.session_state["gantt_ultimo"] = (identificador, trazado)
+            except Exception as exc:
+                st.session_state.pop("gantt_ultimo", None)
+                st.error(f"No se pudo validar el Gantt: {exc}")
+        previo = st.session_state.get("gantt_ultimo")
+        if previo is not None and previo[0] == identificador:
+            trazado = previo[1]
+            st.success("Partida reconstruida y comprobada: todos los indicadores coinciden con el motor original.")
+            nombres = " + ".join(f"{x['personaje']} #{x['id']}" for x in trazado['ganadores'])
+            st.markdown(f"**Pareja ganadora:** {nombres} · **Casamiento:** ronda {trazado['ronda_casamiento']}")
+            st.plotly_chart(grafico_gantt(trazado), use_container_width=True)
+            st.caption("Las barras indican períodos en los que se conservó el hito. "
+                       "Una interrupción muestra pérdida y posterior recuperación. "
+                       "El tiempo horizontal registra rondas y orden de los turnos.")
+            st.dataframe(trazado["hitos"], use_container_width=True, hide_index=True)
+            st.info(trazado["advertencia"])
+            st.download_button(
+                "Descargar cronología verificada (JSON)",
+                data=json.dumps(trazado, ensure_ascii=False, indent=2).encode("utf-8"),
+                mime="application/json",
+                file_name=f"gantt_partida_{numero}_{lado.lower()}.json",
+                key="descargar_gantt")
+        elif previo is not None:
+            st.caption("Seleccionaste otra partida o escenario. Elegí «Construir Gantt» para actualizar el gráfico.")
