@@ -181,3 +181,99 @@ else:
                 key="descargar_gantt")
         elif previo is not None:
             st.caption("Seleccionaste otra partida o escenario. Elegí «Construir Gantt» para actualizar el gráfico.")
+
+    st.divider()
+    st.subheader("5. Economía de recursos por origen, etapa y jugador")
+    st.caption("El lote completo aporta flujos agregados por fuente y recurso. "
+               "El desglose por etapa/jugador se obtiene reejecutando una partida verificada: "
+               "no se asignan etapas que los CSV originales no contienen.")
+    from laboratorio.economia_trazable import trazar_economia
+    from laboratorio.graficos_economia import (resumen_lote, figura_flujos,
+                                               figura_saldos, RECURSO_NOMBRE)
+    import pandas as pd
+
+    with st.expander("Resumen de flujos del lote completo (sin desglose por etapa)"):
+        df_base = pd.DataFrame(resumen_lote(baseline['filas']))
+        df_exp = pd.DataFrame(resumen_lote(experiment['filas']))
+        if not df_base.empty and not df_exp.empty:
+            comun = df_base.merge(df_exp, on=['Recurso', 'Código', 'Fuente'],
+                                  how='outer', suffixes=(' base', ' experimento')).fillna(0)
+            comun['Diferencia'] = (comun['Fichas medias por partida experimento'] -
+                                   comun['Fichas medias por partida base']).round(3)
+            st.dataframe(comun.drop(columns='Código'), use_container_width=True,
+                         hide_index=True)
+            st.caption("Flujos brutos por partida. Inversiones, conversiones y ventas "
+                       "de Casa no son ingresos externos netos; no sumar categorías "
+                       "como si fueran beneficios independientes.")
+
+    lado_ec = st.radio("Escenario de la economía", ['Base', 'Experimento'],
+                       horizontal=True, key='economia_lado')
+    elegido_ec = baseline if lado_ec == 'Base' else experiment
+    opciones_ec = list(range(1, len(elegido_ec['filas']) + 1))
+    numero_ec = st.selectbox(
+        'Partida para auditar su economía', opciones_ec, key='economia_numero',
+        format_func=lambda n: (f"Partida {n} · semilla {elegido_ec['filas'][n-1]['semilla']} "
+                               f"· {elegido_ec['filas'][n-1]['rondas_observadas']} rondas"))
+    identificador_ec = json.dumps(
+        {'escenario': elegido_ec['escenario'], 'partida': numero_ec},
+        ensure_ascii=False, sort_keys=True)
+    if st.button('Reconstruir economía y auditar recursos', key='economia_reconstruir'):
+        try:
+            with st.spinner('Reconstruyendo movimientos y verificando stocks…'):
+                detalle = trazar_economia(
+                    escenario_desde_dict(elegido_ec['escenario']), numero_ec,
+                    elegido_ec['filas'][numero_ec - 1])
+            st.session_state['economia_ultima'] = (identificador_ec, detalle)
+        except Exception as exc:
+            st.session_state.pop('economia_ultima', None)
+            st.error(f'Falló la auditoría económica: {exc}')
+    previo_ec = st.session_state.get('economia_ultima')
+    if previo_ec is not None and previo_ec[0] == identificador_ec:
+        detalle = previo_ec[1]
+        st.success('Economía verificada: movimientos, saldos y resultado coinciden con el motor.')
+        st.caption(detalle['alcance'])
+        etapas_activas = sorted({x['etapa'] for x in detalle['movimientos']})
+        f1, f2, f3 = st.columns(3)
+        with f1:
+            etapas_filtradas = st.multiselect('Etapas', etapas_activas,
+                                              default=etapas_activas, key='economia_etapas')
+        with f2:
+            jugadores_filtrados = st.multiselect('Jugadores',
+                                                list(range(1, detalle['jugadores'] + 1)),
+                                                default=list(range(1, detalle['jugadores'] + 1)),
+                                                key='economia_jugadores')
+        with f3:
+            recursos_filtrados = st.multiselect('Recursos', list(RECURSO_NOMBRE),
+                                                default=list(RECURSO_NOMBRE),
+                                                format_func=lambda x: RECURSO_NOMBRE[x],
+                                                key='economia_recursos')
+        movimientos_filtrados = [e for e in detalle['movimientos']
+                                 if e['etapa'] in etapas_filtradas and
+                                 e['jugador'] in jugadores_filtrados and
+                                 e['recurso'] in recursos_filtrados]
+        st.plotly_chart(figura_flujos(movimientos_filtrados), use_container_width=True)
+        st.caption('Barras positivas: ingresos y transferencias recibidas. '
+                   'Barras negativas: pérdidas, pagos, inversiones y transferencias enviadas. '
+                   'Los cambios 2:1 del banco se registran como salida e ingreso de distintos recursos.')
+        st.markdown('**Saldos libres y reservados por etapa**')
+        st.plotly_chart(figura_saldos([
+            x for x in detalle['stock_por_etapa'] if
+            x['Etapa'] in etapas_filtradas and x['Recurso'] in recursos_filtrados
+        ]), use_container_width=True)
+        st.caption('Son medias de fotografías de fin de turno por jugador/etapa, '
+                   'no cifras de cierre ni medias por ronda.')
+        with st.expander('Movimientos individuales y auditoría'):
+            st.dataframe(pd.DataFrame(movimientos_filtrados),
+                         hide_index=True, use_container_width=True)
+            st.dataframe(pd.DataFrame(detalle['tabla_flujos']),
+                         hide_index=True, use_container_width=True)
+            st.json({'stock_final': detalle['stock_final'],
+                     'errores_conciliacion': detalle['errores_conciliacion'],
+                     'errores_motor': detalle['errores_motor']})
+        st.info(detalle['advertencia'])
+        st.download_button('Descargar auditoría económica (JSON)',
+                           data=json.dumps(detalle, ensure_ascii=False, indent=2).encode('utf-8'),
+                           file_name=f'economia_partida_{numero_ec}_{lado_ec.lower()}.json',
+                           mime='application/json', key='descargar_economia')
+    elif previo_ec is not None:
+        st.caption('Cambiaste de partida o escenario. Volvé a reconstruir para actualizar los datos.')
