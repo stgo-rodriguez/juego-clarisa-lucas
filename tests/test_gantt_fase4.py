@@ -196,7 +196,7 @@ class TestStreamlitGantt(unittest.TestCase):
         self.assertNotEqual(primer[0], segundo[0])
         # Cambiar de escenario también reconstruye, aunque conserve número.
         escenario = next(x for x in app.radio if x.label == 'Escenario del Gantt')
-        escenario.set_value('Base').run(timeout=120)
+        escenario.set_value('Experimento').run(timeout=120)
         self.assertFalse(app.exception, str(app.exception))
         tercero = app.session_state['gantt_ultimo']
         self.assertNotEqual(segundo[0], tercero[0])
