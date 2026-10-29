@@ -130,8 +130,8 @@ class TestStreamlitTurnos(unittest.TestCase):
         app.button[0].click().run(timeout=120)
         self.assertFalse(app.exception,str(app.exception))
         self.assertTrue(any('Actividad de turnos' in x.value for x in app.subheader))
-        button=next(x for x in app.button if 'Reconstruir actividad de turnos' in x.label)
-        button.click().run(timeout=120)
+        self.assertFalse(any('Reconstruir actividad de turnos' in x.label
+                             for x in app.button))
         self.assertFalse(app.exception,str(app.exception))
         self.assertTrue(any('Actividad validada' in x.value for x in app.success))
 
