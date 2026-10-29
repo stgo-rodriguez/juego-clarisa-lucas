@@ -7,7 +7,7 @@ import unittest
 from laboratorio.comparacion import escenario_base, ejecutar
 from laboratorio.trazabilidad import (JuegoObservado, construir_cronologia,
                                       obtener_periodos, trazar_partida)
-from laboratorio.gantt import grafico_gantt, grafico_vigencia
+from laboratorio.gantt import grafico_gantt, grafico_vigencia, intervalos_entre_hitos
 from simulador.economia import EconomyConfig
 from simulador.motor import Game, parse_cards
 from laboratorio.ejecucion import CARDS
@@ -49,11 +49,37 @@ class PruebasGanttFase4(unittest.TestCase):
         self.assertTrue(any('R' in str(t) for trace in chart.data for t in (trace.text or [])))
         self.assertTrue(all(str(x.type) == 'bar' for x in grafico_vigencia(valid).data))
         self.assertGreaterEqual(len([t for t in chart.data if t.mode == 'markers+text']), 4)
-        self.assertIn('¿En qué ronda', chart.layout.title.text)
+        self.assertIn('intervalos entre hitos', chart.layout.title.text)
         self.assertEqual(chart.layout.yaxis.ticktext.count('Ingreso UTN'), 2)
         self.assertIn('Casa en propiedad', chart.layout.yaxis.ticktext)
 
         self.assertEqual(len(grafico_gantt({'finalizada': False}).data), 0)
+
+    def test_barras_entre_hitos_conservan_rondas_sin_inventar_tareas(self):
+        cronologia = trazar_partida(self.base, 1, self.rows[0])
+        intervalos = intervalos_entre_hitos(cronologia)
+        self.assertTrue(intervalos)
+        self.assertTrue(all(t['rondas'] == t['ronda_hasta'] - t['ronda_desde']
+                            for t in intervalos))
+        self.assertTrue(all(t['rondas'] >= 0 for t in intervalos))
+        self.assertTrue(all(t['x_fin'] >= t['x_inicio'] for t in intervalos))
+        self.assertTrue(all(t['grupo'] in ('Clarisa #1', 'Lucas #4', 'Pareja')
+                            for t in intervalos))
+        self.assertTrue(any(t['grupo'] == 'Lucas #4' and
+                            t['desde'] == 'Pasaporte' and t['hasta'] == 'Título' and
+                            t['ronda_desde'] == 10 and t['ronda_hasta'] == 27 and
+                            t['rondas'] == 17 for t in intervalos))
+        chart = grafico_gantt(cronologia)
+        barras = [t for t in chart.data if t.mode == 'lines']
+        self.assertTrue(barras, 'Debe haber barras de intervalos entre logros.')
+        self.assertTrue(any(t.name == 'Mayor intervalo' for t in barras))
+        self.assertTrue(all('No implica dedicación exclusiva' in t.hovertemplate
+                            for t in barras))
+
+    def test_sin_hitos_ni_pareja_no_inventa_intervalos(self):
+        self.assertEqual(intervalos_entre_hitos({'finalizada': False}), [])
+        self.assertEqual(intervalos_entre_hitos({'finalizada': True, 'ganadores': [],
+                                                'periodos': []}), [])
 
     def test_perdidas_y_recuperaciones_son_eventos_separados(self):
         # En la referencia de 6 jugadores, semilla 131028, se pierde y
