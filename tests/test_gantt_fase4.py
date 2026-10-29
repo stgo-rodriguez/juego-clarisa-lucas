@@ -227,7 +227,7 @@ class TestSelectorCompartido(unittest.TestCase):
         self.assertFalse(app.exception, str(app.exception))
         self.assertEqual(len(app.tabs), 4)
         self.assertEqual(len(app.form), 0)
-        self.assertTrue(any('Análisis de una partida · 6 jugadores' in x.value
+        self.assertTrue(any('Partida · 6 jugadores' in x.value
                             for x in app.markdown))
         estilos = ' '.join(x.value for x in app.markdown if isinstance(x.value, str))
         self.assertIn('position: fixed !important', estilos)
