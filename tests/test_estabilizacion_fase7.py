@@ -1,94 +1,114 @@
-# Guía de usuario — Laboratorio de Balance de Clarisa & Lucas
+"""Validaciones de despliegue local; no tocan el motor del juego."""
+from __future__ import annotations
 
-Aplicación **local**, separada de la web pública del juego. Motor/reglas v1.3 congelados. Requiere Mac con Python 3.11 o superior; se verificó la instalación original con Python 3.13.
+from hashlib import sha256
+import json
+from pathlib import Path
+from tempfile import TemporaryDirectory
+import unittest
+from unittest.mock import patch
 
-## 1. Primera instalación (macOS)
+from laboratorio.diagnostico import (MOTOR_VALIDADO, MAZO_VALIDADO,
+                                    diagnosticar, main)
+from laboratorio.benchmark_fase7 import medir
+from laboratorio.ejecucion import ROOT
 
-Abrí Terminal e ingresá:
 
-```bash
-cd ~/Documents
-git clone -b feature/laboratorio-balance https://github.com/stgo-rodriguez/juego-clarisa-lucas.git
-cd juego-clarisa-lucas
-python3.13 -m venv .venv
-source .venv/bin/activate
-python -m pip install -r requirements.txt
-python -m laboratorio.diagnostico
-./iniciar_laboratorio.sh
-```
+class TestDiagnosticoFase7(unittest.TestCase):
+    def test_entorno_sin_dependencias_en_ci_minima(self):
+        info = diagnosticar(comprobar_dependencias=False, comprobar_escritura=False)
+        self.assertTrue(info['apto'], info['controles'])
+        self.assertEqual(len(info['controles']), 5)
+        self.assertEqual(main(['--sin-dependencias', '--sin-escritura', '--json']), 0)
 
-Si ya tenés el repositorio, **no lo clones por segunda vez**. Usá el procedimiento de actualización. Si tu Python 3.11+ tiene otro nombre, reemplazá `python3.13` en la creación del entorno virtual.
+    def test_motor_y_mazo_congelados(self):
+        self.assertEqual(sha256((ROOT/'simulador/motor_v13_base.py').read_bytes()).hexdigest(),
+                         MOTOR_VALIDADO)
+        self.assertEqual(sha256((ROOT/'simulador/cards_v13_effects.txt').read_bytes()).hexdigest(),
+                         MAZO_VALIDADO)
 
-Abre `http://localhost:8501` o `http://127.0.0.1:8501`. Para salir, presioná **Ctrl+C** en la Terminal; no alcanza con cerrar la pestaña.
+    def test_detecta_archivo_corrupto_y_config_sin_proteccion(self):
+        with TemporaryDirectory() as tmp:
+            root = Path(tmp)
+            (root/'simulador').mkdir()
+            (root/'referencias').mkdir()
+            (root/'.streamlit').mkdir()
+            (root/'simulador/motor_v13_base.py').write_text('corrupto')
+            (root/'simulador/cards_v13_effects.txt').write_text('corrupto')
+            (root/'.streamlit/config.toml').write_text('[server]\naddress="0.0.0.0"\n')
+            info = diagnosticar(root, comprobar_dependencias=False,
+                                comprobar_escritura=False)
+        self.assertFalse(info['apto'])
+        results = {x['control']:x for x in info['controles']}
+        self.assertEqual(results['Motor v1.3 congelado']['estado'], 'error')
+        self.assertEqual(results['Servidor local']['estado'], 'error')
+        self.assertEqual(results['Referencias históricas']['estado'], 'error')
 
-## 2. Actualización desde versiones anteriores
+    def test_detecta_dependencia_ausente(self):
+        with patch('laboratorio.diagnostico.importlib.util.find_spec', return_value=None):
+            info = diagnosticar(comprobar_escritura=False)
+        self.assertFalse(info['apto'])
+        self.assertIn('streamlit', next(x['detalle'] for x in info['controles']
+                                      if x['control'] == 'Dependencias'))
 
-Guardá primero los ZIP que quieras conservar. Detené Streamlit con **Ctrl+C**:
+    def test_historial_crea_y_elimina_temporales(self):
+        with TemporaryDirectory() as tmp:
+            # Construcción de una raíz mínima con archivos válidos por copia.
+            root = Path(tmp)
+            for nombre in ('simulador/motor_v13_base.py',
+                           'simulador/cards_v13_effects.txt',
+                           'referencias/resultados_6j.csv.gz',
+                           'referencias/resultados_10j.csv.gz',
+                           '.streamlit/config.toml'):
+                destino = root/nombre
+                destino.parent.mkdir(parents=True, exist_ok=True)
+                destino.write_bytes((ROOT/nombre).read_bytes())
+            info = diagnosticar(root, comprobar_dependencias=False)
+            self.assertTrue(info['apto'], info['controles'])
+            self.assertTrue((root/'.laboratorio').is_dir())
+            self.assertEqual(list((root/'.laboratorio').iterdir()), [])
 
-```bash
-cd ~/Documents/juego-clarisa-lucas
-git switch feature/laboratorio-balance
-git pull --ff-only origin feature/laboratorio-balance
-source .venv/bin/activate
-python -m pip install -r requirements.txt
-python -m laboratorio.diagnostico
-./iniciar_laboratorio.sh
-```
+    def test_configuracion_solo_local(self):
+        import tomllib
+        config = tomllib.loads((ROOT/'.streamlit/config.toml').read_text())
+        self.assertEqual(config['server']['address'], '127.0.0.1')
+        self.assertTrue(config['server']['enableXsrfProtection'])
+        self.assertTrue(config['server']['enableCORS'])
+        self.assertLessEqual(config['server']['maxUploadSize'], 24)
 
-**No uses** `git reset --hard` ni `git clean -fd` para actualizar: podrías perder cambios locales. Si `git pull` rechaza la actualización por modificaciones locales, primero revisá `git status` y conservá las modificaciones antes de continuar.
+    def test_lanzador_no_instala_dependencias_ni_hace_red(self):
+        script = (ROOT/'iniciar_laboratorio.sh').read_text()
+        self.assertIn('python -m laboratorio.diagnostico', script)
+        self.assertIn('server.address=127.0.0.1', script)
+        self.assertNotIn('pip install', script)
+        self.assertNotIn('git pull', script)
 
-Para uso cotidiano, solo necesitás:
 
-```bash
-cd ~/Documents/juego-clarisa-lucas
-./iniciar_laboratorio.sh
-```
+class TestRendimientoFase7(unittest.TestCase):
+    def test_benchmark_pequeno_es_descriptivo(self):
+        r = medir(5)
+        self.assertEqual(r['comparacion_ab']['partidas_ejecutadas'], 10)
+        self.assertEqual(r['matriz_3x3']['celdas'], 9)
+        self.assertGreaterEqual(r['comparacion_ab']['segundos'], 0)
+        self.assertGreaterEqual(r['matriz_3x3']['segundos'], 0)
+        self.assertIn('no equivalen', r['advertencia'])
 
-## 3. Recorrido recomendado
+    def test_benchmark_rechaza_valores_extremos(self):
+        with self.assertRaises(ValueError): medir(5000)
+        with self.assertRaises(ValueError): medir(True)
 
-1. En **Configuración común**, elegí **6 jugadores / 20 partidas** para la primera prueba. Mantené la semilla inicial original y las condiciones económicas al 100%.
-2. Pulsá **Ejecutar y comparar escenarios**. Base y experimento idénticos deben producir diferencia cero.
-3. Modificá **Ganancias por cartas = 90%** y **Pérdidas por cartas = 110%**; volvé a ejecutar. Interpretá con cuidado censura e incertidumbre.
-4. Desde los resultados podés reconstruir **una partida elegida**: Gantt de hitos, economía, interacciones y actividad de turnos. Esas reconstrucciones reejecutan solo esa partida y comprueban los resultados.
-5. **Historial de experimentos (Fase 5)**: guardá las comparaciones en tu Mac, importá antiguos ZIP o recuperá dos experimentos para compararlos sin volver a simular.
-6. **Sensibilidad e incertidumbre (Fase 6)**: elegí dos parámetros y una cuadrícula. Usá pocas partidas para explorar; ampliá únicamente los escenarios prometedores. Límite de 3.000 partidas presupuestadas por matriz.
 
-**Importante:** la aplicación simula **bots**, no humanos. Más rondas, más acciones y mayor tasa de Duelos no son pruebas de mejor jugabilidad. Si hay partidas que no terminaron, diferenciá rondas **observadas hasta el horizonte** de duración final.
+class TestInterfazFase7(unittest.TestCase):
+    def test_guia_rapida_y_diagnostico_en_interfaz(self):
+        try:
+            from streamlit.testing.v1 import AppTest
+        except ImportError:
+            self.skipTest('Streamlit se comprueba en GitHub Actions')
+        app = AppTest.from_file(str(ROOT/'laboratorio/app.py'), default_timeout=90).run()
+        self.assertFalse(app.exception, str(app.exception))
+        self.assertTrue(any('Versión local estabilizada' in x.value for x in app.caption))
+        self.assertTrue(any('Guía rápida' in x.label for x in app.get('expander')))
 
-## 4. Persistencia y copias de seguridad
 
-Los experimentos guardados quedan en:
-
-- `.laboratorio/historial/`: comparaciones completas (ZIP).
-- `.laboratorio/sensibilidad/`: matrices resumidas (ZIP).
-
-Estas carpetas se ignoran en Git y **no se sincronizan automáticamente**. Respaldá/exportá los ZIP si actualizás de computadora. El caché de Streamlit no equivale a un archivo persistente. Importá únicamente ZIP de origen confiable: SHA-256 verifica integridad de bytes, **no** identidad del productor ni autenticidad.
-
-## 5. Problemas frecuentes
-
-| Síntoma | Diagnóstico / solución |
-|---|---|
-| `python3.13: command not found` | Usá el nombre de tu Python 3.11+ instalado (`python3` o `python3.12`). |
-| `.venv/bin/python` no existe | Creá el entorno virtual con `python3.13 -m venv .venv` e instalá requisitos. |
-| `No module named streamlit` | `source .venv/bin/activate` y `python -m pip install -r requirements.txt`. |
-| Puerto `8501` ocupado | Cerrá el proceso anterior con **Ctrl+C** o inspeccioná `lsof -iTCP:8501 -sTCP:LISTEN`. |
-| Pantalla en blanco | Confirmá que Terminal no muestre un traceback; recargá `http://127.0.0.1:8501`. |
-| Diagnóstico de integridad falla | No ejecutes resultados de la instalación alterada. Actualizá desde Git con cambios locales respaldados. |
-| ZIP incompatible | Verificá versión de motor/mazo, semillas, bots, horizonte y jugadores. No se fuerzan comparaciones incompatibles. |
-| Almacenamiento no escribible | Verificá permisos sobre la carpeta del repositorio y espacio disponible. |
-| Las simulaciones tardan | Probá 20 partidas antes de 500/1000. Usá `python -m laboratorio.benchmark_fase7` para medir tu equipo. |
-
-Diagnóstico reproducible para adjuntar a un pedido de ayuda:
-
-```bash
-cd ~/Documents/juego-clarisa-lucas
-source .venv/bin/activate
-python -m laboratorio.diagnostico --json
-python -m laboratorio.benchmark_fase7 --json
-```
-
-El diagnóstico no necesita internet. No incluye nombres de usuarios, contraseñas ni datos personales.
-
-## 6. Privacidad y despliegue
-
-Esta instalación escucha únicamente en **127.0.0.1**, con protección XSRF y límite de cargas. No se publica en internet y no incluye autenticación de usuarios. **No cambies la dirección a `0.0.0.0` para abrirla a terceros** sin un diseño de acceso, límites y tratamiento del historial. Un servidor público requiere una revisión separada y autorización expresa.
+if __name__ == '__main__':
+    unittest.main()

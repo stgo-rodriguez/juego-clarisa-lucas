@@ -1,4 +1,4 @@
-# Laboratorio de Balance de Clarisa & Lucas (fases 1–6)
+# Laboratorio de Balance de Clarisa & Lucas (fases 0–7)
 
 Branch independiente; no modificar `index.html`, `README.md` ni `.github/workflows/pages.yml`.
 
@@ -54,7 +54,7 @@ source .venv/bin/activate
 python -m streamlit run laboratorio/app.py
 ```
 
-El panel ejecuta dos escenarios con semillas apareadas y permite descargar datos y configuraciones. Se mantiene el sitio público existente (`index.html`) intacto. El análisis completo de incertidumbre, sensibilidad y Gantt corresponde a fases posteriores.
+El panel ejecuta dos escenarios con semillas apareadas y permite descargar datos y configuraciones. Se mantiene el sitio público existente (`index.html`) intacto. Los módulos de Gantt, economía, interacciones, actividad de turnos, historial y sensibilidad se encuentran implementados (fases 4–6).
 
 ## Fase 4.1 — Gantt de hitos
 
@@ -137,3 +137,25 @@ comparaciones múltiples ni se infiere diversión humana.
 
 Documentación técnica: `docs/FASE6_SENSIBILIDAD.md`. Ejemplo reproducible:
 `docs/DIAGNOSTICO_SENSIBILIDAD_FASE6.json`.
+
+
+### Fase 7 — Estabilización local
+
+Se incluyen guía de usuario, autodiagnóstico offline, script de inicio local,
+configuración segura de Streamlit y CI en Python 3.11 y 3.13. Esta versión **no
+se publica en internet**. Para actualizar sin borrar el historial: 
+
+```bash
+cd ~/Documents/juego-clarisa-lucas
+git switch feature/laboratorio-balance
+git pull --ff-only origin feature/laboratorio-balance
+source .venv/bin/activate
+python -m pip install -r requirements.txt
+python -m laboratorio.diagnostico
+./iniciar_laboratorio.sh
+```
+
+Para la primera instalación, problemas frecuentes, pruebas manuales y rendimiento:
+`docs/GUIA_USUARIO.md`, `docs/FASE7_ESTABILIZACION.md` y
+`docs/PRUEBA_MANUAL_FASE7.md`. Conservar los ZIP guardados en `.laboratorio/`:
+los historiales no se sincronizan automáticamente con GitHub.
