@@ -234,6 +234,8 @@ class TestSelectorCompartido(unittest.TestCase):
         self.assertIn('data-baseweb="tab-panel"', estilos)
         self.assertIn('overflow-y: auto !important', estilos)
         self.assertIn('height: calc(100dvh - 118px)', estilos)
+        self.assertIn('height: calc(100dvh - 120px) !important', estilos)
+        self.assertIn('overflow-y: auto !important', estilos)
         self.assertIn('100dvh', estilos)
         self.assertEqual(len([x for x in app.selectbox if x.label == 'Partida seleccionada']), 1)
         self.assertTrue(any(x.label == 'Salir' for x in app.button))
