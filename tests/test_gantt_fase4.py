@@ -233,15 +233,18 @@ class TestSelectorCompartido(unittest.TestCase):
         self.assertIn('position: fixed !important', estilos)
         self.assertIn('data-baseweb="tab-panel"', estilos)
         self.assertIn('overflow-y: auto !important', estilos)
+        self.assertIn('height: calc(100dvh - 118px)', estilos)
+        self.assertEqual(
+            len([x for x in app.get("container") if x.key and x.key.startswith("scroll_")]), 4)
         self.assertIn('100dvh', estilos)
         self.assertEqual(len([x for x in app.selectbox if x.label == 'Partida seleccionada']), 1)
-        self.assertTrue(any(x.label == 'Salir de pantalla de análisis' for x in app.button))
+        self.assertTrue(any(x.label == 'Salir' for x in app.button))
         next(x for x in app.selectbox if x.label == 'Partida seleccionada').set_value(2).run(timeout=120)
         self.assertFalse(app.exception, str(app.exception))
         for clave in ('gantt_ultimo', 'economia_ultima',
                       'interacciones_ultimas', 'turnos_ultimos'):
             self.assertEqual(app.session_state[clave][1]['partida'], 2)
-        next(x for x in app.button if x.label == 'Salir de pantalla de análisis').click().run(timeout=120)
+        next(x for x in app.button if x.label == 'Salir').click().run(timeout=120)
         self.assertFalse(app.exception, str(app.exception))
         self.assertGreaterEqual(len(app.form), 1)
         self.assertTrue(any(x.label == 'Pantalla de análisis' for x in app.button))
