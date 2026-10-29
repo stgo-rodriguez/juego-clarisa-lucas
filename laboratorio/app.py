@@ -24,7 +24,7 @@ from laboratorio.visualizaciones import tabla_distribucion, metricas_comparadas
 from laboratorio.historial import (crear_archivo, cargar_archivo, guardar_local,
                                   listar_local, abrir_local, comparar_guardados)
 from laboratorio.trazabilidad import trazar_partida
-from laboratorio.gantt import grafico_gantt
+from laboratorio.gantt import grafico_gantt, grafico_vigencia
 
 st.set_page_config(page_title="Laboratorio de Balance · Clarisa & Lucas", page_icon="⚖️", layout="wide")
 
@@ -229,7 +229,7 @@ else:
                  "firmas": baseline["codigo"]})
 
     st.divider()
-    st.subheader("4. Cronología de hitos de la pareja ganadora (Gantt)")
+    st.subheader("4. Cronología de hitos de la pareja ganadora")
     st.caption("Elegí una partida concluida de cualquiera de los escenarios. "
                "El laboratorio vuelve a ejecutar solamente esa semilla con observación pasiva "
                "y comprueba que el resultado completo sea idéntico al de la simulación original.")
@@ -247,7 +247,7 @@ else:
         )
         identificador = json.dumps({"escenario": resultado["escenario"], "partida": numero},
                                    sort_keys=True, ensure_ascii=False)
-        if st.button("Construir Gantt y verificar partida", key="gantt_reconstruir"):
+        if st.button("Ver cronología y verificar partida", key="gantt_reconstruir"):
             try:
                 with st.spinner(f"Reejecutando únicamente la partida {numero} para reconstruir sus hitos…"):
                     trazado = trazar_partida(escenario_desde_dict(resultado["escenario"]),
@@ -262,11 +262,17 @@ else:
             st.success("Partida reconstruida y comprobada: todos los indicadores coinciden con el motor original.")
             nombres = " + ".join(f"{x['personaje']} #{x['id']}" for x in trazado['ganadores'])
             st.markdown(f"**Pareja ganadora:** {nombres} · **Casamiento:** ronda {trazado['ronda_casamiento']}")
+            st.caption('**Cómo leerlo:** cada círculo indica la ronda en que se obtuvo un hito por primera vez; '
+                       'un rombo hueco indica recuperación y una cruz roja, pérdida. '
+                       'El eje horizontal muestra el avance de las rondas, no el tiempo de posesión.')
             st.plotly_chart(grafico_gantt(trazado), use_container_width=True)
-            st.caption("Las barras indican períodos en los que se conservó el hito. "
-                       "Una interrupción muestra pérdida y posterior recuperación. "
-                       "El tiempo horizontal registra rondas y orden de los turnos.")
-            st.dataframe(trazado["hitos"], use_container_width=True, hide_index=True)
+            with st.expander('Ver períodos de vigencia y pérdidas (detalle técnico)'):
+                st.caption('En esta vista alternativa, cada barra indica durante cuánto tiempo '
+                           'se conservó efectivamente el hito. No representa el tiempo '
+                           'que llevó conseguirlo.')
+                st.plotly_chart(grafico_vigencia(trazado), use_container_width=True)
+            with st.expander('Ver tabla de rondas exactas y recuperaciones'):
+                st.dataframe(trazado["hitos"], use_container_width=True, hide_index=True)
             st.info(trazado["advertencia"])
             st.download_button(
                 "Descargar cronología verificada (JSON)",

@@ -7,7 +7,7 @@ import unittest
 from laboratorio.comparacion import escenario_base, ejecutar
 from laboratorio.trazabilidad import (JuegoObservado, construir_cronologia,
                                       obtener_periodos, trazar_partida)
-from laboratorio.gantt import grafico_gantt
+from laboratorio.gantt import grafico_gantt, grafico_vigencia
 from simulador.economia import EconomyConfig
 from simulador.motor import Game, parse_cards
 from laboratorio.ejecucion import CARDS
@@ -41,12 +41,30 @@ class PruebasGanttFase4(unittest.TestCase):
             self.assertLessEqual(h['Ronda vigente final'], result['ronda_casamiento'])
         self.assertGreater(len(result['periodos']), len(result['hitos']))
 
-    def test_grafico_contiene_barras_y_sin_datos_con_censura(self):
+    def test_cronologia_marca_logros_y_gantt_de_vigencia_opcional(self):
         valid = trazar_partida(self.base, 1, self.rows[0])
         chart = grafico_gantt(valid)
         self.assertGreaterEqual(len(chart.data), 4)
-        self.assertTrue(all(str(x.type) == 'bar' for x in chart.data))
+        self.assertTrue(all(str(x.type) == 'scatter' for x in chart.data))
+        self.assertTrue(any('R' in str(t) for trace in chart.data for t in (trace.text or [])))
+        self.assertTrue(all(str(x.type) == 'bar' for x in grafico_vigencia(valid).data))
+        self.assertGreaterEqual(len([t for t in chart.data if t.mode == 'markers+text']), 4)
+        self.assertIn('¿En qué ronda', chart.layout.title.text)
+        self.assertEqual(chart.layout.yaxis.ticktext.count('Ingreso UTN'), 2)
+        self.assertIn('Casa en propiedad', chart.layout.yaxis.ticktext)
+
         self.assertEqual(len(grafico_gantt({'finalizada': False}).data), 0)
+
+    def test_perdidas_y_recuperaciones_son_eventos_separados(self):
+        # En la referencia de 6 jugadores, semilla 131028, se pierde y
+        # recupera la Casa: la vista principal nunca dibuja una barra larga.
+        cronologia = trazar_partida(self.base, 1, self.rows[0])
+        grafico = grafico_gantt(cronologia)
+        nombres = [x.name for x in grafico.data]
+        self.assertIn('Recuperación', nombres)
+        self.assertIn('Pérdida / ruptura', nombres)
+        self.assertTrue(all(x.type == 'scatter' for x in grafico.data))
+        self.assertGreaterEqual(len(grafico_vigencia(cronologia).data), 1)
 
     def test_reduccion_economica_y_diez_jugadores(self):
         for cfg in (replace(self.base, economia=EconomyConfig(
@@ -120,7 +138,7 @@ class TestStreamlitGantt(unittest.TestCase):
         self.assertFalse(app.exception)
         self.assertTrue(any('Cronología de hitos' in s.value for s in app.subheader))
         self.assertGreaterEqual(len(app.button), 2)
-        next(b for b in app.button if b.label == 'Construir Gantt y verificar partida').click().run(timeout=120)
+        next(b for b in app.button if b.label == 'Ver cronología y verificar partida').click().run(timeout=120)
         self.assertFalse(app.exception, str(app.exception))
         self.assertGreaterEqual(len(app.success), 1)
 

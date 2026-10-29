@@ -60,7 +60,7 @@ El panel ejecuta dos escenarios con semillas apareadas y permite descargar datos
 
 Después de ejecutar los dos escenarios, seleccioná un escenario y una
 partida **concluida** en «4. Cronología de hitos» y presioná
-**Construir Gantt y verificar partida**. El Gantt considera solamente
+**Ver cronología y verificar partida**. El Gantt considera solamente
 los dos integrantes ganadores, separa primera consecución de hito vigente
 y reconstruye pérdidas y recuperaciones. Comprueba igualdad de `summary()`
 por semilla antes de mostrarlo. Más información:
@@ -159,3 +159,12 @@ Para la primera instalación, problemas frecuentes, pruebas manuales y rendimien
 `docs/GUIA_USUARIO.md`, `docs/FASE7_ESTABILIZACION.md` y
 `docs/PRUEBA_MANUAL_FASE7.md`. Conservar los ZIP guardados en `.laboratorio/`:
 los historiales no se sincronizan automáticamente con GitHub.
+
+## Mejora de legibilidad de cronología (Fase 7, revisión visual)
+
+La sección 4 abre por defecto una línea de tiempo con marcadores por **ronda exacta**
+de primera obtención. Clarisa, Lucas y la pareja tienen bloques separados.
+Los rombos huecos marcan recuperaciones; las cruces rojas, pérdidas.
+El antiguo gráfico de barras permanece en «Ver períodos de vigencia y pérdidas»
+porque esas barras indican cuánto se conservó un hito, no cuánto tardó en obtenerse.
+La reconstrucción de semillas y el motor de reglas no cambian.

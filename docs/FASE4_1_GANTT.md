@@ -3,9 +3,9 @@
 ## Alcance entregado
 
 En la aplicación Streamlit, tras ejecutar y comparar escenarios, la sección
-**4. Cronología de hitos de la pareja ganadora (Gantt)** permite elegir la
+**4. Cronología de hitos de la pareja ganadora** permite elegir la
 partida concluida de **Base** o **Experimento**, volver a ejecutar únicamente
-esa semilla y observar un Gantt y una tabla de hitos, con descarga JSON.
+esa semilla y observar la cronología de logros y, opcionalmente, el Gantt técnico de vigencia, con descarga JSON.
 
 Se registran individualmente UTN, Título y Pasaporte de los **dos jugadores
 ganadores**; en la pareja, la formación, la posesión simultánea de Título y
@@ -21,9 +21,13 @@ grupo "Casa" distingue adquisición inicial, pérdidas y recuperación final;
 - `laboratorio/trazabilidad.py` define `JuegoObservado`, que extiende el
   **adaptador** y registra estados después de eventos significativos y tras
   cada turno; se registra el estado anterior al primer turno. No consume RNG.
-- Se construyen períodos de posesión y coincidencia (no barras de "tiempo
-  necesario" para un hito). Se separan pérdida y recuperación, incluso si
-  ocurren en una misma ronda, usando el orden de turnos.
+- La **vista principal** es una cronología de eventos: círculo en la ronda/turno
+  de primera obtención, rombo hueco al recuperar y cruz roja en cada pérdida
+  observable. Se distinguen claramente los tres logros de Clarisa, los de Lucas
+  y los hitos de pareja. Los rótulos `R#` indican la ronda del logro.
+- La **vista secundaria desplegable** conserva los períodos reales de tenencia;
+  sus barras no son la duración que tomó obtener el hito. Se separan pérdidas y
+  recuperaciones, incluso en una misma ronda, usando el orden de turnos.
 - El Gantt se produce **a demanda** por partida seleccionada, no instrumenta
   las 2.000 partidas del lote; evita crecer en memoria y mantiene la
   equivalencia binaria de los CSV. Para una partida censurada no se inventa
@@ -44,7 +48,7 @@ grupo "Casa" distingue adquisición inicial, pérdidas y recuperación final;
 ## Archivos añadidos
 
 - `laboratorio/trazabilidad.py` — observador y reconstrucción de períodos.
-- `laboratorio/gantt.py` — gráfico Plotly horizontal interactivo.
+- `laboratorio/gantt.py` — cronología principal de marcadores y Gantt técnico opcional.
 - `tests/test_gantt_fase4.py` — regresión, pérdidas y recuperaciones, censura,
   RNG invariante, pares de ganadores y prueba de interfaz en CI.
 - `laboratorio/app.py` — sección de selección, gráfico, tabla, exportación.
@@ -75,6 +79,6 @@ python -m streamlit run laboratorio/app.py
 ```
 
 Ejecutar la comparación, ir a la sección 4, elegir escenario y partida
-concluida, presionar «Construir Gantt y verificar partida». El enlace de
+concluida, presionar «Ver cronología y verificar partida». El enlace de
 descarga genera JSON con la cronología y los hashes del resultado original
 siguen en los archivos existentes de la comparación.

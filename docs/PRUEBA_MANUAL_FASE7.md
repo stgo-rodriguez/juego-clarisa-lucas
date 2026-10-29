@@ -7,7 +7,7 @@ Ejecución humana pendiente hasta que el usuario lo verifique en su equipo. Marc
 - [ ] `./iniciar_laboratorio.sh`: abre `http://127.0.0.1:8501`, sin errores en Terminal.
 - [ ] En modo Base=Experimento (6 jugadores, 20 partidas, todo en 100%, Juv/Adultez 0%), diferencia de rondas = 0.
 - [ ] Escenario 90% ganancias, 110% pérdidas: se actualizan métricas, tabla y gráfico.
-- [ ] Se reconstruye una partida terminada: Gantt y pérdida/recuperación de hitos visible cuando existe.
+- [ ] Se reconstruye una partida terminada: cronología con hitos puntuales R# agrupados por Clarisa, Lucas y Pareja; pérdidas/recuperaciones visibles cuando existen; Gantt de vigencia disponible al desplegar el detalle.
 - [ ] Economía: cuadro por recurso y etapa; ninguna discrepancia de auditoría.
 - [ ] Interacciones: Duelos y negociaciones; ayuda automática diferenciada.
 - [ ] Turnos: decisiones ejecutadas y oportunidades, con advertencia metodológica.
