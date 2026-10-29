@@ -120,7 +120,7 @@ class TestStreamlitGantt(unittest.TestCase):
         self.assertFalse(app.exception)
         self.assertTrue(any('Cronología de hitos' in s.value for s in app.subheader))
         self.assertGreaterEqual(len(app.button), 2)
-        app.button[1].click().run(timeout=120)
+        next(b for b in app.button if b.label == 'Construir Gantt y verificar partida').click().run(timeout=120)
         self.assertFalse(app.exception, str(app.exception))
         self.assertGreaterEqual(len(app.success), 1)
 
