@@ -83,7 +83,7 @@ def mostrar_detalle(baseline: dict, experiment: dict, *, modo_enfoque: bool = Fa
            Solo el contenido de la solapa tiene scroll independiente. */
         div[data-testid="stTabs"] {
             position: fixed !important;
-            top: 122px !important;
+            top: 136px !important;
             bottom: 0 !important;
             left: 0 !important;
             right: 0 !important;
@@ -166,9 +166,10 @@ def mostrar_detalle(baseline: dict, experiment: dict, *, modo_enfoque: bool = Fa
     }, sort_keys=True, ensure_ascii=False)
     paneles_detalle = st.tabs(["Cronología", "Economía", "Interacciones", "Actividad de turnos"])
     with paneles_detalle[0]:
-        st.subheader("4. Cronología de hitos de la pareja ganadora")
-        st.caption("La cronología de la partida seleccionada se carga automáticamente y "
-                   "se verifica contra la simulación original.")
+        if not modo_enfoque:
+            st.subheader("4. Cronología de hitos de la pareja ganadora")
+            st.caption("La cronología de la partida seleccionada se carga automáticamente y "
+                       "se verifica contra la simulación original.")
         lado = lado_detalle
         resultado = elegido_detalle
         if not int(fila_detalle["terminada"]):
@@ -197,17 +198,26 @@ def mostrar_detalle(baseline: dict, experiment: dict, *, modo_enfoque: bool = Fa
             previo = st.session_state.get("gantt_ultimo")
             if previo is not None and previo[0] == identificador:
                 trazado = previo[1]
-                st.success("Partida reconstruida y comprobada: todos los indicadores coinciden con el motor original.")
                 nombres = " + ".join(f"{x['personaje']} #{x['id']}" for x in trazado['ganadores'])
-                st.markdown(f"**Pareja ganadora:** {nombres} · **Casamiento:** ronda {trazado['ronda_casamiento']}")
-                st.caption('**Cómo leerlo:** las barras comienzan en la primera inversión '
-                           'registrada en el proyecto concreto de Título o Pasaporte, '
-                           'y terminan cuando se adjudica ese hito. '
-                           'El rombo inicial representa la inversión y el círculo, la obtención. '
-                           'Los hitos que no tienen inicio de trabajo registrado aparecen solo '
-                           'como puntos. Una barra no significa inversión continua durante '
-                           'todas las rondas. Las pérdidas y recuperaciones conservan sus símbolos.')
-                st.plotly_chart(grafico_gantt(trazado), use_container_width=True)
+                if modo_enfoque:
+                    st.caption(f"**{nombres}** · Casamiento: ronda "
+                               f"{trazado['ronda_casamiento']} · Partida verificada")
+                    figura = grafico_gantt(trazado)
+                    figura.update_layout(
+                        title=None, height=630,
+                        margin=dict(l=170, r=25, t=32, b=72))
+                    st.plotly_chart(figura, use_container_width=True)
+                else:
+                    st.success("Partida reconstruida y comprobada: todos los indicadores coinciden con el motor original.")
+                    st.markdown(f"**Pareja ganadora:** {nombres} · **Casamiento:** ronda {trazado['ronda_casamiento']}")
+                    st.caption('**Cómo leerlo:** las barras comienzan en la primera inversión '
+                               'registrada en el proyecto concreto de Título o Pasaporte, '
+                               'y terminan cuando se adjudica ese hito. '
+                               'El rombo inicial representa la inversión y el círculo, la obtención. '
+                               'Los hitos que no tienen inicio de trabajo registrado aparecen solo '
+                               'como puntos. Una barra no significa inversión continua durante '
+                               'todas las rondas. Las pérdidas y recuperaciones conservan sus símbolos.')
+                    st.plotly_chart(grafico_gantt(trazado), use_container_width=True)
                 trabajos = trazado.get('tramos_trabajo', [])
                 if trabajos:
                     mayor = max(trabajos, key=lambda t: t['rondas_transcurridas'])
