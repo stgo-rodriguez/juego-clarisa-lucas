@@ -7,7 +7,7 @@ import unittest
 from laboratorio.comparacion import escenario_base, ejecutar
 from laboratorio.trazabilidad import (JuegoObservado, construir_cronologia,
                                       obtener_periodos, trazar_partida)
-from laboratorio.gantt import grafico_gantt, grafico_vigencia, intervalos_entre_hitos
+from laboratorio.gantt import grafico_gantt, grafico_vigencia
 from simulador.economia import EconomyConfig
 from simulador.motor import Game, parse_cards
 from laboratorio.ejecucion import CARDS
@@ -49,37 +49,56 @@ class PruebasGanttFase4(unittest.TestCase):
         self.assertTrue(any('R' in str(t) for trace in chart.data for t in (trace.text or [])))
         self.assertTrue(all(str(x.type) == 'bar' for x in grafico_vigencia(valid).data))
         self.assertGreaterEqual(len([t for t in chart.data if t.mode == 'markers+text']), 4)
-        self.assertIn('intervalos entre hitos', chart.layout.title.text)
+        self.assertIn('primera inversión hasta adjudicación', chart.layout.title.text)
         self.assertEqual(chart.layout.yaxis.ticktext.count('Ingreso UTN'), 2)
         self.assertIn('Casa en propiedad', chart.layout.yaxis.ticktext)
 
         self.assertEqual(len(grafico_gantt({'finalizada': False}).data), 0)
 
-    def test_barras_entre_hitos_conservan_rondas_sin_inventar_tareas(self):
+    def test_gantt_inicio_en_primera_inversion_del_proyecto_adjudicado(self):
         cronologia = trazar_partida(self.base, 1, self.rows[0])
-        intervalos = intervalos_entre_hitos(cronologia)
-        self.assertTrue(intervalos)
-        self.assertTrue(all(t['rondas'] == t['ronda_hasta'] - t['ronda_desde']
-                            for t in intervalos))
-        self.assertTrue(all(t['rondas'] >= 0 for t in intervalos))
-        self.assertTrue(all(t['x_fin'] >= t['x_inicio'] for t in intervalos))
-        self.assertTrue(all(t['grupo'] in ('Clarisa #1', 'Lucas #4', 'Pareja')
-                            for t in intervalos))
-        self.assertTrue(any(t['grupo'] == 'Lucas #4' and
-                            t['desde'] == 'Pasaporte' and t['hasta'] == 'Título' and
-                            t['ronda_desde'] == 10 and t['ronda_hasta'] == 27 and
-                            t['rondas'] == 17 for t in intervalos))
-        chart = grafico_gantt(cronologia)
-        barras = [t for t in chart.data if t.mode == 'lines']
-        self.assertTrue(barras, 'Debe haber barras de intervalos entre logros.')
-        self.assertTrue(any(t.name == 'Mayor intervalo' for t in barras))
-        self.assertTrue(all('No implica dedicación exclusiva' in t.hovertemplate
-                            for t in barras))
+        trabajos = cronologia['tramos_trabajo']
+        self.assertTrue(trabajos)
+        self.assertTrue(all(t['clave'].startswith(('titulo_', 'pasaporte_'))
+                            for t in trabajos))
+        self.assertTrue(all(t['rondas_transcurridas'] ==
+                            t['ronda_fin'] - t['ronda_inicio'] for t in trabajos))
+        self.assertTrue(all(t['rondas_transcurridas'] >= 0 for t in trabajos))
+        self.assertEqual(len(trabajos), len({(t['clave'], t['proyecto']) for t in trabajos}))
 
-    def test_sin_hitos_ni_pareja_no_inventa_intervalos(self):
-        self.assertEqual(intervalos_entre_hitos({'finalizada': False}), [])
-        self.assertEqual(intervalos_entre_hitos({'finalizada': True, 'ganadores': [],
-                                                'periodos': []}), [])
+        config = self.base
+        juego = JuegoObservado(1, config.seed, config.jugadores, parse_cards(CARDS),
+                               log=False, max_rounds=config.max_rondas,
+                               bot_mode=config.bot, economia=config.economia).run()
+        self.assertEqual(juego.summary(), self.rows[0])
+        for trabajo in trabajos:
+            inversiones = [inv for inv in juego.inversiones_proyectos
+                           if inv['proyecto'] == trabajo['proyecto']]
+            self.assertTrue(inversiones)
+            primera = inversiones[0]
+            self.assertEqual(trabajo['ronda_inicio'], primera['ronda'])
+            self.assertEqual(trabajo['turno_inicio'], primera['turno'])
+            self.assertEqual(trabajo['inversor_inicial'], primera['inversor'])
+            self.assertEqual(trabajo['subhito_inicial'], 1)
+            self.assertLessEqual(trabajo['turno_inicio'], trabajo['turno_fin'])
+            self.assertTrue(any(periodo['clave'] == trabajo['clave'] and
+                                periodo.get('proyecto') == trabajo['proyecto'] and
+                                periodo['turno_inicio'] == trabajo['turno_fin']
+                                for periodo in cronologia['periodos']))
+
+        chart = grafico_gantt(cronologia)
+        barras = [x for x in chart.data if x.mode == 'lines+markers']
+        self.assertEqual(len(barras), len(trabajos))
+        self.assertTrue(all('Primera inversión' in x.hovertemplate
+                            for x in barras))
+        self.assertTrue(all('Entre hitos' not in str(x.name) for x in barras))
+
+    def test_sin_inversiones_no_inventa_tramos(self):
+        self.assertEqual(trazar_partida(
+            replace(self.base, max_rondas=1), 1)['tramos_trabajo'], [])
+        self.assertEqual(len(grafico_gantt({
+            'finalizada': True, 'periodos': [], 'tramos_trabajo': []
+        }).data), 0)
 
     def test_perdidas_y_recuperaciones_son_eventos_separados(self):
         # En la referencia de 6 jugadores, semilla 131028, se pierde y
