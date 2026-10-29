@@ -53,13 +53,13 @@ def validar_vista(page, ancho: int, alto: int) -> None:
 
     cabecera = geometria(page, ".st-key-selector_analisis")
     panel = geometria(page, '[data-testid="stTabs"] [role="tabpanel"]:visible')
-    assert cabecera.top <= 4, f"El selector no está fijo: {cabecera}"
-    assert cabecera.bottom < alto * .23, f"El encabezado ocupa demasiado alto: {cabecera}"
-    assert panel.bottom >= alto - 8, f"Panel recortado al pie: {panel}"
-    assert panel.height >= alto - cabecera.bottom - 75, (
+    assert cabecera['top'] <= 4, f"El selector no está fijo: {cabecera}"
+    assert cabecera['bottom'] < alto * .23, f"El encabezado ocupa demasiado alto: {cabecera}"
+    assert panel['bottom'] >= alto - 8, f"Panel recortado al pie: {panel}"
+    assert panel['height'] >= alto - cabecera['bottom'] - 75, (
         f"Panel desaprovecha altura: {panel}; cabecera={cabecera}"
     )
-    assert panel.overflowY in ("auto", "scroll"), f"Sin scroll nativo: {panel}"
+    assert panel['overflowY'] in ("auto", "scroll"), f"Sin scroll nativo: {panel}"
 
     # La solapa debe desplazarse, sin mover el selector superior.
     locator = page.locator('[data-testid="stTabs"] [role="tabpanel"]:visible')
@@ -68,7 +68,7 @@ def validar_vista(page, ancho: int, alto: int) -> None:
     scroll = locator.evaluate("(el) => el.scrollTop")
     assert scroll > 100, f"El panel no permite bajar: scrollTop={scroll}, panel={panel}"
     cabecera_final = geometria(page, ".st-key-selector_analisis")
-    assert abs(cabecera_final.top - cabecera.top) < 3, "El selector se desplazó al bajar"
+    assert abs(cabecera_final['top'] - cabecera['top']) < 3, "El selector se desplazó al bajar"
 
     tablas = locator.locator('[data-testid="stDataFrame"]')
     assert tablas.count() >= 3, "Faltan las tablas de actividad"
@@ -79,7 +79,7 @@ def validar_vista(page, ancho: int, alto: int) -> None:
         }""")
         for i in range(2)
     ]
-    assert all(x["width"] >= panel.width * .76 for x in dimensiones), (
+    assert all(x["width"] >= panel['width'] * .76 for x in dimensiones), (
         f"Tablas demasiado estrechas: {dimensiones}, panel={panel}"
     )
     assert dimensiones[1]["y"] >= dimensiones[0]["y"] + dimensiones[0]["height"] - 10, (
