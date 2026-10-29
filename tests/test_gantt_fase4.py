@@ -171,21 +171,39 @@ class PruebasGanttFase4(unittest.TestCase):
             trazar_partida(self.base, 1, altered)
 
 class TestStreamlitGantt(unittest.TestCase):
-    def test_gantt_visible_al_reconstruir(self):
+    def test_gantt_aparece_automaticamente_y_cambia_con_la_seleccion(self):
         try:
             from streamlit.testing.v1 import AppTest
         except ImportError:
             self.skipTest('Streamlit solo disponible en el CI de GitHub')
         from laboratorio.ejecucion import ROOT
-        app = AppTest.from_file(str(ROOT/'laboratorio/app.py'),default_timeout=120).run()
+        app = AppTest.from_file(str(ROOT/'laboratorio/app.py'), default_timeout=120).run()
         self.assertFalse(app.exception)
+        # La ejecución inicial abre el Gantt automáticamente sin otro botón.
         app.button[0].click().run(timeout=120)
-        self.assertFalse(app.exception)
-        self.assertTrue(any('Cronología de hitos' in s.value for s in app.subheader))
-        self.assertGreaterEqual(len(app.button), 2)
-        next(b for b in app.button if b.label == 'Ver cronología y verificar partida').click().run(timeout=120)
         self.assertFalse(app.exception, str(app.exception))
-        self.assertGreaterEqual(len(app.success), 1)
+        self.assertTrue(any('Cronología de hitos' in s.value for s in app.subheader))
+        self.assertFalse(any(b.label == 'Ver cronología y verificar partida' for b in app.button))
+        self.assertTrue(any('Partida reconstruida y comprobada' in x.message
+                            if hasattr(x, 'message') else
+                            'Partida reconstruida y comprobada' in x.value
+                            for x in app.success))
+        primer = app.session_state['gantt_ultimo']
+        self.assertEqual(primer[1]['partida'], 1)
+        # Cambiar de partida debe reconstruirla sin clic adicional.
+        selector = next(x for x in app.selectbox if x.label == 'Partida concluida')
+        selector.set_value(2).run(timeout=120)
+        self.assertFalse(app.exception, str(app.exception))
+        segundo = app.session_state['gantt_ultimo']
+        self.assertEqual(segundo[1]['partida'], 2)
+        self.assertNotEqual(primer[0], segundo[0])
+        # Cambiar de escenario también reconstruye, aunque conserve número.
+        escenario = next(x for x in app.radio if x.label == 'Escenario del Gantt')
+        escenario.set_value('Base').run(timeout=120)
+        self.assertFalse(app.exception, str(app.exception))
+        tercero = app.session_state['gantt_ultimo']
+        self.assertNotEqual(segundo[0], tercero[0])
+        self.assertEqual(tercero[1]['partida'], 2)
 
 
 if __name__ == '__main__': unittest.main()
