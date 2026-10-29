@@ -45,6 +45,407 @@ def correr(config: ScenarioConfig) -> dict:
 
 
 
+def mostrar_detalle(baseline: dict, experiment: dict, *, modo_enfoque: bool = False) -> None:
+    if modo_enfoque:
+        st.markdown("""
+        <style>
+        /* Vista ampliada: los controles siguen visibles durante el desplazamiento. */
+        .block-container { max-width:100% !important; padding-top:.5rem !important; }
+        .st-key-selector_analisis {
+            position: sticky; top: 0; z-index: 999;
+            background: var(--background-color, #fff);
+            padding: .45rem .8rem .25rem;
+            box-shadow: 0 2px 12px rgba(0,0,0,.09);
+            border-radius: .5rem;
+        }
+        div[data-testid="stTabs"] div[data-baseweb="tab-list"] {
+            position: sticky; top: 145px; z-index: 998;
+            background: var(--background-color, #fff);
+        }
+        </style>
+        """, unsafe_allow_html=True)
+        cabecera, volver = st.columns([5, 1])
+        with cabecera:
+            st.markdown("### Análisis de una partida")
+        with volver:
+            if st.button("Volver al laboratorio", key="salir_enfoque"):
+                st.session_state["modo_enfoque"] = False
+                st.rerun()
+    else:
+        st.divider()
+        encabezado, ampliar = st.columns([4, 1])
+        with encabezado:
+            st.subheader("Detalle de una partida · selección común")
+        with ampliar:
+            if st.button("Pantalla de análisis", key="abrir_enfoque"):
+                st.session_state["modo_enfoque"] = True
+                st.rerun()
+    with st.container(key="selector_analisis"):
+        st.caption("Un escenario y una partida para Cronología, Economía, "
+                   "Interacciones y Actividad de turnos.")
+        col_escenario, col_partida = st.columns([1, 3])
+        with col_escenario:
+            lado_detalle = st.radio("Escenario de la partida", ["Base", "Experimento"],
+                                    horizontal=True, key="detalle_lado")
+        elegido_detalle = baseline if lado_detalle == "Base" else experiment
+        opciones_detalle = list(range(1, len(elegido_detalle["filas"]) + 1))
+        if st.session_state.get("detalle_numero") not in opciones_detalle:
+            st.session_state["detalle_numero"] = next(
+                (i for i in opciones_detalle if int(elegido_detalle["filas"][i-1]["terminada"])),
+                opciones_detalle[0])
+        with col_partida:
+            numero_detalle = st.selectbox(
+                "Partida seleccionada", options=opciones_detalle, key="detalle_numero",
+                format_func=lambda n: (
+                    f"Partida {n} · semilla {elegido_detalle['filas'][n-1]['semilla']} "
+                    f"· {elegido_detalle['filas'][n-1]['rondas_observadas']} rondas "
+                    f"· {'concluida' if int(elegido_detalle['filas'][n-1]['terminada']) else 'sin concluir'}"))
+        fila_detalle = elegido_detalle["filas"][numero_detalle - 1]
+        st.caption(f"**Selección actual:** {lado_detalle} · partida {numero_detalle} · "
+                   f"semilla {fila_detalle['semilla']}. "
+                   "Los cuatro análisis se actualizan automáticamente.")
+    firma_detalle = json.dumps({
+        "escenario": elegido_detalle["escenario"],
+        "partida": numero_detalle,
+        "fila_esperada": fila_detalle,
+    }, sort_keys=True, ensure_ascii=False)
+    paneles_detalle = st.tabs(["Cronología", "Economía", "Interacciones", "Actividad de turnos"])
+    with paneles_detalle[0]:
+        st.subheader("4. Cronología de hitos de la pareja ganadora")
+        st.caption("La cronología de la partida seleccionada se carga automáticamente y "
+                   "se verifica contra la simulación original.")
+        lado = lado_detalle
+        resultado = elegido_detalle
+        if not int(fila_detalle["terminada"]):
+            st.session_state.pop("gantt_ultimo", None)
+            st.info("Esta partida no finalizó dentro del límite de rondas. "
+                    "No hay una pareja ganadora para graficar; los otros paneles "
+                    "sí permiten auditar esta partida.")
+        else:
+            numero = numero_detalle
+            # Carga automática al entrar en la sección o cambiar partida/escenario.
+            # Se conserva la última reconstrucción mientras la selección sea idéntica;
+            # no se reejecuta en cada interacción con otros paneles de Streamlit.
+
+            identificador = firma_detalle
+            previo = st.session_state.get("gantt_ultimo")
+            if previo is None or previo[0] != identificador:
+                st.session_state.pop("gantt_ultimo", None)
+                try:
+                    with st.spinner(f"Verificando y reconstruyendo la partida {numero}…"):
+                        trazado = trazar_partida(
+                            escenario_desde_dict(resultado["escenario"]),
+                            numero, resultado["filas"][numero - 1])
+                    st.session_state["gantt_ultimo"] = (identificador, trazado)
+                except Exception as exc:
+                    st.error(f"No se pudo validar la cronología: {exc}")
+            previo = st.session_state.get("gantt_ultimo")
+            if previo is not None and previo[0] == identificador:
+                trazado = previo[1]
+                st.success("Partida reconstruida y comprobada: todos los indicadores coinciden con el motor original.")
+                nombres = " + ".join(f"{x['personaje']} #{x['id']}" for x in trazado['ganadores'])
+                st.markdown(f"**Pareja ganadora:** {nombres} · **Casamiento:** ronda {trazado['ronda_casamiento']}")
+                st.caption('**Cómo leerlo:** las barras comienzan en la primera inversión '
+                           'registrada en el proyecto concreto de Título o Pasaporte, '
+                           'y terminan cuando se adjudica ese hito. '
+                           'El rombo inicial representa la inversión y el círculo, la obtención. '
+                           'Los hitos que no tienen inicio de trabajo registrado aparecen solo '
+                           'como puntos. Una barra no significa inversión continua durante '
+                           'todas las rondas. Las pérdidas y recuperaciones conservan sus símbolos.')
+                st.plotly_chart(grafico_gantt(trazado), use_container_width=True)
+                trabajos = trazado.get('tramos_trabajo', [])
+                if trabajos:
+                    mayor = max(trabajos, key=lambda t: t['rondas_transcurridas'])
+                    st.caption(
+                        f"**Proyecto con mayor plazo registrado:** {mayor['hito']} "
+                        f"({mayor['proyecto']}): primera inversión R{mayor['ronda_inicio']} "
+                        f"→ adjudicación R{mayor['ronda_fin']} "
+                        f"({mayor['rondas_transcurridas']} rondas). "
+                        f"Primer inversor: jugador #{mayor['inversor_inicial']}. "
+                        'El plazo no implica trabajo continuo.')
+                else:
+                    st.caption('No hay proyectos adjudicados con inversión inicial '
+                               'identificable en esta cronología.')
+                with st.expander('Ver períodos de vigencia y pérdidas (detalle técnico)'):
+                    st.caption('En esta vista alternativa, cada barra indica durante cuánto tiempo '
+                               'se conservó efectivamente el hito. No representa el tiempo '
+                               'que llevó conseguirlo.')
+                    st.plotly_chart(grafico_vigencia(trazado), use_container_width=True)
+                with st.expander('Ver tabla de rondas exactas y recuperaciones'):
+                    st.dataframe(trazado["hitos"], use_container_width=True, hide_index=True)
+                st.info(trazado["advertencia"])
+                st.download_button(
+                    "Descargar cronología verificada (JSON)",
+                    data=json.dumps(trazado, ensure_ascii=False, indent=2).encode("utf-8"),
+                    mime="application/json",
+                    file_name=f"gantt_partida_{numero}_{lado.lower()}.json",
+                    key="descargar_gantt")
+
+    with paneles_detalle[1]:
+        st.subheader("5. Economía de recursos por origen, etapa y jugador")
+        st.caption("El lote completo aporta flujos agregados por fuente y recurso. "
+                   "El desglose por etapa/jugador se obtiene reejecutando una partida verificada: "
+                   "no se asignan etapas que los CSV originales no contienen.")
+        from laboratorio.economia_trazable import trazar_economia
+        from laboratorio.graficos_economia import (resumen_lote, figura_flujos,
+                                                   figura_saldos, RECURSO_NOMBRE)
+        import pandas as pd
+
+        with st.expander("Resumen de flujos del lote completo (sin desglose por etapa)"):
+            df_base = pd.DataFrame(resumen_lote(baseline['filas']))
+            df_exp = pd.DataFrame(resumen_lote(experiment['filas']))
+            if not df_base.empty and not df_exp.empty:
+                comun = df_base.merge(df_exp, on=['Recurso', 'Código', 'Fuente'],
+                                      how='outer', suffixes=(' base', ' experimento')).fillna(0)
+                comun['Diferencia'] = (comun['Fichas medias por partida experimento'] -
+                                       comun['Fichas medias por partida base']).round(3)
+                st.dataframe(comun.drop(columns='Código'), use_container_width=True,
+                             hide_index=True)
+                st.caption("Flujos brutos por partida. Inversiones, conversiones y ventas "
+                           "de Casa no son ingresos externos netos; no sumar categorías "
+                           "como si fueran beneficios independientes.")
+
+        lado_ec = lado_detalle
+        elegido_ec = elegido_detalle
+        numero_ec = numero_detalle
+
+        identificador_ec = firma_detalle
+        previo_ec = st.session_state.get('economia_ultima')
+        if previo_ec is None or previo_ec[0] != identificador_ec:
+            st.session_state.pop('economia_ultima', None)
+            try:
+                with st.spinner('Auditando economía de la partida seleccionada…'):
+                    detalle = trazar_economia(
+                        escenario_desde_dict(elegido_ec['escenario']), numero_ec,
+                        elegido_ec['filas'][numero_ec - 1])
+                st.session_state['economia_ultima'] = (identificador_ec, detalle)
+            except Exception as exc:
+                st.error(f'Falló la auditoría económica: {exc}')
+        previo_ec = st.session_state.get('economia_ultima')
+        if previo_ec is not None and previo_ec[0] == identificador_ec:
+            detalle = previo_ec[1]
+            st.success('Economía verificada: movimientos, saldos y resultado coinciden con el motor.')
+            st.caption(detalle['alcance'])
+            etapas_activas = sorted({x['etapa'] for x in detalle['movimientos']})
+            f1, f2, f3 = st.columns(3)
+            with f1:
+                etapas_filtradas = st.multiselect('Etapas', etapas_activas,
+                                                  default=etapas_activas, key='economia_etapas')
+            with f2:
+                jugadores_filtrados = st.multiselect('Jugadores',
+                                                    list(range(1, detalle['jugadores'] + 1)),
+                                                    default=list(range(1, detalle['jugadores'] + 1)),
+                                                    key='economia_jugadores')
+            with f3:
+                recursos_filtrados = st.multiselect('Recursos', list(RECURSO_NOMBRE),
+                                                    default=list(RECURSO_NOMBRE),
+                                                    format_func=lambda x: RECURSO_NOMBRE[x],
+                                                    key='economia_recursos')
+            movimientos_filtrados = [e for e in detalle['movimientos']
+                                     if e['etapa'] in etapas_filtradas and
+                                     e['jugador'] in jugadores_filtrados and
+                                     e['recurso'] in recursos_filtrados]
+            st.plotly_chart(figura_flujos(movimientos_filtrados), use_container_width=True)
+            st.caption('Barras positivas: ingresos y transferencias recibidas. '
+                       'Barras negativas: pérdidas, pagos, inversiones y transferencias enviadas. '
+                       'Los cambios 2:1 del banco se registran como salida e ingreso de distintos recursos.')
+            st.markdown('**Saldos libres y reservados por etapa**')
+            st.plotly_chart(figura_saldos([
+                x for x in detalle['stock_por_etapa'] if
+                x['Etapa'] in etapas_filtradas and x['Recurso'] in recursos_filtrados
+            ]), use_container_width=True)
+            st.caption('Son medias de fotografías de fin de turno por jugador/etapa, '
+                       'no cifras de cierre ni medias por ronda.')
+            with st.expander('Movimientos individuales y auditoría'):
+                st.dataframe(pd.DataFrame(movimientos_filtrados),
+                             hide_index=True, use_container_width=True)
+                st.dataframe(pd.DataFrame(detalle['tabla_flujos']),
+                             hide_index=True, use_container_width=True)
+                st.json({'stock_final': detalle['stock_final'],
+                         'errores_conciliacion': detalle['errores_conciliacion'],
+                         'errores_motor': detalle['errores_motor']})
+            st.info(detalle['advertencia'])
+            st.download_button('Descargar auditoría económica (JSON)',
+                               data=json.dumps(detalle, ensure_ascii=False, indent=2).encode('utf-8'),
+                               file_name=f'economia_partida_{numero_ec}_{lado_ec.lower()}.json',
+                               mime='application/json', key='descargar_economia')
+
+
+    with paneles_detalle[2]:
+        st.subheader('6. Interacciones: Duelos, negociación, Pareja y Casa')
+        st.caption('El lote completo muestra contadores por partida. Para conocer modalidad, '
+                   'participantes, resultado, ronda y etapa, reconstruí una partida específica '
+                   'con la misma semilla y compará su resultado exacto con el motor.')
+        from laboratorio.interacciones import (resumen_lote_interacciones,
+                                               trazar_interacciones)
+        from laboratorio.graficos_interacciones import (figura_interacciones_por_tipo,
+                                                        figura_interacciones_por_ronda)
+
+        with st.expander('Interacciones agregadas de los dos escenarios'):
+            tb = pd.DataFrame(resumen_lote_interacciones(baseline['filas']))
+            te = pd.DataFrame(resumen_lote_interacciones(experiment['filas']))
+            if not tb.empty and not te.empty:
+                comp_int = tb.merge(te, on=['Métrica', 'Código'],
+                                    suffixes=(' base', ' experimento'))
+                comp_int['Diferencia media'] = (
+                    comp_int['Promedio por partida experimento'] -
+                    comp_int['Promedio por partida base']).round(3)
+                st.dataframe(comp_int.drop(columns='Código'),
+                             use_container_width=True, hide_index=True)
+                st.caption('Totales y promedios reales de los CSV; no se atribuyen '
+                           'rondas, participantes ni causas que los CSV no registran.')
+
+        lado_int = lado_detalle
+        elegido_int = elegido_detalle
+        numero_int = numero_detalle
+
+        marca_int = firma_detalle
+        anterior_int = st.session_state.get('interacciones_ultimas')
+        if anterior_int is None or anterior_int[0] != marca_int:
+            st.session_state.pop('interacciones_ultimas', None)
+            try:
+                with st.spinner('Auditando interacciones de la partida seleccionada…'):
+                    detalle_int = trazar_interacciones(
+                        escenario_desde_dict(elegido_int['escenario']), numero_int,
+                        elegido_int['filas'][numero_int - 1])
+                st.session_state['interacciones_ultimas'] = (marca_int, detalle_int)
+            except Exception as exc:
+                st.error(f'Falló la reconstrucción de interacciones: {exc}')
+        anterior_int = st.session_state.get('interacciones_ultimas')
+        if anterior_int and anterior_int[0] == marca_int:
+            detalle_int = anterior_int[1]
+            st.success('Interacciones verificadas: cada evento y los contadores coinciden con el motor.')
+            c1, c2, c3, c4 = st.columns(4)
+            c1.metric('Duelos iniciados', detalle_int['duelos'])
+            c2.metric('Retiradas', detalle_int['retiradas'])
+            c3.metric('Defensas sin perder', detalle_int['defensas_sin_perder'])
+            c4.metric('Comprobantes cedidos', detalle_int['cesiones_comprobante'])
+            st.plotly_chart(figura_interacciones_por_tipo(detalle_int), use_container_width=True)
+            st.plotly_chart(figura_interacciones_por_ronda(detalle_int), use_container_width=True)
+            a, b = st.columns(2)
+            with a:
+                st.markdown('**Resultados de Duelos**')
+                st.dataframe(pd.DataFrame(detalle_int['por_resultado']),
+                             hide_index=True, use_container_width=True)
+                st.markdown('**Modalidades de Duelo**')
+                st.dataframe(pd.DataFrame(detalle_int['por_modalidad']),
+                             hide_index=True, use_container_width=True)
+            with b:
+                st.markdown('**Duelos iniciados y recibidos por jugador**')
+                st.dataframe(pd.DataFrame(detalle_int['duelos_por_jugador']),
+                             hide_index=True, use_container_width=True)
+                st.markdown('**Interacciones por etapa**')
+                st.dataframe(pd.DataFrame(detalle_int['por_etapa']),
+                             hide_index=True, use_container_width=True)
+            eventos_int = detalle_int['eventos']
+            categorias_int = sorted({e['categoria'] for e in eventos_int})
+            filtros_int = st.multiselect('Filtrar por categorías', categorias_int,
+                                         default=categorias_int,
+                                         key='interacciones_categorias')
+            participantes_int = st.multiselect('Filtrar por participantes',
+                                               list(range(1, detalle_int['jugadores'] + 1)),
+                                               default=list(range(1, detalle_int['jugadores'] + 1)),
+                                               key='interacciones_jugadores')
+            eventos_filtrados = [e for e in eventos_int if e['categoria'] in filtros_int and
+                                any(pid in participantes_int for pid in e['participantes'])]
+            st.dataframe(pd.DataFrame([{
+                'Ronda': e['ronda'], 'Turno': e['turno'], 'Tipo': e['tipo'],
+                'Categoría': e['categoria'], 'Jugadores': ', '.join(map(str,e['participantes'])),
+                'Modalidad': e['modalidad'], 'Resultado': e['resultado'],
+                'Detalles': json.dumps(e['detalle'], ensure_ascii=False)
+            } for e in eventos_filtrados]), hide_index=True, use_container_width=True)
+            st.info(detalle_int['advertencia'])
+            st.download_button('Descargar auditoría de interacciones (JSON)',
+                               data=json.dumps(detalle_int, ensure_ascii=False, indent=2).encode('utf-8'),
+                               file_name=f'interacciones_partida_{numero_int}_{lado_int.lower()}.json',
+                               mime='application/json', key='descargar_interacciones')
+
+
+    with paneles_detalle[3]:
+        st.subheader('7. Actividad de turnos y oportunidades detectadas')
+        st.caption('Medición descriptiva de bots: distingue desenlaces automáticos, '
+                   'acciones ejecutadas y familias de acciones disponibles en checkpoints. '
+                   'No es una puntuación de diversión, calidad o profundidad estratégica.')
+        from laboratorio.turnos import trazar_turnos
+        from laboratorio.graficos_turnos import figura_etapas, figura_familias
+
+        lado_turno = lado_detalle
+        elegido_turno = elegido_detalle
+        numero_turno = numero_detalle
+
+        marca_turno = firma_detalle
+        previo_turno = st.session_state.get('turnos_ultimos')
+        if previo_turno is None or previo_turno[0] != marca_turno:
+            st.session_state.pop('turnos_ultimos', None)
+            try:
+                with st.spinner('Auditando actividad de la partida seleccionada…'):
+                    detalle_turno = trazar_turnos(
+                        escenario_desde_dict(elegido_turno['escenario']), numero_turno,
+                        elegido_turno['filas'][numero_turno - 1])
+                    if detalle_turno['errores_auditoria'] or detalle_turno['errores_motor']:
+                        raise AssertionError(str(detalle_turno['errores_auditoria'] + detalle_turno['errores_motor']))
+                st.session_state['turnos_ultimos'] = (marca_turno, detalle_turno)
+            except Exception as exc:
+                st.error(f'Falló la auditoría de turnos: {exc}')
+        previo_turno = st.session_state.get('turnos_ultimos')
+        if previo_turno is not None and previo_turno[0] == marca_turno:
+            dt = previo_turno[1]
+            st.success('Actividad validada: los contadores por decisión y el resultado coinciden con el motor.')
+            a1,a2,a3,a4 = st.columns(4)
+            a1.metric('Turnos individuales', dt['turnos'])
+            a2.metric('Con alguna decisión de bot',dt['turnos_con_decision'])
+            a3.metric('Sin decisión registrada',dt['turnos_solo_automaticos'])
+            a4.metric('Familias disponibles por turno',dt['familias_disponibles_por_turno'])
+            st.plotly_chart(figura_etapas(dt), use_container_width=True)
+            st.plotly_chart(figura_familias(dt), use_container_width=True)
+            st.caption('Cada barra compara turnos con una familia de acción disponible y '
+                       'turnos donde hubo alguna ejecución o resolución de esa familia. '
+                       'No cuenta todas las jugadas legales ni registra intentos rechazados.')
+            x1,x2=st.columns(2)
+            with x1:
+                st.markdown('**Actividad por etapa al comenzar el turno**')
+                st.dataframe(pd.DataFrame(dt['por_etapa']),hide_index=True,use_container_width=True)
+            with x2:
+                st.markdown('**Actividad por política de bot**')
+                st.dataframe(pd.DataFrame(dt['por_bot']),hide_index=True,use_container_width=True)
+            jugadores_turnos = st.multiselect('Jugadores del detalle',
+                                              list(range(1, dt['jugadores']+1)),
+                                              default=list(range(1,dt['jugadores']+1)),
+                                              key='turnos_jugadores')
+            etapas_turnos = st.multiselect('Etapas al comenzar el turno',
+                                           sorted({t['etapa_inicio'] for t in dt['turnos_detalle']}),
+                                           default=sorted({t['etapa_inicio'] for t in dt['turnos_detalle']}),
+                                           key='turnos_etapas')
+            filtrados = [t for t in dt['turnos_detalle'] if t['jugador'] in jugadores_turnos
+                         and t['etapa_inicio'] in etapas_turnos]
+            st.dataframe(pd.DataFrame([{
+                'Ronda':t['ronda'],'Turno':t['turno'],'Jugador':t['jugador'],
+                'Etapa':t['etapa_inicio'],'Bot':t['bot'],
+                'Familias disponibles':t['familias_disponibles'],
+                'Decisiones':t['decisiones_ejecutadas'],
+                'Eventos automáticos':t['eventos_automaticos'],
+                'Oportunidades':', '.join(t['oportunidades']),
+                'Acciones de bot':', '.join(t['decisiones'])
+            } for t in filtrados]),hide_index=True,use_container_width=True)
+            st.info(dt['advertencia'])
+            st.download_button('Descargar actividad de turnos (JSON)',
+                               data=json.dumps(dt,ensure_ascii=False,indent=2).encode('utf-8'),
+                               file_name=f'turnos_partida_{numero_turno}_{lado_turno.lower()}.json',
+                               mime='application/json',key='descargar_turnos')
+
+
+
+
+if st.session_state.get("modo_enfoque"):
+    comparacion_actual = st.session_state.get("ultima_comparacion")
+    if comparacion_actual is None:
+        st.session_state["modo_enfoque"] = False
+        st.warning("Primero ejecutá o recuperá una comparación para abrir el análisis.")
+    else:
+        mostrar_detalle(comparacion_actual[0], comparacion_actual[1], modo_enfoque=True)
+        st.stop()
+
+
 st.title("Laboratorio de Balance · Clarisa & Lucas")
 st.caption("Versión local estabilizada · Laboratorio fases 0–7 · Reglamento v1.3")
 st.info("Se preservan las reglas, los costos de hitos y los bots auditados. "
@@ -228,361 +629,7 @@ else:
         st.json({"base": baseline["escenario"], "experimento": experiment["escenario"],
                  "firmas": baseline["codigo"]})
 
-    st.divider()
-    st.subheader("Detalle de una partida · selección común")
-    st.caption("La partida elegida se utiliza en Cronología, Economía, Interacciones y "
-               "Actividad de turnos. Los resultados agregados de Base y Experimento "
-               "siguen identificados por escenario.")
-    col_escenario, col_partida = st.columns([1, 3])
-    with col_escenario:
-        lado_detalle = st.radio("Escenario de la partida", ["Base", "Experimento"],
-                                horizontal=True, key="detalle_lado")
-    elegido_detalle = baseline if lado_detalle == "Base" else experiment
-    opciones_detalle = list(range(1, len(elegido_detalle["filas"]) + 1))
-    if st.session_state.get("detalle_numero") not in opciones_detalle:
-        st.session_state["detalle_numero"] = next(
-            (i for i in opciones_detalle if int(elegido_detalle["filas"][i-1]["terminada"])),
-            opciones_detalle[0])
-    with col_partida:
-        numero_detalle = st.selectbox(
-            "Partida seleccionada", options=opciones_detalle, key="detalle_numero",
-            format_func=lambda n: (
-                f"Partida {n} · semilla {elegido_detalle['filas'][n-1]['semilla']} "
-                f"· {elegido_detalle['filas'][n-1]['rondas_observadas']} rondas "
-                f"· {'concluida' if int(elegido_detalle['filas'][n-1]['terminada']) else 'sin concluir'}"))
-    fila_detalle = elegido_detalle["filas"][numero_detalle - 1]
-    st.caption(f"**Selección actual:** {lado_detalle} · partida {numero_detalle} · "
-               f"semilla {fila_detalle['semilla']}. "
-               "El Gantt se actualiza solo; las auditorías detalladas se ejecutan a demanda.")
-    paneles_detalle = st.tabs(["Cronología", "Economía", "Interacciones", "Actividad de turnos"])
-    with paneles_detalle[0]:
-        st.subheader("4. Cronología de hitos de la pareja ganadora")
-        st.caption("La cronología de la partida seleccionada se carga automáticamente y "
-                   "se verifica contra la simulación original.")
-        lado = lado_detalle
-        resultado = elegido_detalle
-        if not int(fila_detalle["terminada"]):
-            st.session_state.pop("gantt_ultimo", None)
-            st.info("Esta partida no finalizó dentro del límite de rondas. "
-                    "No hay una pareja ganadora para graficar; los otros paneles "
-                    "sí permiten auditar esta partida.")
-        else:
-            numero = numero_detalle
-            # Carga automática al entrar en la sección o cambiar partida/escenario.
-            # Se conserva la última reconstrucción mientras la selección sea idéntica;
-            # no se reejecuta en cada interacción con otros paneles de Streamlit.
-            identificador = json.dumps({
-                "escenario": resultado["escenario"], "partida": numero,
-                "fila_esperada": resultado["filas"][numero - 1],
-            }, sort_keys=True, ensure_ascii=False)
-            previo = st.session_state.get("gantt_ultimo")
-            if previo is None or previo[0] != identificador:
-                st.session_state.pop("gantt_ultimo", None)
-                try:
-                    with st.spinner(f"Verificando y reconstruyendo la partida {numero}…"):
-                        trazado = trazar_partida(
-                            escenario_desde_dict(resultado["escenario"]),
-                            numero, resultado["filas"][numero - 1])
-                    st.session_state["gantt_ultimo"] = (identificador, trazado)
-                except Exception as exc:
-                    st.error(f"No se pudo validar la cronología: {exc}")
-            previo = st.session_state.get("gantt_ultimo")
-            if previo is not None and previo[0] == identificador:
-                trazado = previo[1]
-                st.success("Partida reconstruida y comprobada: todos los indicadores coinciden con el motor original.")
-                nombres = " + ".join(f"{x['personaje']} #{x['id']}" for x in trazado['ganadores'])
-                st.markdown(f"**Pareja ganadora:** {nombres} · **Casamiento:** ronda {trazado['ronda_casamiento']}")
-                st.caption('**Cómo leerlo:** las barras comienzan en la primera inversión '
-                           'registrada en el proyecto concreto de Título o Pasaporte, '
-                           'y terminan cuando se adjudica ese hito. '
-                           'El rombo inicial representa la inversión y el círculo, la obtención. '
-                           'Los hitos que no tienen inicio de trabajo registrado aparecen solo '
-                           'como puntos. Una barra no significa inversión continua durante '
-                           'todas las rondas. Las pérdidas y recuperaciones conservan sus símbolos.')
-                st.plotly_chart(grafico_gantt(trazado), use_container_width=True)
-                trabajos = trazado.get('tramos_trabajo', [])
-                if trabajos:
-                    mayor = max(trabajos, key=lambda t: t['rondas_transcurridas'])
-                    st.caption(
-                        f"**Proyecto con mayor plazo registrado:** {mayor['hito']} "
-                        f"({mayor['proyecto']}): primera inversión R{mayor['ronda_inicio']} "
-                        f"→ adjudicación R{mayor['ronda_fin']} "
-                        f"({mayor['rondas_transcurridas']} rondas). "
-                        f"Primer inversor: jugador #{mayor['inversor_inicial']}. "
-                        'El plazo no implica trabajo continuo.')
-                else:
-                    st.caption('No hay proyectos adjudicados con inversión inicial '
-                               'identificable en esta cronología.')
-                with st.expander('Ver períodos de vigencia y pérdidas (detalle técnico)'):
-                    st.caption('En esta vista alternativa, cada barra indica durante cuánto tiempo '
-                               'se conservó efectivamente el hito. No representa el tiempo '
-                               'que llevó conseguirlo.')
-                    st.plotly_chart(grafico_vigencia(trazado), use_container_width=True)
-                with st.expander('Ver tabla de rondas exactas y recuperaciones'):
-                    st.dataframe(trazado["hitos"], use_container_width=True, hide_index=True)
-                st.info(trazado["advertencia"])
-                st.download_button(
-                    "Descargar cronología verificada (JSON)",
-                    data=json.dumps(trazado, ensure_ascii=False, indent=2).encode("utf-8"),
-                    mime="application/json",
-                    file_name=f"gantt_partida_{numero}_{lado.lower()}.json",
-                    key="descargar_gantt")
-
-    with paneles_detalle[1]:
-        st.subheader("5. Economía de recursos por origen, etapa y jugador")
-        st.caption("El lote completo aporta flujos agregados por fuente y recurso. "
-                   "El desglose por etapa/jugador se obtiene reejecutando una partida verificada: "
-                   "no se asignan etapas que los CSV originales no contienen.")
-        from laboratorio.economia_trazable import trazar_economia
-        from laboratorio.graficos_economia import (resumen_lote, figura_flujos,
-                                                   figura_saldos, RECURSO_NOMBRE)
-        import pandas as pd
-
-        with st.expander("Resumen de flujos del lote completo (sin desglose por etapa)"):
-            df_base = pd.DataFrame(resumen_lote(baseline['filas']))
-            df_exp = pd.DataFrame(resumen_lote(experiment['filas']))
-            if not df_base.empty and not df_exp.empty:
-                comun = df_base.merge(df_exp, on=['Recurso', 'Código', 'Fuente'],
-                                      how='outer', suffixes=(' base', ' experimento')).fillna(0)
-                comun['Diferencia'] = (comun['Fichas medias por partida experimento'] -
-                                       comun['Fichas medias por partida base']).round(3)
-                st.dataframe(comun.drop(columns='Código'), use_container_width=True,
-                             hide_index=True)
-                st.caption("Flujos brutos por partida. Inversiones, conversiones y ventas "
-                           "de Casa no son ingresos externos netos; no sumar categorías "
-                           "como si fueran beneficios independientes.")
-
-        lado_ec = lado_detalle
-        elegido_ec = elegido_detalle
-        numero_ec = numero_detalle
-        identificador_ec = json.dumps(
-            {'escenario': elegido_ec['escenario'], 'partida': numero_ec},
-            ensure_ascii=False, sort_keys=True)
-        if st.button('Reconstruir economía y auditar recursos', key='economia_reconstruir'):
-            try:
-                with st.spinner('Reconstruyendo movimientos y verificando stocks…'):
-                    detalle = trazar_economia(
-                        escenario_desde_dict(elegido_ec['escenario']), numero_ec,
-                        elegido_ec['filas'][numero_ec - 1])
-                st.session_state['economia_ultima'] = (identificador_ec, detalle)
-            except Exception as exc:
-                st.session_state.pop('economia_ultima', None)
-                st.error(f'Falló la auditoría económica: {exc}')
-        previo_ec = st.session_state.get('economia_ultima')
-        if previo_ec is not None and previo_ec[0] == identificador_ec:
-            detalle = previo_ec[1]
-            st.success('Economía verificada: movimientos, saldos y resultado coinciden con el motor.')
-            st.caption(detalle['alcance'])
-            etapas_activas = sorted({x['etapa'] for x in detalle['movimientos']})
-            f1, f2, f3 = st.columns(3)
-            with f1:
-                etapas_filtradas = st.multiselect('Etapas', etapas_activas,
-                                                  default=etapas_activas, key='economia_etapas')
-            with f2:
-                jugadores_filtrados = st.multiselect('Jugadores',
-                                                    list(range(1, detalle['jugadores'] + 1)),
-                                                    default=list(range(1, detalle['jugadores'] + 1)),
-                                                    key='economia_jugadores')
-            with f3:
-                recursos_filtrados = st.multiselect('Recursos', list(RECURSO_NOMBRE),
-                                                    default=list(RECURSO_NOMBRE),
-                                                    format_func=lambda x: RECURSO_NOMBRE[x],
-                                                    key='economia_recursos')
-            movimientos_filtrados = [e for e in detalle['movimientos']
-                                     if e['etapa'] in etapas_filtradas and
-                                     e['jugador'] in jugadores_filtrados and
-                                     e['recurso'] in recursos_filtrados]
-            st.plotly_chart(figura_flujos(movimientos_filtrados), use_container_width=True)
-            st.caption('Barras positivas: ingresos y transferencias recibidas. '
-                       'Barras negativas: pérdidas, pagos, inversiones y transferencias enviadas. '
-                       'Los cambios 2:1 del banco se registran como salida e ingreso de distintos recursos.')
-            st.markdown('**Saldos libres y reservados por etapa**')
-            st.plotly_chart(figura_saldos([
-                x for x in detalle['stock_por_etapa'] if
-                x['Etapa'] in etapas_filtradas and x['Recurso'] in recursos_filtrados
-            ]), use_container_width=True)
-            st.caption('Son medias de fotografías de fin de turno por jugador/etapa, '
-                       'no cifras de cierre ni medias por ronda.')
-            with st.expander('Movimientos individuales y auditoría'):
-                st.dataframe(pd.DataFrame(movimientos_filtrados),
-                             hide_index=True, use_container_width=True)
-                st.dataframe(pd.DataFrame(detalle['tabla_flujos']),
-                             hide_index=True, use_container_width=True)
-                st.json({'stock_final': detalle['stock_final'],
-                         'errores_conciliacion': detalle['errores_conciliacion'],
-                         'errores_motor': detalle['errores_motor']})
-            st.info(detalle['advertencia'])
-            st.download_button('Descargar auditoría económica (JSON)',
-                               data=json.dumps(detalle, ensure_ascii=False, indent=2).encode('utf-8'),
-                               file_name=f'economia_partida_{numero_ec}_{lado_ec.lower()}.json',
-                               mime='application/json', key='descargar_economia')
-        elif previo_ec is not None:
-            st.caption('La auditoría anterior corresponde a otra partida. '
-                       'Pulsá «Reconstruir economía» para analizar la selección actual.')
-
-    with paneles_detalle[2]:
-        st.subheader('6. Interacciones: Duelos, negociación, Pareja y Casa')
-        st.caption('El lote completo muestra contadores por partida. Para conocer modalidad, '
-                   'participantes, resultado, ronda y etapa, reconstruí una partida específica '
-                   'con la misma semilla y compará su resultado exacto con el motor.')
-        from laboratorio.interacciones import (resumen_lote_interacciones,
-                                               trazar_interacciones)
-        from laboratorio.graficos_interacciones import (figura_interacciones_por_tipo,
-                                                        figura_interacciones_por_ronda)
-
-        with st.expander('Interacciones agregadas de los dos escenarios'):
-            tb = pd.DataFrame(resumen_lote_interacciones(baseline['filas']))
-            te = pd.DataFrame(resumen_lote_interacciones(experiment['filas']))
-            if not tb.empty and not te.empty:
-                comp_int = tb.merge(te, on=['Métrica', 'Código'],
-                                    suffixes=(' base', ' experimento'))
-                comp_int['Diferencia media'] = (
-                    comp_int['Promedio por partida experimento'] -
-                    comp_int['Promedio por partida base']).round(3)
-                st.dataframe(comp_int.drop(columns='Código'),
-                             use_container_width=True, hide_index=True)
-                st.caption('Totales y promedios reales de los CSV; no se atribuyen '
-                           'rondas, participantes ni causas que los CSV no registran.')
-
-        lado_int = lado_detalle
-        elegido_int = elegido_detalle
-        numero_int = numero_detalle
-        marca_int = json.dumps({'escenario': elegido_int['escenario'],
-                                 'partida': numero_int}, sort_keys=True, ensure_ascii=False)
-        if st.button('Reconstruir y auditar interacciones', key='interacciones_reconstruir'):
-            try:
-                with st.spinner('Reejecutando partida y conciliando los eventos con los contadores…'):
-                    detalle_int = trazar_interacciones(
-                        escenario_desde_dict(elegido_int['escenario']), numero_int,
-                        elegido_int['filas'][numero_int - 1])
-                st.session_state['interacciones_ultimas'] = (marca_int, detalle_int)
-            except Exception as exc:
-                st.session_state.pop('interacciones_ultimas', None)
-                st.error(f'Falló la reconstrucción de interacciones: {exc}')
-        anterior_int = st.session_state.get('interacciones_ultimas')
-        if anterior_int and anterior_int[0] == marca_int:
-            detalle_int = anterior_int[1]
-            st.success('Interacciones verificadas: cada evento y los contadores coinciden con el motor.')
-            c1, c2, c3, c4 = st.columns(4)
-            c1.metric('Duelos iniciados', detalle_int['duelos'])
-            c2.metric('Retiradas', detalle_int['retiradas'])
-            c3.metric('Defensas sin perder', detalle_int['defensas_sin_perder'])
-            c4.metric('Comprobantes cedidos', detalle_int['cesiones_comprobante'])
-            st.plotly_chart(figura_interacciones_por_tipo(detalle_int), use_container_width=True)
-            st.plotly_chart(figura_interacciones_por_ronda(detalle_int), use_container_width=True)
-            a, b = st.columns(2)
-            with a:
-                st.markdown('**Resultados de Duelos**')
-                st.dataframe(pd.DataFrame(detalle_int['por_resultado']),
-                             hide_index=True, use_container_width=True)
-                st.markdown('**Modalidades de Duelo**')
-                st.dataframe(pd.DataFrame(detalle_int['por_modalidad']),
-                             hide_index=True, use_container_width=True)
-            with b:
-                st.markdown('**Duelos iniciados y recibidos por jugador**')
-                st.dataframe(pd.DataFrame(detalle_int['duelos_por_jugador']),
-                             hide_index=True, use_container_width=True)
-                st.markdown('**Interacciones por etapa**')
-                st.dataframe(pd.DataFrame(detalle_int['por_etapa']),
-                             hide_index=True, use_container_width=True)
-            eventos_int = detalle_int['eventos']
-            categorias_int = sorted({e['categoria'] for e in eventos_int})
-            filtros_int = st.multiselect('Filtrar por categorías', categorias_int,
-                                         default=categorias_int,
-                                         key='interacciones_categorias')
-            participantes_int = st.multiselect('Filtrar por participantes',
-                                               list(range(1, detalle_int['jugadores'] + 1)),
-                                               default=list(range(1, detalle_int['jugadores'] + 1)),
-                                               key='interacciones_jugadores')
-            eventos_filtrados = [e for e in eventos_int if e['categoria'] in filtros_int and
-                                any(pid in participantes_int for pid in e['participantes'])]
-            st.dataframe(pd.DataFrame([{
-                'Ronda': e['ronda'], 'Turno': e['turno'], 'Tipo': e['tipo'],
-                'Categoría': e['categoria'], 'Jugadores': ', '.join(map(str,e['participantes'])),
-                'Modalidad': e['modalidad'], 'Resultado': e['resultado'],
-                'Detalles': json.dumps(e['detalle'], ensure_ascii=False)
-            } for e in eventos_filtrados]), hide_index=True, use_container_width=True)
-            st.info(detalle_int['advertencia'])
-            st.download_button('Descargar auditoría de interacciones (JSON)',
-                               data=json.dumps(detalle_int, ensure_ascii=False, indent=2).encode('utf-8'),
-                               file_name=f'interacciones_partida_{numero_int}_{lado_int.lower()}.json',
-                               mime='application/json', key='descargar_interacciones')
-        elif anterior_int is not None:
-            st.caption('Cambiaste de partida o escenario. Reconstruí la partida para actualizar el detalle.')
-
-    with paneles_detalle[3]:
-        st.subheader('7. Actividad de turnos y oportunidades detectadas')
-        st.caption('Medición descriptiva de bots: distingue desenlaces automáticos, '
-                   'acciones ejecutadas y familias de acciones disponibles en checkpoints. '
-                   'No es una puntuación de diversión, calidad o profundidad estratégica.')
-        from laboratorio.turnos import trazar_turnos
-        from laboratorio.graficos_turnos import figura_etapas, figura_familias
-
-        lado_turno = lado_detalle
-        elegido_turno = elegido_detalle
-        numero_turno = numero_detalle
-        marca_turno = json.dumps({'escenario': elegido_turno['escenario'],
-                                   'partida': numero_turno},sort_keys=True,ensure_ascii=False)
-        if st.button('Reconstruir actividad de turnos', key='turnos_reconstruir'):
-            try:
-                with st.spinner('Auditando decisiones, eventos y checkpoints de oportunidades…'):
-                    detalle_turno = trazar_turnos(
-                        escenario_desde_dict(elegido_turno['escenario']), numero_turno,
-                        elegido_turno['filas'][numero_turno - 1])
-                    if detalle_turno['errores_auditoria'] or detalle_turno['errores_motor']:
-                        raise AssertionError(str(detalle_turno['errores_auditoria'] + detalle_turno['errores_motor']))
-                st.session_state['turnos_ultimos'] = (marca_turno, detalle_turno)
-            except Exception as exc:
-                st.session_state.pop('turnos_ultimos', None)
-                st.error(f'Falló la auditoría de turnos: {exc}')
-        previo_turno = st.session_state.get('turnos_ultimos')
-        if previo_turno is not None and previo_turno[0] == marca_turno:
-            dt = previo_turno[1]
-            st.success('Actividad validada: los contadores por decisión y el resultado coinciden con el motor.')
-            a1,a2,a3,a4 = st.columns(4)
-            a1.metric('Turnos individuales', dt['turnos'])
-            a2.metric('Con alguna decisión de bot',dt['turnos_con_decision'])
-            a3.metric('Sin decisión registrada',dt['turnos_solo_automaticos'])
-            a4.metric('Familias disponibles por turno',dt['familias_disponibles_por_turno'])
-            st.plotly_chart(figura_etapas(dt), use_container_width=True)
-            st.plotly_chart(figura_familias(dt), use_container_width=True)
-            st.caption('Cada barra compara turnos con una familia de acción disponible y '
-                       'turnos donde hubo alguna ejecución o resolución de esa familia. '
-                       'No cuenta todas las jugadas legales ni registra intentos rechazados.')
-            x1,x2=st.columns(2)
-            with x1:
-                st.markdown('**Actividad por etapa al comenzar el turno**')
-                st.dataframe(pd.DataFrame(dt['por_etapa']),hide_index=True,use_container_width=True)
-            with x2:
-                st.markdown('**Actividad por política de bot**')
-                st.dataframe(pd.DataFrame(dt['por_bot']),hide_index=True,use_container_width=True)
-            jugadores_turnos = st.multiselect('Jugadores del detalle',
-                                              list(range(1, dt['jugadores']+1)),
-                                              default=list(range(1,dt['jugadores']+1)),
-                                              key='turnos_jugadores')
-            etapas_turnos = st.multiselect('Etapas al comenzar el turno',
-                                           sorted({t['etapa_inicio'] for t in dt['turnos_detalle']}),
-                                           default=sorted({t['etapa_inicio'] for t in dt['turnos_detalle']}),
-                                           key='turnos_etapas')
-            filtrados = [t for t in dt['turnos_detalle'] if t['jugador'] in jugadores_turnos
-                         and t['etapa_inicio'] in etapas_turnos]
-            st.dataframe(pd.DataFrame([{
-                'Ronda':t['ronda'],'Turno':t['turno'],'Jugador':t['jugador'],
-                'Etapa':t['etapa_inicio'],'Bot':t['bot'],
-                'Familias disponibles':t['familias_disponibles'],
-                'Decisiones':t['decisiones_ejecutadas'],
-                'Eventos automáticos':t['eventos_automaticos'],
-                'Oportunidades':', '.join(t['oportunidades']),
-                'Acciones de bot':', '.join(t['decisiones'])
-            } for t in filtrados]),hide_index=True,use_container_width=True)
-            st.info(dt['advertencia'])
-            st.download_button('Descargar actividad de turnos (JSON)',
-                               data=json.dumps(dt,ensure_ascii=False,indent=2).encode('utf-8'),
-                               file_name=f'turnos_partida_{numero_turno}_{lado_turno.lower()}.json',
-                               mime='application/json',key='descargar_turnos')
-        elif previo_turno is not None:
-            st.caption('Cambiaste de partida o escenario. Reconstruí la actividad para actualizar el panel.')
-
+    mostrar_detalle(baseline, experiment)
 
 # Fase 6: interfaz independiente; permite explorar incluso sin correr el A/B principal.
 from laboratorio.panel_sensibilidad import mostrar as mostrar_sensibilidad
