@@ -26,6 +26,7 @@ class JuegoObservado(Game):
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
         self.instantaneas: list[dict] = []
+        self.inversiones_proyectos: list[dict] = []
         self._firma_previa = None
         self._registrar('inicio')
 
@@ -36,7 +37,9 @@ class JuegoObservado(Game):
                 'etapa': p.stage,
                 'utn': bool(p.utn),
                 'titulo': bool(p.title),
+                'titulo_proyecto': p.title_project if p.title else None,
                 'pasaporte': bool(p.passport and p.passport_kind == p.role),
+                'pasaporte_proyecto': p.passport_project if p.passport else None,
                 'pareja': p.pair,
                 'perfil': p.profile.uid if p.profile else None,
                 'afinidad': p.profile.affinity if p.profile else None,
@@ -58,6 +61,13 @@ class JuegoObservado(Game):
 
     def event(self, action, **kwargs):
         super().event(action, **kwargs)
+        if action == 'inversion' and hasattr(self, 'inversiones_proyectos'):
+            self.inversiones_proyectos.append({
+                'ronda': self.round, 'turno': self.turn,
+                'proyecto': kwargs['proyecto'], 'inversor': kwargs['inversor'],
+                'recurso': kwargs['recurso'], 'importe': kwargs['importe'],
+                'subhito': kwargs['subhito'],
+            })
         if action in EVENTOS_RELEVANTES and hasattr(self, 'instantaneas'):
             self._registrar(action)
 
@@ -132,8 +142,14 @@ def obtener_periodos(instantaneas: list[dict], ganadores: tuple[int, int],
 def _episodio(key, etiqueta, grupo, inicio, fin, jugadores):
     x0 = _ronda_decimal(inicio, jugadores)
     x1 = _ronda_decimal(fin, jugadores)
+    proyecto = None
+    if key.startswith('titulo_'):
+        proyecto = inicio['jugadores'][int(key[7:])].get('titulo_proyecto')
+    elif key.startswith('pasaporte_'):
+        proyecto = inicio['jugadores'][int(key[10:])].get('pasaporte_proyecto')
     return {
         'clave': key, 'hito': etiqueta, 'grupo': grupo,
+        'proyecto': proyecto,
         'ronda_inicio': inicio['ronda'], 'turno_inicio': inicio['turno'],
         'ronda_fin': fin['ronda'], 'turno_fin': fin['turno'],
         'x_inicio': x0, 'x_fin': max(x1, x0 + 0.06),
@@ -146,6 +162,7 @@ def construir_cronologia(juego: JuegoObservado) -> dict:
         return {
             'partida': juego.id, 'semilla': juego.seed, 'finalizada': False,
             'ganadores': [], 'ronda_casamiento': None, 'periodos': [],
+            'tramos_trabajo': [],
             'hitos': [], 'advertencia': 'Partida censurada: no existe pareja ganadora.',
             'estados_observados': len(juego.instantaneas),
         }
@@ -168,6 +185,34 @@ def construir_cronologia(juego: JuegoObservado) -> dict:
         ('casamiento', 'Casamiento', 'Final'),
     ]
     periodos = obtener_periodos(juego.instantaneas, ganadores, definiciones, len(juego.players))
+    # Inicio verificable: primera inversión registrada en EL MISMO proyecto
+    # que otorgó el Título/Pasaporte. El primer inversor puede ser otro jugador.
+    primera_inversion = {}
+    for inv in juego.inversiones_proyectos:
+        primera_inversion.setdefault(inv['proyecto'], inv)
+    trabajos = []
+    for periodo in periodos:
+        if not periodo['clave'].startswith(('titulo_', 'pasaporte_')):
+            continue
+        proyecto = periodo.get('proyecto')
+        inversion = primera_inversion.get(proyecto)
+        if inversion is None or inversion['turno'] > periodo['turno_inicio']:
+            continue
+        trabajos.append({
+            'clave': periodo['clave'], 'hito': periodo['hito'],
+            'proyecto': proyecto,
+            'ronda_inicio': inversion['ronda'],
+            'turno_inicio': inversion['turno'],
+            'ronda_fin': periodo['ronda_inicio'],
+            'turno_fin': periodo['turno_inicio'],
+            'x_inicio': _ronda_decimal(inversion, len(juego.players)),
+            'x_fin': periodo['x_inicio'],
+            'inversor_inicial': inversion['inversor'],
+            'recurso_inicial': inversion['recurso'],
+            'importe_inicial': inversion['importe'],
+            'subhito_inicial': inversion['subhito'],
+            'rondas_transcurridas': periodo['ronda_inicio'] - inversion['ronda'],
+        })
     tabla = []
     for clave, hito, grupo in definiciones:
         episodios = [x for x in periodos if x['clave'] == clave]
@@ -182,6 +227,7 @@ def construir_cronologia(juego: JuegoObservado) -> dict:
         'ganadores': [{'id': x.id, 'personaje': x.role, 'perfil_final': x.profile.uid if x.profile else None,
                        'afinidad_final': x.profile.affinity if x.profile else None} for x in (p,q)],
         'ronda_casamiento': juego.round, 'periodos': periodos, 'hitos': tabla,
+        'tramos_trabajo': trabajos,
         'advertencia': ('La cronología registra cambios observables tras los eventos importantes y al finalizar cada turno. '
                          'Los hitos que se pierden y recuperan aparecen como intervalos separados. '
                          'Los indicadores históricos «primera vez» pueden diferir del estado vigente al casarse.'),
