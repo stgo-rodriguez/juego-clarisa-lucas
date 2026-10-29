@@ -61,8 +61,14 @@ El panel ejecuta dos escenarios con semillas apareadas y permite descargar datos
 Después de ejecutar los escenarios, abrí **Detalle de una partida · selección
 común** y elegí **Base o Experimento** y la **partida** una sola vez. Las cuatro
 pestañas —Cronología, Economía, Interacciones y Actividad de turnos— usan esa
-misma selección. La cronología se reconstruye y verifica automáticamente;
-las auditorías detalladas de las otras pestañas permanecen a demanda.
+misma selección. **Los cuatro análisis se reconstruyen y verifican
+automáticamente** al cambiar escenario o partida. Se reutilizan cuando
+la selección no cambia; no hay botones de reconstrucción.
+
+**Pantalla de análisis** abre una vista ampliada que oculta formularios y
+resúmenes generales. El selector se mantiene visible al recorrer gráficos
+y se puede volver al laboratorio con el botón correspondiente. No es
+necesario activar el modo de pantalla completa del navegador.
 Las partidas censuradas también son seleccionables, aunque no tienen pareja
 ganadora para el Gantt.
 
