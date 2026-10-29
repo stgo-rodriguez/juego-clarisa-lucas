@@ -533,3 +533,7 @@ else:
                            mime='application/json',key='descargar_turnos')
     elif previo_turno is not None:
         st.caption('Cambiaste de partida o escenario. Reconstruí la actividad para actualizar el panel.')
+
+# Fase 6: interfaz independiente; permite explorar incluso sin correr el A/B principal.
+from laboratorio.panel_sensibilidad import mostrar as mostrar_sensibilidad
+mostrar_sensibilidad(st, correr, ROOT)

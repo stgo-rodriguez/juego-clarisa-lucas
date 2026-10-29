@@ -1,4 +1,4 @@
-# Laboratorio de Balance de Clarisa & Lucas (fases 1–2)
+# Laboratorio de Balance de Clarisa & Lucas (fases 1–6)
 
 Branch independiente; no modificar `index.html`, `README.md` ni `.github/workflows/pages.yml`.
 
@@ -114,3 +114,26 @@ Los ZIP tienen límites de tamaño y validación de rutas e integridad, pero los
 no son firmas criptográficas de procedencia. No cargues archivos de origen dudoso.
 
 Especificación y pruebas: `docs/FASE5_HISTORIAL.md` y `tests/test_historial_fase5.py`.
+
+### Fase 6 — Análisis de sensibilidad e incertidumbre
+
+La sección **«8. Sensibilidad e incertidumbre»** se puede utilizar sin ejecutar
+antes el comparador básico. Elegí dos variables económicas distintas, 1–5
+valores por eje (0/100% para casilleros de Juventud y Adultez), política de
+bots, cantidad de jugadores, semilla y cantidad de partidas. La matriz ejecuta
+un máximo de **3.000 partidas** con semillas comunes y caché por configuración.
+
+El mapa de calor muestra la **diferencia media de rondas observadas hasta el
+horizonte**, y una tabla detalla IC95 bootstrap apareados, censura, tasa de
+finalización y métricas de las partidas concluidas. Si hay partidas censuradas,
+la duración observable NO es una estimación de la duración final esperada.
+
+Podés **descargar el ZIP** de la matriz, guardarlo en
+`.laboratorio/sensibilidad/` (excluido por Git), o importarlo/recuperarlo sin
+volver a simular. Los archivos conservan métricas agregadas, configuraciones,
+huellas de motor y mazo y SHA-256 de integridad; no incluyen partidas/eventos
+individuales para evitar grandes tamaños. No se calculan correcciones por
+comparaciones múltiples ni se infiere diversión humana.
+
+Documentación técnica: `docs/FASE6_SENSIBILIDAD.md`. Ejemplo reproducible:
+`docs/DIAGNOSTICO_SENSIBILIDAD_FASE6.json`.
