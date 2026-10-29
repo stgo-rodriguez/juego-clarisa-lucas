@@ -49,7 +49,12 @@ cd ~/Documents/juego-clarisa-lucas
 1. En **Configuración común**, elegí **6 jugadores / 20 partidas** para la primera prueba. Mantené la semilla inicial original y las condiciones económicas al 100%.
 2. Pulsá **Ejecutar y comparar escenarios**. Base y experimento idénticos deben producir diferencia cero.
 3. Modificá **Ganancias por cartas = 90%** y **Pérdidas por cartas = 110%**; volvé a ejecutar. Interpretá con cuidado censura e incertidumbre.
-4. En **Detalle de una partida · selección común**, elegí una sola vez **Base o Experimento** y la **partida**. Las pestañas **Cronología**, **Economía**, **Interacciones** y **Actividad de turnos** utilizan siempre esa selección. Los cuatro análisis se actualizan automáticamente al cambiar de partida y se verifican contra el motor. Usá **Pantalla de análisis** para disponer del selector fijo y las cuatro solapas sin tener que subir y bajar hasta la configuración; **Volver al laboratorio** restaura la pantalla general. Las partidas no concluidas no tienen Gantt de pareja ganadora, pero sí se pueden auditar en otros módulos.
+4. En **Detalle de una partida · selección común**, elegí una sola vez **Base o Experimento** y la **partida**. Las pestañas **Cronología**, **Economía**, **Interacciones** y **Actividad de turnos** utilizan siempre esa selección. Los cuatro análisis se actualizan automáticamente al cambiar de partida y se verifican contra el motor. Usá **Pantalla de análisis** para abrir el tablero de vista completa, con
+encabezado flotante y selectores siempre a mano. El gráfico ocupa el espacio
+principal y solo cada solapa tiene desplazamiento propio. **Salir de pantalla
+de análisis** restaura la pantalla general. Si usás el botón de pantalla
+completa nativo de Plotly, los selectores no aparecerán, por eso el tablero
+ampliado es la opción recomendada. Las partidas no concluidas no tienen Gantt de pareja ganadora, pero sí se pueden auditar en otros módulos.
 5. **Historial de experimentos (Fase 5)**: guardá las comparaciones en tu Mac, importá antiguos ZIP o recuperá dos experimentos para compararlos sin volver a simular.
 6. **Sensibilidad e incertidumbre (Fase 6)**: elegí dos parámetros y una cuadrícula. Usá pocas partidas para explorar; ampliá únicamente los escenarios prometedores. Límite de 3.000 partidas presupuestadas por matriz.
 
