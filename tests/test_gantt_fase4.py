@@ -277,8 +277,10 @@ class TestSelectorCompartido(unittest.TestCase):
         next(x for x in app.radio if x.label == 'Escenario de la partida').set_value('Experimento').run(timeout=120)
         self.assertFalse(app.exception, str(app.exception))
         self.assertEqual(app.session_state['gantt_ultimo'][1]['partida'], 4)
-        self.assertNotEqual(app.session_state['gantt_ultimo'][0],
-                            app.session_state['economia_ultima'][0])
+        self.assertEqual(app.session_state['gantt_ultimo'][0],
+                         app.session_state['economia_ultima'][0])
+        self.assertEqual(app.session_state['interacciones_ultimas'][0],
+                         app.session_state['turnos_ultimos'][0])
 
 
 if __name__ == '__main__': unittest.main()
