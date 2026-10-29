@@ -65,3 +65,12 @@ los dos integrantes ganadores, separa primera consecución de hito vigente
 y reconstruye pérdidas y recuperaciones. Comprueba igualdad de `summary()`
 por semilla antes de mostrarlo. Más información:
 `docs/FASE4_1_GANTT.md`.
+
+### Fase 4.2 — Economía de recursos
+
+En la aplicación, tras ejecutar escenarios, la sección **5. Economía de recursos**
+permite comparar flujos medios del lote sin atribución ficticia de etapas,
+seleccionar una partida, reconstruir su economía con el mismo motor y consultar:
+entradas, pagos, inversiones, pérdidas, transferencias, stock libre y reservas.
+La auditoría incluye exportación JSON y verificación de todos los movimientos
+por jugador y recurso. Más detalles en `docs/FASE4_2_ECONOMIA.md`.
