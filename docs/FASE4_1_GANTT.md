@@ -21,10 +21,16 @@ grupo "Casa" distingue adquisición inicial, pérdidas y recuperación final;
 - `laboratorio/trazabilidad.py` define `JuegoObservado`, que extiende el
   **adaptador** y registra estados después de eventos significativos y tras
   cada turno; se registra el estado anterior al primer turno. No consume RNG.
-- La **vista principal** es una cronología de eventos: círculo en la ronda/turno
-  de primera obtención, rombo hueco al recuperar y cruz roja en cada pérdida
-  observable. Se distinguen claramente los tres logros de Clarisa, los de Lucas
-  y los hitos de pareja. Los rótulos `R#` indican la ronda del logro.
+- La **vista principal** es una cronología con Gantt de inversiones verificables.
+  En Título y Pasaporte la barra comienza en la **primera inversión registrada
+  en el proyecto concreto que terminó adjudicándose** y termina en el hito.
+  Los proyectos pueden financiarse entre jugadores: se registra quién realizó
+  esa primera inversión, aunque no sea la persona finalmente adjudicataria.
+  El círculo señala la primera obtención, el rombo hueco una recuperación y
+  la cruz roja una pérdida. Una recuperación del mismo proyecto no reinicia
+  su período de inversión. Las demás filas muestran hitos puntuales cuando
+  no existe un evento de inicio de trabajo verificable. Las barras **no**
+  conectan hitos sucesivos ni indican que hubo trabajo continuo entre fechas.
 - La **vista secundaria desplegable** conserva los períodos reales de tenencia;
   sus barras no son la duración que tomó obtener el hito. Se separan pérdidas y
   recuperaciones, incluso en una misma ronda, usando el orden de turnos.
@@ -48,7 +54,7 @@ grupo "Casa" distingue adquisición inicial, pérdidas y recuperación final;
 ## Archivos añadidos
 
 - `laboratorio/trazabilidad.py` — observador y reconstrucción de períodos.
-- `laboratorio/gantt.py` — cronología principal de marcadores y Gantt técnico opcional.
+- `laboratorio/gantt.py` — cronología principal con barras de primera inversión a adjudicación y Gantt de vigencia opcional.
 - `tests/test_gantt_fase4.py` — regresión, pérdidas y recuperaciones, censura,
   RNG invariante, pares de ganadores y prueba de interfaz en CI.
 - `laboratorio/app.py` — sección de selección, gráfico, tabla, exportación.
