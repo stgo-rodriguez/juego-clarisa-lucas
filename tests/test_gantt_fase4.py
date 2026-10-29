@@ -185,17 +185,26 @@ class TestStreamlitGantt(unittest.TestCase):
         self.assertTrue(any('Cronología de hitos' in s.value for s in app.subheader))
         self.assertFalse(any(b.label == 'Ver cronología y verificar partida' for b in app.button))
         self.assertGreaterEqual(len(app.success), 1)
+        self.assertEqual(
+            len([x for x in app.radio if x.label == 'Escenario de la partida']), 1)
+        self.assertEqual(
+            len([x for x in app.selectbox if x.label == 'Partida seleccionada']), 1)
+        self.assertFalse(any(x.label.startswith('Escenario de interacciones')
+                             for x in app.radio))
+        self.assertFalse(any(x.label.startswith('Partida para auditar')
+                             for x in app.selectbox))
+        self.assertEqual(len(app.tabs), 4)
         primer = app.session_state['gantt_ultimo']
         self.assertEqual(primer[1]['partida'], 1)
         # Cambiar de partida debe reconstruirla sin clic adicional.
-        selector = next(x for x in app.selectbox if x.label == 'Partida concluida')
+        selector = next(x for x in app.selectbox if x.label == 'Partida seleccionada')
         selector.set_value(2).run(timeout=120)
         self.assertFalse(app.exception, str(app.exception))
         segundo = app.session_state['gantt_ultimo']
         self.assertEqual(segundo[1]['partida'], 2)
         self.assertNotEqual(primer[0], segundo[0])
         # Cambiar de escenario también reconstruye, aunque conserve número.
-        escenario = next(x for x in app.radio if x.label == 'Escenario del Gantt')
+        escenario = next(x for x in app.radio if x.label == 'Escenario de la partida')
         escenario.set_value('Experimento').run(timeout=120)
         self.assertFalse(app.exception, str(app.exception))
         tercero = app.session_state['gantt_ultimo']
