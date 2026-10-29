@@ -233,7 +233,7 @@ class TestSelectorCompartido(unittest.TestCase):
         self.assertIn('position: fixed !important', estilos)
         self.assertIn('data-baseweb="tab-panel"', estilos)
         self.assertIn('overflow-y: auto !important', estilos)
-        self.assertIn('flex: 1 1 0 !important', estilos)
+        self.assertIn('position: absolute !important', estilos)
         self.assertIn('height: auto !important', estilos)
         self.assertIn('max-height: none !important', estilos)
         self.assertIn('100dvh', estilos)
