@@ -1,0 +1,12 @@
+# Configuración conservadora para ejecución LOCAL.
+# Si se decide desplegar en servidor externo, requiere revisar explícitamente
+# la dirección de escucha, autenticación, permisos, historial y límites de cómputo.
+[server]
+address = "127.0.0.1"
+port = 8501
+enableXsrfProtection = true
+enableCORS = true
+maxUploadSize = 24
+
+[browser]
+gatherUsageStats = false

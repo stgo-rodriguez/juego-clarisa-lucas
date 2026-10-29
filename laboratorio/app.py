@@ -1,4 +1,4 @@
-"""Interfaz local del Laboratorio de Balance v1.3 (Fase 3).
+"""Interfaz local del Laboratorio de Balance v1.3 (fases 0–7).
 
 Iniciar desde la raíz del repositorio:
   streamlit run laboratorio/app.py
@@ -46,9 +46,25 @@ def correr(config: ScenarioConfig) -> dict:
 
 
 st.title("Laboratorio de Balance · Clarisa & Lucas")
-st.caption("Prototipo local · Fase 3 · Reglamentación v1.3 consolidada")
+st.caption("Versión local estabilizada · Laboratorio fases 0–7 · Reglamento v1.3")
 st.info("Se preservan las reglas, los costos de hitos y los bots auditados. "
         "Los resultados estiman el comportamiento de los bots, no la duración real ni la diversión humana.")
+with st.expander("Guía rápida, alcance y privacidad", expanded=False):
+    st.markdown("""**Primera prueba:** elegí 6 jugadores, 20 partidas y pulsá
+    **Ejecutar y comparar escenarios**. Revisá el resultado y luego la cronología,
+    economía, interacciones y actividad de una partida. Para comparar muchos
+    escenarios usá **8. Sensibilidad e incertidumbre**.
+
+    **Guardado:** descargá un ZIP o guardá el experimento en el historial local.
+    El historial no se sincroniza con GitHub; conservá tus ZIP de respaldo.
+
+    **Interpretación:** las estimaciones corresponden a bots y semillas simuladas.
+    No representan por sí solas diversión ni comportamiento humano.
+
+    **Privacidad:** esta instalación escucha solo en `127.0.0.1`.
+    No expongas la aplicación en internet sin revisar autenticación, recursos
+    de ejecución y almacenamiento. Para actualizar o resolver problemas,
+    consultá `docs/GUIA_USUARIO.md` y ejecutá `python -m laboratorio.diagnostico`.""")
 
 with st.form("ajustes"):
     st.subheader("1. Configuración común de la simulación")
