@@ -151,8 +151,8 @@ class TestStreamlitInteracciones(unittest.TestCase):
         app.button[0].click().run(timeout=120)
         self.assertFalse(app.exception, str(app.exception))
         self.assertTrue(any('Interacciones' in x.value for x in app.subheader))
-        boton = next(b for b in app.button if 'Reconstruir y auditar interacciones' in b.label)
-        boton.click().run(timeout=120)
+        self.assertFalse(any('Reconstruir y auditar interacciones' in b.label
+                             for b in app.button))
         self.assertFalse(app.exception, str(app.exception))
         self.assertTrue(any('Interacciones verificadas' in x.value for x in app.success))
 
