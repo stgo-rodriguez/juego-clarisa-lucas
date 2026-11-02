@@ -126,8 +126,7 @@ def run_game(n:int,seed:int,policy:str,max_rounds:int=120,hand_size:int=3,
         'adult_moves':adult_moves,
         'adult_hand_renewals':sum(e['action']=='hand_renewed' for e in engine.events),
         'first_pair_wins':first_pair is not None and eco.married==first_pair,
-        'profile_activations':sum(e.get('source') in ('vuelta_juventud','caida_perfil_adultez','colocacion_inicial_dublin')
-                                  for e in eco.events if e['action']=='issue'),
+        'profile_activations':economic['profile_activation'],
         'marriage_eligible_ever':eco.married is not None,
         'synthetic_cards':True,
     }
