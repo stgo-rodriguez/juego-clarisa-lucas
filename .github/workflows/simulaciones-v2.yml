@@ -1,4 +1,4 @@
-name: Simulaciones v2 - Fases 1 a 8
+name: Simulaciones v2 - Fases 1 a 9
 on:
   push:
     branches:
@@ -14,6 +14,9 @@ on:
       - 'laboratorio/sensibilidad_v2.py'
       - 'laboratorio/consolidar_sensibilidad_v2.py'
       - 'tests/test_sensibilidad_v2.py'
+      - 'tests/test_fase9_v2.py'
+      - 'laboratorio/factorial_v2.py'
+      - 'laboratorio/rupturas_v2.py'
       - 'tests/test_movimiento_v2.py'
       - 'tests/test_turnos_v2.py'
       - 'tests/test_economia_v2.py'
@@ -44,7 +47,7 @@ jobs:
         with:
           python-version: ${{ matrix.python-version }}
       - name: Sintaxis del motor y pruebas v2
-        run: python -m compileall -q simulador/movimiento_v2.py simulador/turnos_v2.py tests/test_movimiento_v2.py tests/test_turnos_v2.py tests/test_economia_v2.py simulador/economia_v2.py simulador/transiciones_v2.py tests/test_transiciones_v2.py laboratorio/smoke_transiciones_v2.py laboratorio/comparar_dublin_v2.py simulador/agentes_v2.py laboratorio/experimento_agentes_v2.py tests/test_agentes_v2.py simulador/interacciones_v2.py laboratorio/experimento_interacciones_v2.py tests/test_interacciones_v2.py simulador/competencia_v2.py laboratorio/experimento_competencia_v2.py tests/test_competencia_v2.py laboratorio/sensibilidad_v2.py laboratorio/consolidar_sensibilidad_v2.py tests/test_sensibilidad_v2.py
+        run: python -m compileall -q simulador/movimiento_v2.py simulador/turnos_v2.py tests/test_movimiento_v2.py tests/test_turnos_v2.py tests/test_economia_v2.py simulador/economia_v2.py simulador/transiciones_v2.py tests/test_transiciones_v2.py laboratorio/smoke_transiciones_v2.py laboratorio/comparar_dublin_v2.py simulador/agentes_v2.py laboratorio/experimento_agentes_v2.py tests/test_agentes_v2.py simulador/interacciones_v2.py laboratorio/experimento_interacciones_v2.py tests/test_interacciones_v2.py simulador/competencia_v2.py laboratorio/experimento_competencia_v2.py tests/test_competencia_v2.py laboratorio/sensibilidad_v2.py laboratorio/consolidar_sensibilidad_v2.py tests/test_sensibilidad_v2.py tests/test_fase9_v2.py laboratorio/factorial_v2.py laboratorio/rupturas_v2.py
       - name: Pruebas geométricas v2
         run: python -m unittest discover -s tests -p 'test_movimiento_v2.py' -v
       - name: Pruebas de orquestador v2
@@ -77,3 +80,9 @@ jobs:
         run: python -m unittest discover -s tests -p 'test_sensibilidad_v2.py' -v
       - name: Comparar escenarios pareados (smoke 2 semillas, ambas políticas)
         run: python -m laboratorio.sensibilidad_v2 --semillas 2 --rondas 100 --ambos-agentes --out resultados/fase8_ci
+      - name: Factorial 2^3 y rupturas juveniles (Fase 9)
+        run: python -m unittest discover -s tests -p 'test_fase9_v2.py' -v
+      - name: Smoke factorial 2 semillas x 2 mesas x 2 agentes x competencia
+        run: python -m laboratorio.factorial_v2 --semillas 2 --rondas 60 --out resultados/fase9_factorial_ci
+      - name: Smoke reservas juveniles con ayuda y ruptura
+        run: python -m laboratorio.rupturas_v2 --semillas 2 --rondas 60 --out resultados/fase9_reservas_ci
