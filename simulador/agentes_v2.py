@@ -187,6 +187,12 @@ class GameAgent:
         else:
             take=self.rng.choice(('hidden','visible')) if visible is not None else 'hidden'
             discard=self.rng.choice(('hidden','visible'))
+        # Elegir únicamente fuentes existentes: en escenarios lentos el mazo
+        # tapado de Perfil puede agotarse, sin que eso autorice cartas nuevas.
+        if take == 'hidden' and not self.profiles.decks[p.role].can_draw(1):
+            if visible is None:
+                return
+            take='visible'
         card=self.profiles.change(self.eco,p,self.engine.round_no,take=take,discard=discard)
         self._event(p,'profile_change',card=card.id,take=take,matching=(card.affinity==mate.affinity))
 
