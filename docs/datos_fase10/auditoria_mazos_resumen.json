@@ -1,0 +1,18 @@
+{
+  "total": 126,
+  "por_mazo": {
+    "Infancia/Clarisa": 24,
+    "Infancia/Lucas": 24,
+    "Juventud/Clarisa": 24,
+    "Juventud/Lucas": 24,
+    "Adultez/Clarisa": 15,
+    "Adultez/Lucas": 15
+  },
+  "familia_adulta": {
+    "Decisión individual": 6,
+    "Conflicto entre versiones": 10,
+    "Cooperación entre versiones": 6,
+    "Subasta de apropiación": 8
+  },
+  "maquina_de_estados": "PROPUESTAS_NO_APROBADAS"
+}
