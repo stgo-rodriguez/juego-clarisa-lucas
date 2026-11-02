@@ -104,6 +104,13 @@ class CardPool(Generic[T]):
             raise ValueError('Solo puede descartarse una carta realmente retenida')
         self._discard.append(card)
 
+    def return_to_bottom(self, card: T) -> None:
+        """Devuelve carta retenida al fondo del mazo oculto (mercado de Perfil)."""
+        held = self._held.pop(card.id, None)
+        if held is None or held != card:
+            raise ValueError('Solo se devuelve una carta física retenida')
+        self._deck.insert(0, card)
+
     def assert_conservation(self) -> None:
         ids = [c.id for c in self._deck] + [c.id for c in self._discard] + list(self._held)
         if len(ids) != len(set(ids)) or set(ids) != self._all_ids:
@@ -193,7 +200,8 @@ class RoundEngine:
         self.youth_deck = youth_deck
         self.adult_deck = adult_deck
         self.hand_size = hand_size
-        self.dublin_policy = dublin_policy  # Ambas variantes son experimentales.        self.rng_dice = rng_dice or random.Random(1)
+        self.dublin_policy = dublin_policy  # Ambas variantes son experimentales.
+        self.rng_dice = rng_dice or random.Random(1)
         self.hooks = hooks or RuleHooks()
         self.round_no = 0
         self._cohort: set[tuple[Stage, str]] = set()
