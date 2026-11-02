@@ -1,0 +1,159 @@
+{
+  "advertencia": "Escenarios y mazos SINTÉTICOS; pujas y elegibilidad de cartas EXPERIMENTALES, NO balance oficial.",
+  "semillas": 40,
+  "rondas_max": 80,
+  "mano": 3,
+  "partidas": 320,
+  "resultados": [
+    {
+      "jugadores": 6,
+      "politica": "aleatorio",
+      "competencia": false,
+      "partidas": 40,
+      "casamientos": 40,
+      "rondas_medias": 32.58,
+      "subastas_medias": 30.62,
+      "adjudicadas_medias": 0.0,
+      "ofertas_medias": 0.0,
+      "duelos_medios": 0.0,
+      "transferencias_casa_medias": 0.28,
+      "rupturas_medias": 0.0
+    },
+    {
+      "jugadores": 6,
+      "politica": "aleatorio",
+      "competencia": true,
+      "partidas": 40,
+      "casamientos": 40,
+      "rondas_medias": 33.08,
+      "subastas_medias": 31.9,
+      "adjudicadas_medias": 31.8,
+      "ofertas_medias": 96.22,
+      "duelos_medios": 24.98,
+      "transferencias_casa_medias": 0.15,
+      "rupturas_medias": 0.0
+    },
+    {
+      "jugadores": 6,
+      "politica": "planificador",
+      "competencia": false,
+      "partidas": 40,
+      "casamientos": 40,
+      "rondas_medias": 13.0,
+      "subastas_medias": 6.88,
+      "adjudicadas_medias": 0.0,
+      "ofertas_medias": 0.0,
+      "duelos_medios": 0.0,
+      "transferencias_casa_medias": 1.6,
+      "rupturas_medias": 0.0
+    },
+    {
+      "jugadores": 6,
+      "politica": "planificador",
+      "competencia": true,
+      "partidas": 40,
+      "casamientos": 40,
+      "rondas_medias": 13.0,
+      "subastas_medias": 6.9,
+      "adjudicadas_medias": 6.9,
+      "ofertas_medias": 26.07,
+      "duelos_medios": 7.25,
+      "transferencias_casa_medias": 1.73,
+      "rupturas_medias": 0.0
+    },
+    {
+      "jugadores": 10,
+      "politica": "aleatorio",
+      "competencia": false,
+      "partidas": 40,
+      "casamientos": 40,
+      "rondas_medias": 27.88,
+      "subastas_medias": 41.83,
+      "adjudicadas_medias": 0.0,
+      "ofertas_medias": 0.0,
+      "duelos_medios": 0.0,
+      "transferencias_casa_medias": 0.3,
+      "rupturas_medias": 0.0
+    },
+    {
+      "jugadores": 10,
+      "politica": "aleatorio",
+      "competencia": true,
+      "partidas": 40,
+      "casamientos": 40,
+      "rondas_medias": 27.6,
+      "subastas_medias": 37.58,
+      "adjudicadas_medias": 37.58,
+      "ofertas_medias": 225.0,
+      "duelos_medios": 67.62,
+      "transferencias_casa_medias": 0.2,
+      "rupturas_medias": 0.0
+    },
+    {
+      "jugadores": 10,
+      "politica": "planificador",
+      "competencia": false,
+      "partidas": 40,
+      "casamientos": 40,
+      "rondas_medias": 12.45,
+      "subastas_medias": 10.4,
+      "adjudicadas_medias": 0.0,
+      "ofertas_medias": 0.0,
+      "duelos_medios": 0.0,
+      "transferencias_casa_medias": 3.05,
+      "rupturas_medias": 0.0
+    },
+    {
+      "jugadores": 10,
+      "politica": "planificador",
+      "competencia": true,
+      "partidas": 40,
+      "casamientos": 40,
+      "rondas_medias": 12.43,
+      "subastas_medias": 11.38,
+      "adjudicadas_medias": 11.38,
+      "ofertas_medias": 84.88,
+      "duelos_medios": 19.82,
+      "transferencias_casa_medias": 3.73,
+      "rupturas_medias": 0.0
+    }
+  ],
+  "diferencias_pareadas": [
+    {
+      "jugadores": 6,
+      "politica": "aleatorio",
+      "semillas": 40,
+      "delta_rondas_con_menos_sin": 0.5,
+      "competencia_mas_rapida": 13,
+      "competencia_mas_lenta": 10,
+      "sin_cambio": 17
+    },
+    {
+      "jugadores": 6,
+      "politica": "planificador",
+      "semillas": 40,
+      "delta_rondas_con_menos_sin": 0.0,
+      "competencia_mas_rapida": 11,
+      "competencia_mas_lenta": 9,
+      "sin_cambio": 20
+    },
+    {
+      "jugadores": 10,
+      "politica": "aleatorio",
+      "semillas": 40,
+      "delta_rondas_con_menos_sin": -0.275,
+      "competencia_mas_rapida": 20,
+      "competencia_mas_lenta": 19,
+      "sin_cambio": 1
+    },
+    {
+      "jugadores": 10,
+      "politica": "planificador",
+      "semillas": 40,
+      "delta_rondas_con_menos_sin": -0.025,
+      "competencia_mas_rapida": 14,
+      "competencia_mas_lenta": 12,
+      "sin_cambio": 14
+    }
+  ]
+}
