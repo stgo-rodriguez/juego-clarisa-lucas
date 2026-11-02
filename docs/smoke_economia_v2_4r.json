@@ -1,0 +1,106 @@
+[
+  {
+    "stage": "Juventud",
+    "players": 6,
+    "rounds": 4,
+    "turns": 24,
+    "situations_resolved": 24,
+    "resources_issued": {
+      "A": 21,
+      "P": 47,
+      "K": 52,
+      "M": 29
+    },
+    "resources_burned": {
+      "A": 0,
+      "P": 0,
+      "K": 0,
+      "M": 0
+    },
+    "profile_activations": 49,
+    "experimental_assumptions": [
+      "Situaciones neutras",
+      "Ingresos casilleros adultos=2 por recurso",
+      "Cartas adultas sintéticas",
+      "Bots geométricos no estratégicos"
+    ]
+  },
+  {
+    "stage": "Juventud",
+    "players": 10,
+    "rounds": 4,
+    "turns": 40,
+    "situations_resolved": 40,
+    "resources_issued": {
+      "A": 31,
+      "P": 84,
+      "K": 77,
+      "M": 43
+    },
+    "resources_burned": {
+      "A": 0,
+      "P": 0,
+      "K": 0,
+      "M": 0
+    },
+    "profile_activations": 73,
+    "experimental_assumptions": [
+      "Situaciones neutras",
+      "Ingresos casilleros adultos=2 por recurso",
+      "Cartas adultas sintéticas",
+      "Bots geométricos no estratégicos"
+    ]
+  },
+  {
+    "stage": "Adultez",
+    "players": 6,
+    "rounds": 4,
+    "turns": 24,
+    "situations_resolved": 24,
+    "resources_issued": {
+      "A": 1,
+      "P": 1,
+      "K": 1,
+      "M": 3
+    },
+    "resources_burned": {
+      "A": 0,
+      "P": 0,
+      "K": 0,
+      "M": 0
+    },
+    "profile_activations": 0,
+    "experimental_assumptions": [
+      "Situaciones neutras",
+      "Ingresos casilleros adultos=2 por recurso",
+      "Cartas adultas sintéticas",
+      "Bots geométricos no estratégicos"
+    ]
+  },
+  {
+    "stage": "Adultez",
+    "players": 10,
+    "rounds": 4,
+    "turns": 40,
+    "situations_resolved": 40,
+    "resources_issued": {
+      "A": 4,
+      "P": 3,
+      "K": 3,
+      "M": 8
+    },
+    "resources_burned": {
+      "A": 0,
+      "P": 0,
+      "K": 0,
+      "M": 0
+    },
+    "profile_activations": 0,
+    "experimental_assumptions": [
+      "Situaciones neutras",
+      "Ingresos casilleros adultos=2 por recurso",
+      "Cartas adultas sintéticas",
+      "Bots geométricos no estratégicos"
+    ]
+  }
+]
