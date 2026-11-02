@@ -1,4 +1,4 @@
-name: Simulaciones v2 - Fase 2
+name: Simulaciones v2 - Fases 1 a 3
 on:
   push:
     branches:
