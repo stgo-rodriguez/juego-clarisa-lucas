@@ -173,5 +173,6 @@
       "mean_house_transfers": 1.57,
       "hand_size": 4
     }
-  ]
+  ],
+  "metric_note": "profile_activations es número real de cobros de Perfil por jugador (un evento por activación), no número de recursos emitidos."
 }
