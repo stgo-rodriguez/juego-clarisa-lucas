@@ -194,6 +194,7 @@ class EconomyV2:
             raise PendingRuleError('Jugador sin Perfil asignado (UTN/mercado pendientes)')
         for r,n in zip(RESOURCES,production):
             if n:self.issue(pid,r,n,reason)
+        self.events.append(dict(action='profile_activation',player=pid,source=reason))
 
     def on_step(self, engine: RoundEngine, p: PlayerState, pos: int, last: bool):
         if p.stage == Stage.INFANCIA:
