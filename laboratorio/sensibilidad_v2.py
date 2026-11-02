@@ -100,7 +100,7 @@ def synthetic_decks(seed: int, scenario: StressScenario):
                 adjusted_appropriable = min(
                     max(1,thin(appropriable,scenario.situation_yield,seed,card_id,'auction-part')),
                     adjusted_total)
-                # All scales tested are >=0.8. Test value validity before creating.
+                # Fases 8-9 incluyen escalas inferiores a 0.8; mantener beneficio legal.
                 if adjusted_total < 1 or adjusted_appropriable < 1:
                     raise ValueError('Subasta experimental reducida a beneficio sin apropiación')
                 payload = AuctionCard(f'AUC-{role}-{i}', resource, adjusted_total,
@@ -159,11 +159,14 @@ class StressEconomyV2(EconomyV2):
 
 def run_game(size: int, seed: int, policy: str, competition: bool,
              scenario: StressScenario, *, rounds: int=100, hand_size: int=3,
-             with_events: bool=False) -> dict:
+             with_events: bool=False,
+             youth_reserve_loss_rate: float=0.0, youth_reserve_loss_amount: int=5) -> dict:
     if size not in (6,10) or policy not in ('planificador','aleatorio'):
         raise ValueError('Tamaño o agente inválido')
     if rounds < 1 or hand_size not in (3,4):
         raise ValueError('Rondas o mano inválidas')
+    if not (0<=youth_reserve_loss_rate<=1) or type(youth_reserve_loss_amount) is not int or not 1<=youth_reserve_loss_amount<=5:
+        raise ValueError('Intervención de reserva experimental inválida')
     players=[PlayerState(i+1,'Clarisa' if i<size//2 else 'Lucas') for i in range(size)]
     eco=StressEconomyV2(players, scenario=EconomyScenario(
         adult_square_amounts=dict.fromkeys('APKM',scenario.adult_square_amount),neutral_situations=False),
@@ -185,6 +188,9 @@ def run_game(size: int, seed: int, policy: str, competition: bool,
     controller=CompetitiveController(engine,eco,agent,interactions,auctions,
          CompetitionConfig(enabled=competition,youth_return_pos=None),seed*97+66)
     real_losses=0
+    reserve_events=0
+    reserve_repairs=0
+    reserve_breaks=0
 
     def normal_effect(e,p,card,letter):
         nonlocal real_losses
@@ -198,8 +204,20 @@ def run_game(size: int, seed: int, policy: str, competition: bool,
                 real_losses+=spent
 
     def resolve(e,p,card,letter):
-        nonlocal real_losses
+        nonlocal real_losses, reserve_events, reserve_repairs, reserve_breaks
         controller.resolve_social_situation(e,p,card,normal_effect,letter)
+        # Fixture de Fase 9: ataque DIRECTO a reserva de pareja desde una
+        # Situación juvenil ANTES de mover. Juventud evita la política aún
+        # pendiente de regreso desde Adultez. La ayuda legal se mantiene.
+        if (youth_reserve_loss_rate and p.stage == Stage.JUVENTUD and
+                p.partner_id is not None and
+                _u01('v2-9', seed, engine.round_no, p.id, card.id) < youth_reserve_loss_rate):
+            amount=min(youth_reserve_loss_amount,eco.accounts[p.id].pair_a)
+            if amount:
+                reserve_events+=1
+                survived=interactions.affect_pair_reserve(p.id,amount,allow_partner_help=True)
+                if survived: reserve_repairs+=1
+                else: reserve_breaks+=1
         if card.id in extra_losses:
             resource, requested=extra_losses[card.id]
             spent=min(requested,eco.accounts[p.id].free[resource])
@@ -279,6 +297,9 @@ def run_game(size: int, seed: int, policy: str, competition: bool,
         'auctions_awarded':auction_counts['awarded'],
         'free_resources_lost':real_losses,
         'pair_breaks':sum(e['action']=='pair_broken' for e in eco.events),
+        'youth_reserve_loss_rate_experimental':youth_reserve_loss_rate,
+        'reserve_events':reserve_events,'reserve_repairs':reserve_repairs,
+        'reserve_breaks':reserve_breaks,
         'synthetic_scenarios':True,
     }
     if with_events:
