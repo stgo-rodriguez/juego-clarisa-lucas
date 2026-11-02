@@ -51,3 +51,23 @@ python -m unittest discover -s tests -p 'test_turnos_v2.py' -v
 4. Incorporar agentes aleatorio legal, táctico y de planificación de manos, antes de comparar 6 vs. 10 jugadores.
 
 **No confundir esta fase con 2.000 partidas Monte Carlo v2.0:** todavía no hay agentes ni mazos definitivos.
+
+
+## Smoke reproducible de turno y reparto (sin economía)
+
+Se agregó `laboratorio/smoke_turnos_v2.py` con cartas neutrales y una composición adulta **sintética y expresamente experimental**. La prueba local del orquestador (con módulo geométrico de apoyo) produjo, en dos rondas:
+
+| Configuración | Turnos | Situaciones resueltas | Revelaciones compartidas | Repartos juveniles | Nuevas manos adultas |
+|---|---:|---:|---:|---:|---:|
+| Juventud, 6 jugadores | 12 | 12 | 4 | 12 | 0 |
+| Juventud, 10 jugadores | 20 | 20 | 4 | 20 | 0 |
+| Adultez, 6 jugadores | 12 | 12 | 4 | 0 | 6 |
+| Adultez, 10 jugadores | 20 | 20 | 4 | 0 | 10 |
+
+Estos conteos reflejan el **ciclo de turnos y cartas**, no victorias, duración esperada ni balance. Reproducción:
+
+```bash
+python -m laboratorio.smoke_turnos_v2 --rondas 2
+```
+
+Se incluyó su ejecución en el workflow específico v2. La comprobación remota de GitHub Actions permanece pendiente.
