@@ -332,7 +332,7 @@ class RoundEngine:
                 raise ValueError('Carta fuera de mano')
             distance = selected.distance(decision.letter)
             route = walk_adult(p.position, distance, decision.direction,
-                               marriage_eligible=self.hooks.marriage_eligible(self,p),
+                               marriage_eligible=(p.partner_id is not None and self.hooks.marriage_eligible(self,p)),
                                exit_after=decision.exit_after)
             movement_card_id, letter = selected.id, decision.letter
             if self.adult_deck is None:
