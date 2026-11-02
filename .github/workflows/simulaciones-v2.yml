@@ -1,4 +1,4 @@
-name: Simulaciones v2 - Fases 1 a 5
+name: Simulaciones v2 - Fases 1 a 6
 on:
   push:
     branches:
@@ -9,16 +9,19 @@ on:
       - 'simulador/economia_v2.py'
       - 'simulador/transiciones_v2.py'
       - 'simulador/agentes_v2.py'
+      - 'simulador/interacciones_v2.py'
       - 'tests/test_movimiento_v2.py'
       - 'tests/test_turnos_v2.py'
       - 'tests/test_economia_v2.py'
       - 'tests/test_transiciones_v2.py'
       - 'tests/test_agentes_v2.py'
+      - 'tests/test_interacciones_v2.py'
       - 'laboratorio/smoke_turnos_v2.py'
       - 'laboratorio/smoke_economia_v2.py'
       - 'laboratorio/smoke_transiciones_v2.py'
       - 'laboratorio/comparar_dublin_v2.py'
       - 'laboratorio/experimento_agentes_v2.py'
+      - 'laboratorio/experimento_interacciones_v2.py'
       - '.github/workflows/simulaciones-v2.yml'
   workflow_dispatch:
 
@@ -35,7 +38,7 @@ jobs:
         with:
           python-version: ${{ matrix.python-version }}
       - name: Sintaxis del motor y pruebas v2
-        run: python -m compileall -q simulador/movimiento_v2.py simulador/turnos_v2.py tests/test_movimiento_v2.py tests/test_turnos_v2.py tests/test_economia_v2.py simulador/economia_v2.py simulador/transiciones_v2.py tests/test_transiciones_v2.py laboratorio/smoke_transiciones_v2.py laboratorio/comparar_dublin_v2.py simulador/agentes_v2.py laboratorio/experimento_agentes_v2.py tests/test_agentes_v2.py
+        run: python -m compileall -q simulador/movimiento_v2.py simulador/turnos_v2.py tests/test_movimiento_v2.py tests/test_turnos_v2.py tests/test_economia_v2.py simulador/economia_v2.py simulador/transiciones_v2.py tests/test_transiciones_v2.py laboratorio/smoke_transiciones_v2.py laboratorio/comparar_dublin_v2.py simulador/agentes_v2.py laboratorio/experimento_agentes_v2.py tests/test_agentes_v2.py simulador/interacciones_v2.py laboratorio/experimento_interacciones_v2.py tests/test_interacciones_v2.py
       - name: Pruebas geométricas v2
         run: python -m unittest discover -s tests -p 'test_movimiento_v2.py' -v
       - name: Pruebas de orquestador v2
@@ -56,3 +59,7 @@ jobs:
         run: python -m unittest discover -s tests -p 'test_agentes_v2.py' -v
       - name: Integración de partidas sintéticas de 6 y 10 jugadores
         run: python -m laboratorio.experimento_agentes_v2 --semillas 5 --rondas 60 --mano 3 --out resultados/fase5_ci
+      - name: Duelo, Perfil, hito y subastas de una ronda (Fase 6)
+        run: python -m unittest discover -s tests -p 'test_interacciones_v2.py' -v
+      - name: Simular 20 semillas de subastas sintéticas de 6 y 10 jugadores
+        run: python -m laboratorio.experimento_interacciones_v2 --semillas 20 --out resultados/fase6_ci
