@@ -1,0 +1,2690 @@
+{
+  "schema": "clarisa-lucas-situaciones-experimentales-v2.0",
+  "source_legacy": {
+    "url": "https://docs.google.com/spreadsheets/d/1C3s3lXEJ10VPtnvjhAtxkFGE1SuaEOVcH-dGkHefXJI/edit",
+    "rows": 78,
+    "source": "v0.1"
+  },
+  "source_adult": {
+    "url": "https://docs.google.com/spreadsheets/d/15t9oPXdH2hkh5asGXPZsC3E3TMkF_fKU2TyC60BaJbA/edit",
+    "rows": 30,
+    "source": "v0.2_MULTIVERSO_PROPUESTA_NO_APROBADA"
+  },
+  "notes": "Ninguna carta se considera aprobada para v2.0. Infancia y Juventud se duplican por personaje SOLO para medir seis mazos; adultez usa propuesta multiverso 15+15; no se usan las 30 cartas históricas adultas en estos mazos.",
+  "historical_78": [
+    {
+      "id": "I01",
+      "stage": "Infancia",
+      "title": "Trabajo grupal. El grupo no se pone de acuerdo.",
+      "text_a": "Tomás el liderazgo: +4 PERSONALIDAD / -1 AMOR",
+      "text_b": "Priorizás que todos estén conformes: +7 AMOR / -1 PERSONALIDAD",
+      "effects": {
+        "A": {
+          "P": 4,
+          "A": -1
+        },
+        "B": {
+          "A": 7,
+          "P": -1
+        }
+      },
+      "source_collection": "situaciones_historicas_v0.1",
+      "approval": "HISTORICO_NO_ADAPTADO"
+    },
+    {
+      "id": "I02",
+      "stage": "Infancia",
+      "title": "Nuevo grupo de amigos. Te invitan a sumarte.",
+      "text_a": "Te integrás rápidamente: +5 AMOR / -1 PERSONALIDAD",
+      "text_b": "Marcás tu propio lugar: +3 PERSONALIDAD / -2 AMOR",
+      "effects": {
+        "A": {
+          "A": 5,
+          "P": -1
+        },
+        "B": {
+          "P": 3,
+          "A": -2
+        }
+      },
+      "source_collection": "situaciones_historicas_v0.1",
+      "approval": "HISTORICO_NO_ADAPTADO"
+    },
+    {
+      "id": "I03",
+      "stage": "Infancia",
+      "title": "Competencia escolar. Querés destacarte.",
+      "text_a": "Te enfocás en competir: +4 PERSONALIDAD / -1 CONOCIMIENTO",
+      "text_b": "Organizás al equipo: +3 PERSONALIDAD / -3 AMOR",
+      "effects": {
+        "A": {
+          "P": 4,
+          "K": -1
+        },
+        "B": {
+          "P": 3,
+          "A": -3
+        }
+      },
+      "source_collection": "situaciones_historicas_v0.1",
+      "approval": "HISTORICO_NO_ADAPTADO"
+    },
+    {
+      "id": "I04",
+      "stage": "Infancia",
+      "title": "Discusión entre amigos. Tenés que tomar posición.",
+      "text_a": "Defendés lo que pensás: +4 PERSONALIDAD / -3 AMOR",
+      "text_b": "Buscás reconciliar al grupo: +7 AMOR / -1 PERSONALIDAD",
+      "effects": {
+        "A": {
+          "P": 4,
+          "A": -3
+        },
+        "B": {
+          "A": 7,
+          "P": -1
+        }
+      },
+      "source_collection": "situaciones_historicas_v0.1",
+      "approval": "HISTORICO_NO_ADAPTADO"
+    },
+    {
+      "id": "I05",
+      "stage": "Infancia",
+      "title": "Tarde libre. Podés estudiar o probar algo nuevo.",
+      "text_a": "Te encerrás a aprender: +2 CONOCIMIENTO / -3 AMOR",
+      "text_b": "Probás una actividad nueva: +2 PERSONALIDAD / -1 AMOR",
+      "effects": {
+        "A": {
+          "K": 2,
+          "A": -3
+        },
+        "B": {
+          "P": 2,
+          "A": -1
+        }
+      },
+      "source_collection": "situaciones_historicas_v0.1",
+      "approval": "HISTORICO_NO_ADAPTADO"
+    },
+    {
+      "id": "I06",
+      "stage": "Infancia",
+      "title": "Te eligen para representar al curso.",
+      "text_a": "Asumís toda la responsabilidad: +3 PERSONALIDAD / -3 AMOR",
+      "text_b": "Te preparás intensamente: +4 PERSONALIDAD / -1 CONOCIMIENTO",
+      "effects": {
+        "A": {
+          "P": 3,
+          "A": -3
+        },
+        "B": {
+          "P": 4,
+          "K": -1
+        }
+      },
+      "source_collection": "situaciones_historicas_v0.1",
+      "approval": "HISTORICO_NO_ADAPTADO"
+    },
+    {
+      "id": "I07",
+      "stage": "Infancia",
+      "title": "Un amigo necesita ayuda antes de una prueba.",
+      "text_a": "Le enseñás a organizarse: +3 PERSONALIDAD / -1 AMOR",
+      "text_b": "Le dedicás toda la tarde: +7 AMOR / -1 CONOCIMIENTO",
+      "effects": {
+        "A": {
+          "P": 3,
+          "A": -1
+        },
+        "B": {
+          "A": 7,
+          "K": -1
+        }
+      },
+      "source_collection": "situaciones_historicas_v0.1",
+      "approval": "HISTORICO_NO_ADAPTADO"
+    },
+    {
+      "id": "I08",
+      "stage": "Infancia",
+      "title": "Feria escolar. Hay que presentar un proyecto.",
+      "text_a": "Dirigís la presentación: +4 PERSONALIDAD / -1 CONOCIMIENTO",
+      "text_b": "Trabajás con todo el grupo: +3 PERSONALIDAD / -2 AMOR",
+      "effects": {
+        "A": {
+          "P": 4,
+          "K": -1
+        },
+        "B": {
+          "P": 3,
+          "A": -2
+        }
+      },
+      "source_collection": "situaciones_historicas_v0.1",
+      "approval": "HISTORICO_NO_ADAPTADO"
+    },
+    {
+      "id": "I09",
+      "stage": "Infancia",
+      "title": "Curso extracurricular. Sólo podés dedicarte a una parte.",
+      "text_a": "Te concentrás en aprender: +2 CONOCIMIENTO / -2 PERSONALIDAD",
+      "text_b": "Te animás a participar públicamente: +3 PERSONALIDAD / -2 AMOR",
+      "effects": {
+        "A": {
+          "K": 2,
+          "P": -2
+        },
+        "B": {
+          "P": 3,
+          "A": -2
+        }
+      },
+      "source_collection": "situaciones_historicas_v0.1",
+      "approval": "HISTORICO_NO_ADAPTADO"
+    },
+    {
+      "id": "I10",
+      "stage": "Infancia",
+      "title": "Concurso escolar. Podés prepararte o disfrutarlo con amigos.",
+      "text_a": "Estudiás para competir: +2 CONOCIMIENTO / -2 AMOR",
+      "text_b": "Lo vivís como experiencia social: +8 AMOR / -1 PERSONALIDAD",
+      "effects": {
+        "A": {
+          "K": 2,
+          "A": -2
+        },
+        "B": {
+          "A": 8,
+          "P": -1
+        }
+      },
+      "source_collection": "situaciones_historicas_v0.1",
+      "approval": "HISTORICO_NO_ADAPTADO"
+    },
+    {
+      "id": "I11",
+      "stage": "Infancia",
+      "title": "Proyecto complicado. Hay dos formas de encararlo.",
+      "text_a": "Investigás por tu cuenta: +2 CONOCIMIENTO / -2 AMOR",
+      "text_b": "Pedís ayuda y aprendés del proceso: +2 CONOCIMIENTO / -2 PERSONALIDAD",
+      "effects": {
+        "A": {
+          "K": 2,
+          "A": -2
+        },
+        "B": {
+          "K": 2,
+          "P": -2
+        }
+      },
+      "source_collection": "situaciones_historicas_v0.1",
+      "approval": "HISTORICO_NO_ADAPTADO"
+    },
+    {
+      "id": "I12",
+      "stage": "Infancia",
+      "title": "Descubrís un tema que te apasiona.",
+      "text_a": "Lo estudiás obsesivamente: +2 CONOCIMIENTO / -1 PERSONALIDAD",
+      "text_b": "Lo compartís con tus amigos: +2 CONOCIMIENTO / -1 AMOR",
+      "effects": {
+        "A": {
+          "K": 2,
+          "P": -1
+        },
+        "B": {
+          "K": 2,
+          "A": -1
+        }
+      },
+      "source_collection": "situaciones_historicas_v0.1",
+      "approval": "HISTORICO_NO_ADAPTADO"
+    },
+    {
+      "id": "I13",
+      "stage": "Infancia",
+      "title": "Fiesta del colegio.",
+      "text_a": "Te dedicás a disfrutar con todos: +8 AMOR / -2 PERSONALIDAD",
+      "text_b": "Te ocupás de organizarla: +3 PERSONALIDAD / -3 AMOR",
+      "effects": {
+        "A": {
+          "A": 8,
+          "P": -2
+        },
+        "B": {
+          "P": 3,
+          "A": -3
+        }
+      },
+      "source_collection": "situaciones_historicas_v0.1",
+      "approval": "HISTORICO_NO_ADAPTADO"
+    },
+    {
+      "id": "I14",
+      "stage": "Infancia",
+      "title": "Nuevo hobby.",
+      "text_a": "Practicás hasta dominarlo: +4 PERSONALIDAD / -1 CONOCIMIENTO",
+      "text_b": "Investigás todo sobre él: +2 CONOCIMIENTO / -2 PERSONALIDAD",
+      "effects": {
+        "A": {
+          "P": 4,
+          "K": -1
+        },
+        "B": {
+          "K": 2,
+          "P": -2
+        }
+      },
+      "source_collection": "situaciones_historicas_v0.1",
+      "approval": "HISTORICO_NO_ADAPTADO"
+    },
+    {
+      "id": "I15",
+      "stage": "Infancia",
+      "title": "Un compañero tiene un problema.",
+      "text_a": "Te quedás acompañándolo: +6 AMOR / -1 PERSONALIDAD",
+      "text_b": "Lo ayudás a enfrentarlo: +4 PERSONALIDAD / -1 CONOCIMIENTO",
+      "effects": {
+        "A": {
+          "A": 6,
+          "P": -1
+        },
+        "B": {
+          "P": 4,
+          "K": -1
+        }
+      },
+      "source_collection": "situaciones_historicas_v0.1",
+      "approval": "HISTORICO_NO_ADAPTADO"
+    },
+    {
+      "id": "I16",
+      "stage": "Infancia",
+      "title": "Desafío inesperado.",
+      "text_a": "Te animás sin prepararte demasiado: +2 PERSONALIDAD / -1 AMOR",
+      "text_b": "Buscás información antes de actuar: +2 CONOCIMIENTO / -3 AMOR",
+      "effects": {
+        "A": {
+          "P": 2,
+          "A": -1
+        },
+        "B": {
+          "K": 2,
+          "A": -3
+        }
+      },
+      "source_collection": "situaciones_historicas_v0.1",
+      "approval": "HISTORICO_NO_ADAPTADO"
+    },
+    {
+      "id": "I17",
+      "stage": "Infancia",
+      "title": "Semana de exámenes.",
+      "text_a": "Estudiás intensamente: +2 CONOCIMIENTO / -3 AMOR",
+      "text_b": "Priorizás no aislarte: +5 AMOR / -1 PERSONALIDAD",
+      "effects": {
+        "A": {
+          "K": 2,
+          "A": -3
+        },
+        "B": {
+          "A": 5,
+          "P": -1
+        }
+      },
+      "source_collection": "situaciones_historicas_v0.1",
+      "approval": "HISTORICO_NO_ADAPTADO"
+    },
+    {
+      "id": "I18",
+      "stage": "Infancia",
+      "title": "Aprendés a usar algo nuevo.",
+      "text_a": "Profundizás hasta entenderlo: +2 CONOCIMIENTO / -2 PERSONALIDAD",
+      "text_b": "Aprendés sólo lo necesario: +1 CONOCIMIENTO / -1 AMOR",
+      "effects": {
+        "A": {
+          "K": 2,
+          "P": -2
+        },
+        "B": {
+          "K": 1,
+          "A": -1
+        }
+      },
+      "source_collection": "situaciones_historicas_v0.1",
+      "approval": "HISTORICO_NO_ADAPTADO"
+    },
+    {
+      "id": "I19",
+      "stage": "Infancia",
+      "title": "Te proponen participar en una actividad nueva.",
+      "text_a": "Te animás y asumís responsabilidades: +3 PERSONALIDAD / -1 AMOR",
+      "text_b": "Primero aprendés cómo funciona: +2 CONOCIMIENTO / -1 AMOR",
+      "effects": {
+        "A": {
+          "P": 3,
+          "A": -1
+        },
+        "B": {
+          "K": 2,
+          "A": -1
+        }
+      },
+      "source_collection": "situaciones_historicas_v0.1",
+      "approval": "HISTORICO_NO_ADAPTADO"
+    },
+    {
+      "id": "I20",
+      "stage": "Infancia",
+      "title": "Reunión familiar.",
+      "text_a": "Te involucrás con todos: +8 AMOR / -1 PERSONALIDAD",
+      "text_b": "Organizás las actividades: +4 PERSONALIDAD / -1 CONOCIMIENTO",
+      "effects": {
+        "A": {
+          "A": 8,
+          "P": -1
+        },
+        "B": {
+          "P": 4,
+          "K": -1
+        }
+      },
+      "source_collection": "situaciones_historicas_v0.1",
+      "approval": "HISTORICO_NO_ADAPTADO"
+    },
+    {
+      "id": "I21",
+      "stage": "Infancia",
+      "title": "Actividad artística.",
+      "text_a": "Practicás para mejorar: +2 CONOCIMIENTO / -2 AMOR",
+      "text_b": "La disfrutás sin preocuparte por hacerlo perfecto: +8 AMOR / -1 CONOCIMIENTO",
+      "effects": {
+        "A": {
+          "K": 2,
+          "A": -2
+        },
+        "B": {
+          "A": 8,
+          "K": -1
+        }
+      },
+      "source_collection": "situaciones_historicas_v0.1",
+      "approval": "HISTORICO_NO_ADAPTADO"
+    },
+    {
+      "id": "I22",
+      "stage": "Infancia",
+      "title": "Te ofrecen entrar a un club.",
+      "text_a": "Primero aprendés cómo funciona: +1 CONOCIMIENTO / -1 AMOR",
+      "text_b": "Entrás y buscás protagonismo: +4 PERSONALIDAD / -3 AMOR",
+      "effects": {
+        "A": {
+          "K": 1,
+          "A": -1
+        },
+        "B": {
+          "P": 4,
+          "A": -3
+        }
+      },
+      "source_collection": "situaciones_historicas_v0.1",
+      "approval": "HISTORICO_NO_ADAPTADO"
+    },
+    {
+      "id": "I23",
+      "stage": "Infancia",
+      "title": "Un amigo te pide consejo.",
+      "text_a": "Investigás antes de responder: +2 CONOCIMIENTO / -2 PERSONALIDAD",
+      "text_b": "Le decís directamente lo que pensás: +3 PERSONALIDAD / -2 AMOR",
+      "effects": {
+        "A": {
+          "K": 2,
+          "P": -2
+        },
+        "B": {
+          "P": 3,
+          "A": -2
+        }
+      },
+      "source_collection": "situaciones_historicas_v0.1",
+      "approval": "HISTORICO_NO_ADAPTADO"
+    },
+    {
+      "id": "I24",
+      "stage": "Infancia",
+      "title": "Viaje escolar.",
+      "text_a": "Disfrutás el tiempo con tus compañeros: +6 AMOR / -1 PERSONALIDAD",
+      "text_b": "Aprovechás para salir de tu zona de confort: +3 PERSONALIDAD / -1 AMOR",
+      "effects": {
+        "A": {
+          "A": 6,
+          "P": -1
+        },
+        "B": {
+          "P": 3,
+          "A": -1
+        }
+      },
+      "source_collection": "situaciones_historicas_v0.1",
+      "approval": "HISTORICO_NO_ADAPTADO"
+    },
+    {
+      "id": "J01",
+      "stage": "Juventud",
+      "title": "Aparece un trabajo temporal.",
+      "text_a": "Lo aceptás: +1 DINERO / -3 AMOR",
+      "text_b": "Usás ese tiempo para estudiar: +3 CONOCIMIENTO / -1 DINERO",
+      "effects": {
+        "A": {
+          "M": 1,
+          "A": -3
+        },
+        "B": {
+          "K": 3,
+          "M": -1
+        }
+      },
+      "source_collection": "situaciones_historicas_v0.1",
+      "approval": "HISTORICO_NO_ADAPTADO"
+    },
+    {
+      "id": "J02",
+      "stage": "Juventud",
+      "title": "Una pasantía exige muchas horas.",
+      "text_a": "Priorizás la experiencia laboral: +3 DINERO / -2 CONOCIMIENTO",
+      "text_b": "Priorizás la facultad: +3 CONOCIMIENTO / -1 PERSONALIDAD",
+      "effects": {
+        "A": {
+          "M": 3,
+          "K": -2
+        },
+        "B": {
+          "K": 3,
+          "P": -1
+        }
+      },
+      "source_collection": "situaciones_historicas_v0.1",
+      "approval": "HISTORICO_NO_ADAPTADO"
+    },
+    {
+      "id": "J03",
+      "stage": "Juventud",
+      "title": "Trabajo de fin de semana.",
+      "text_a": "Trabajás: +1 DINERO / -1 CONOCIMIENTO",
+      "text_b": "Te quedás preparando materias: +3 CONOCIMIENTO / -6 AMOR",
+      "effects": {
+        "A": {
+          "M": 1,
+          "K": -1
+        },
+        "B": {
+          "K": 3,
+          "A": -6
+        }
+      },
+      "source_collection": "situaciones_historicas_v0.1",
+      "approval": "HISTORICO_NO_ADAPTADO"
+    },
+    {
+      "id": "J04",
+      "stage": "Juventud",
+      "title": "Proyecto universitario.",
+      "text_a": "Profundizás la parte técnica: +2 CONOCIMIENTO / -1 PERSONALIDAD",
+      "text_b": "Coordinás al equipo: +4 PERSONALIDAD / -2 AMOR",
+      "effects": {
+        "A": {
+          "K": 2,
+          "P": -1
+        },
+        "B": {
+          "P": 4,
+          "A": -2
+        }
+      },
+      "source_collection": "situaciones_historicas_v0.1",
+      "approval": "HISTORICO_NO_ADAPTADO"
+    },
+    {
+      "id": "J05",
+      "stage": "Juventud",
+      "title": "Te ofrecen liderar un grupo.",
+      "text_a": "Aceptás: +5 PERSONALIDAD / -3 AMOR",
+      "text_b": "Te concentrás en las relaciones del grupo: +8 AMOR / -1 PERSONALIDAD",
+      "effects": {
+        "A": {
+          "P": 5,
+          "A": -3
+        },
+        "B": {
+          "A": 8,
+          "P": -1
+        }
+      },
+      "source_collection": "situaciones_historicas_v0.1",
+      "approval": "HISTORICO_NO_ADAPTADO"
+    },
+    {
+      "id": "J06",
+      "stage": "Juventud",
+      "title": "Semana libre.",
+      "text_a": "Hacés un curso intensivo: +3 CONOCIMIENTO / -4 AMOR",
+      "text_b": "Aprovechás para ganar dinero: +1 DINERO / -2 AMOR",
+      "effects": {
+        "A": {
+          "K": 3,
+          "A": -4
+        },
+        "B": {
+          "M": 1,
+          "A": -2
+        }
+      },
+      "source_collection": "situaciones_historicas_v0.1",
+      "approval": "HISTORICO_NO_ADAPTADO"
+    },
+    {
+      "id": "J07",
+      "stage": "Juventud",
+      "title": "Proyecto freelance.",
+      "text_a": "Te comprometés a terminarlo: +2 DINERO / -3 PERSONALIDAD",
+      "text_b": "Lo rechazás y estudiás: +3 CONOCIMIENTO / -2 AMOR",
+      "effects": {
+        "A": {
+          "M": 2,
+          "P": -3
+        },
+        "B": {
+          "K": 3,
+          "A": -2
+        }
+      },
+      "source_collection": "situaciones_historicas_v0.1",
+      "approval": "HISTORICO_NO_ADAPTADO"
+    },
+    {
+      "id": "J08",
+      "stage": "Juventud",
+      "title": "Conocés gente nueva.",
+      "text_a": "Priorizás los vínculos: +9 AMOR / -1 PERSONALIDAD",
+      "text_b": "Aprovechás el intercambio para aprender: +2 CONOCIMIENTO / -2 AMOR",
+      "effects": {
+        "A": {
+          "A": 9,
+          "P": -1
+        },
+        "B": {
+          "K": 2,
+          "A": -2
+        }
+      },
+      "source_collection": "situaciones_historicas_v0.1",
+      "approval": "HISTORICO_NO_ADAPTADO"
+    },
+    {
+      "id": "J09",
+      "stage": "Juventud",
+      "title": "Viaje con amigos.",
+      "text_a": "Vas al viaje: +10 AMOR / -1 PERSONALIDAD",
+      "text_b": "Te quedás avanzando con tus estudios: +2 CONOCIMIENTO / -3 AMOR",
+      "effects": {
+        "A": {
+          "A": 10,
+          "P": -1
+        },
+        "B": {
+          "K": 2,
+          "A": -3
+        }
+      },
+      "source_collection": "situaciones_historicas_v0.1",
+      "approval": "HISTORICO_NO_ADAPTADO"
+    },
+    {
+      "id": "J10",
+      "stage": "Juventud",
+      "title": "Examen difícil.",
+      "text_a": "Estudiás encerrado varios días: +3 CONOCIMIENTO / -5 AMOR",
+      "text_b": "Buscás ayuda y estudiás acompañado: +3 CONOCIMIENTO / -1 PERSONALIDAD",
+      "effects": {
+        "A": {
+          "K": 3,
+          "A": -5
+        },
+        "B": {
+          "K": 3,
+          "P": -1
+        }
+      },
+      "source_collection": "situaciones_historicas_v0.1",
+      "approval": "HISTORICO_NO_ADAPTADO"
+    },
+    {
+      "id": "J11",
+      "stage": "Juventud",
+      "title": "Curso de especialización.",
+      "text_a": "Lo hacés aunque demande tiempo: +3 CONOCIMIENTO / -4 AMOR",
+      "text_b": "Trabajás durante ese período: +2 DINERO / -6 AMOR",
+      "effects": {
+        "A": {
+          "K": 3,
+          "A": -4
+        },
+        "B": {
+          "M": 2,
+          "A": -6
+        }
+      },
+      "source_collection": "situaciones_historicas_v0.1",
+      "approval": "HISTORICO_NO_ADAPTADO"
+    },
+    {
+      "id": "J12",
+      "stage": "Juventud",
+      "title": "Semana con demasiados compromisos.",
+      "text_a": "Priorizás la facultad: +3 CONOCIMIENTO / -1 DINERO",
+      "text_b": "Te ocupás de organizar todo: +4 PERSONALIDAD / -4 AMOR",
+      "effects": {
+        "A": {
+          "K": 3,
+          "M": -1
+        },
+        "B": {
+          "P": 4,
+          "A": -4
+        }
+      },
+      "source_collection": "situaciones_historicas_v0.1",
+      "approval": "HISTORICO_NO_ADAPTADO"
+    },
+    {
+      "id": "J13",
+      "stage": "Juventud",
+      "title": "Oportunidad laboral inesperada.",
+      "text_a": "Aceptás el trabajo: +1 DINERO / -4 AMOR",
+      "text_b": "Invertís tus ahorros en capacitarte: +3 CONOCIMIENTO / -1 DINERO",
+      "effects": {
+        "A": {
+          "M": 1,
+          "A": -4
+        },
+        "B": {
+          "K": 3,
+          "M": -1
+        }
+      },
+      "source_collection": "situaciones_historicas_v0.1",
+      "approval": "HISTORICO_NO_ADAPTADO"
+    },
+    {
+      "id": "J14",
+      "stage": "Juventud",
+      "title": "Fin de semana largo.",
+      "text_a": "Trabajás unas horas: +1 DINERO / -2 AMOR",
+      "text_b": "Te vas con amigos: +9 AMOR / -2 PERSONALIDAD",
+      "effects": {
+        "A": {
+          "M": 1,
+          "A": -2
+        },
+        "B": {
+          "A": 9,
+          "P": -2
+        }
+      },
+      "source_collection": "situaciones_historicas_v0.1",
+      "approval": "HISTORICO_NO_ADAPTADO"
+    },
+    {
+      "id": "J15",
+      "stage": "Juventud",
+      "title": "Curso pago.",
+      "text_a": "Ahorrás y trabajás: +1 DINERO / -1 PERSONALIDAD",
+      "text_b": "Pagás y lo cursás: +3 CONOCIMIENTO / -3 PERSONALIDAD",
+      "effects": {
+        "A": {
+          "M": 1,
+          "P": -1
+        },
+        "B": {
+          "K": 3,
+          "P": -3
+        }
+      },
+      "source_collection": "situaciones_historicas_v0.1",
+      "approval": "HISTORICO_NO_ADAPTADO"
+    },
+    {
+      "id": "J16",
+      "stage": "Juventud",
+      "title": "Conflicto con compañeros.",
+      "text_a": "Tomás el control de la situación: +5 PERSONALIDAD / -4 AMOR",
+      "text_b": "Te alejás y te concentrás en estudiar: +2 CONOCIMIENTO / -3 AMOR",
+      "effects": {
+        "A": {
+          "P": 5,
+          "A": -4
+        },
+        "B": {
+          "K": 2,
+          "A": -3
+        }
+      },
+      "source_collection": "situaciones_historicas_v0.1",
+      "approval": "HISTORICO_NO_ADAPTADO"
+    },
+    {
+      "id": "J17",
+      "stage": "Juventud",
+      "title": "Necesitás equipamiento nuevo.",
+      "text_a": "Trabajás para conseguirlo: +1 DINERO / -1 CONOCIMIENTO",
+      "text_b": "Improvisás y seguís aprendiendo: +2 CONOCIMIENTO / -1 PERSONALIDAD",
+      "effects": {
+        "A": {
+          "M": 1,
+          "K": -1
+        },
+        "B": {
+          "K": 2,
+          "P": -1
+        }
+      },
+      "source_collection": "situaciones_historicas_v0.1",
+      "approval": "HISTORICO_NO_ADAPTADO"
+    },
+    {
+      "id": "J18",
+      "stage": "Juventud",
+      "title": "Competencia universitaria.",
+      "text_a": "Te dedicás al desafío académico: +3 CONOCIMIENTO / -1 PERSONALIDAD",
+      "text_b": "Convertís el proyecto en una oportunidad económica: +2 DINERO / -3 PERSONALIDAD",
+      "effects": {
+        "A": {
+          "K": 3,
+          "P": -1
+        },
+        "B": {
+          "M": 2,
+          "P": -3
+        }
+      },
+      "source_collection": "situaciones_historicas_v0.1",
+      "approval": "HISTORICO_NO_ADAPTADO"
+    },
+    {
+      "id": "J19",
+      "stage": "Juventud",
+      "title": "Intercambio estudiantil.",
+      "text_a": "Aprovechás para estudiar: +3 CONOCIMIENTO / -5 AMOR",
+      "text_b": "Buscás un trabajo durante la experiencia: +1 DINERO / -3 AMOR",
+      "effects": {
+        "A": {
+          "K": 3,
+          "A": -5
+        },
+        "B": {
+          "M": 1,
+          "A": -3
+        }
+      },
+      "source_collection": "situaciones_historicas_v0.1",
+      "approval": "HISTORICO_NO_ADAPTADO"
+    },
+    {
+      "id": "J20",
+      "stage": "Juventud",
+      "title": "Un compañero necesita apoyo.",
+      "text_a": "Le enseñás lo que sabés: +2 CONOCIMIENTO / -2 AMOR",
+      "text_b": "Te encargás de organizar al grupo: +5 PERSONALIDAD / -3 AMOR",
+      "effects": {
+        "A": {
+          "K": 2,
+          "A": -2
+        },
+        "B": {
+          "P": 5,
+          "A": -3
+        }
+      },
+      "source_collection": "situaciones_historicas_v0.1",
+      "approval": "HISTORICO_NO_ADAPTADO"
+    },
+    {
+      "id": "J21",
+      "stage": "Juventud",
+      "title": "Recital justo antes de un examen.",
+      "text_a": "Vas al recital: +9 AMOR / -1 CONOCIMIENTO",
+      "text_b": "Te quedás estudiando: +2 CONOCIMIENTO / -4 AMOR",
+      "effects": {
+        "A": {
+          "A": 9,
+          "K": -1
+        },
+        "B": {
+          "K": 2,
+          "A": -4
+        }
+      },
+      "source_collection": "situaciones_historicas_v0.1",
+      "approval": "HISTORICO_NO_ADAPTADO"
+    },
+    {
+      "id": "J22",
+      "stage": "Juventud",
+      "title": "Proyecto estudiantil colectivo.",
+      "text_a": "Te concentrás en el contenido: +3 CONOCIMIENTO / -3 PERSONALIDAD",
+      "text_b": "Asumís la coordinación: +5 PERSONALIDAD / -3 AMOR",
+      "effects": {
+        "A": {
+          "K": 3,
+          "P": -3
+        },
+        "B": {
+          "P": 5,
+          "A": -3
+        }
+      },
+      "source_collection": "situaciones_historicas_v0.1",
+      "approval": "HISTORICO_NO_ADAPTADO"
+    },
+    {
+      "id": "J23",
+      "stage": "Juventud",
+      "title": "Primera entrevista laboral importante.",
+      "text_a": "Te preparás técnicamente: +3 CONOCIMIENTO / -3 PERSONALIDAD",
+      "text_b": "Priorizás conseguir experiencia laboral: +1 DINERO / -3 AMOR",
+      "effects": {
+        "A": {
+          "K": 3,
+          "P": -3
+        },
+        "B": {
+          "M": 1,
+          "A": -3
+        }
+      },
+      "source_collection": "situaciones_historicas_v0.1",
+      "approval": "HISTORICO_NO_ADAPTADO"
+    },
+    {
+      "id": "J24",
+      "stage": "Juventud",
+      "title": "Tu familia necesita ayuda durante una semana complicada.",
+      "text_a": "Te organizás para seguir estudiando: +3 CONOCIMIENTO / -4 AMOR",
+      "text_b": "Buscás generar algo de dinero adicional: +1 DINERO / -3 AMOR",
+      "effects": {
+        "A": {
+          "K": 3,
+          "A": -4
+        },
+        "B": {
+          "M": 1,
+          "A": -3
+        }
+      },
+      "source_collection": "situaciones_historicas_v0.1",
+      "approval": "HISTORICO_NO_ADAPTADO"
+    },
+    {
+      "id": "A01",
+      "stage": "Adultez",
+      "title": "Te ofrecen asumir una responsabilidad adicional.",
+      "text_a": "Te concentrás en tus relaciones: +9 AMOR / -1 CONOCIMIENTO",
+      "text_b": "Asumís un rol más firme: +7 AMOR / -1 PERSONALIDAD",
+      "effects": {
+        "A": {
+          "A": 9,
+          "K": -1
+        },
+        "B": {
+          "A": 7,
+          "P": -1
+        }
+      },
+      "source_collection": "situaciones_historicas_v0.1",
+      "approval": "HISTORICO_NO_ADAPTADO"
+    },
+    {
+      "id": "A02",
+      "stage": "Adultez",
+      "title": "Aparece una oportunidad profesional.",
+      "text_a": "La aprovechás económicamente: +1 DINERO / -1 PERSONALIDAD",
+      "text_b": "Priorizás tu vida personal: +10 AMOR / -1 PERSONALIDAD",
+      "effects": {
+        "A": {
+          "M": 1,
+          "P": -1
+        },
+        "B": {
+          "A": 10,
+          "P": -1
+        }
+      },
+      "source_collection": "situaciones_historicas_v0.1",
+      "approval": "HISTORICO_NO_ADAPTADO"
+    },
+    {
+      "id": "A03",
+      "stage": "Adultez",
+      "title": "Proyecto intensivo de varios meses.",
+      "text_a": "Lo convertís en ingreso: +2 DINERO / -2 CONOCIMIENTO",
+      "text_b": "Priorizás tu vida afectiva: +12 AMOR / -2 PERSONALIDAD",
+      "effects": {
+        "A": {
+          "M": 2,
+          "K": -2
+        },
+        "B": {
+          "A": 12,
+          "P": -2
+        }
+      },
+      "source_collection": "situaciones_historicas_v0.1",
+      "approval": "HISTORICO_NO_ADAPTADO"
+    },
+    {
+      "id": "A04",
+      "stage": "Adultez",
+      "title": "Un problema obliga a alguien a tomar el mando.",
+      "text_a": "Cuidás primero los vínculos: +10 AMOR / -1 PERSONALIDAD",
+      "text_b": "Te hacés cargo de resolverlo: +6 PERSONALIDAD / -6 AMOR",
+      "effects": {
+        "A": {
+          "A": 10,
+          "P": -1
+        },
+        "B": {
+          "P": 6,
+          "A": -6
+        }
+      },
+      "source_collection": "situaciones_historicas_v0.1",
+      "approval": "HISTORICO_NO_ADAPTADO"
+    },
+    {
+      "id": "A05",
+      "stage": "Adultez",
+      "title": "Te ofrecen una capacitación importante.",
+      "text_a": "La hacés: +2 CONOCIMIENTO / -2 AMOR",
+      "text_b": "Asumís mayores responsabilidades: +6 PERSONALIDAD / -4 AMOR",
+      "effects": {
+        "A": {
+          "K": 2,
+          "A": -2
+        },
+        "B": {
+          "P": 6,
+          "A": -4
+        }
+      },
+      "source_collection": "situaciones_historicas_v0.1",
+      "approval": "HISTORICO_NO_ADAPTADO"
+    },
+    {
+      "id": "A06",
+      "stage": "Adultez",
+      "title": "Tenés que organizar un evento grande.",
+      "text_a": "Priorizás que todos estén bien: +7 AMOR / -1 PERSONALIDAD",
+      "text_b": "Te encargás personalmente de todo: +6 PERSONALIDAD / -4 AMOR",
+      "effects": {
+        "A": {
+          "A": 7,
+          "P": -1
+        },
+        "B": {
+          "P": 6,
+          "A": -4
+        }
+      },
+      "source_collection": "situaciones_historicas_v0.1",
+      "approval": "HISTORICO_NO_ADAPTADO"
+    },
+    {
+      "id": "A07",
+      "stage": "Adultez",
+      "title": "Curso profesional intensivo.",
+      "text_a": "Aprovechás para aprender: +2 CONOCIMIENTO / -1 PERSONALIDAD",
+      "text_b": "Priorizás tu vida personal: +10 AMOR / -1 PERSONALIDAD",
+      "effects": {
+        "A": {
+          "K": 2,
+          "P": -1
+        },
+        "B": {
+          "A": 10,
+          "P": -1
+        }
+      },
+      "source_collection": "situaciones_historicas_v0.1",
+      "approval": "HISTORICO_NO_ADAPTADO"
+    },
+    {
+      "id": "A08",
+      "stage": "Adultez",
+      "title": "Surge un trabajo extra.",
+      "text_a": "Lo aceptás: +1 DINERO / -3 AMOR",
+      "text_b": "Lo rechazás para dedicar tiempo a los tuyos: +12 AMOR / -2 PERSONALIDAD",
+      "effects": {
+        "A": {
+          "M": 1,
+          "A": -3
+        },
+        "B": {
+          "A": 12,
+          "P": -2
+        }
+      },
+      "source_collection": "situaciones_historicas_v0.1",
+      "approval": "HISTORICO_NO_ADAPTADO"
+    },
+    {
+      "id": "A09",
+      "stage": "Adultez",
+      "title": "Tenés una semana libre.",
+      "text_a": "Hacés una capacitación: +3 CONOCIMIENTO / -3 AMOR",
+      "text_b": "Aprovechás para generar ingresos: +1 DINERO / -2 AMOR",
+      "effects": {
+        "A": {
+          "K": 3,
+          "A": -3
+        },
+        "B": {
+          "M": 1,
+          "A": -2
+        }
+      },
+      "source_collection": "situaciones_historicas_v0.1",
+      "approval": "HISTORICO_NO_ADAPTADO"
+    },
+    {
+      "id": "A10",
+      "stage": "Adultez",
+      "title": "Te ofrecen asistir a un congreso.",
+      "text_a": "Te vinculás con gente nueva: +9 AMOR / -1 PERSONALIDAD",
+      "text_b": "Te concentrás en aprender: +3 CONOCIMIENTO / -4 AMOR",
+      "effects": {
+        "A": {
+          "A": 9,
+          "P": -1
+        },
+        "B": {
+          "K": 3,
+          "A": -4
+        }
+      },
+      "source_collection": "situaciones_historicas_v0.1",
+      "approval": "HISTORICO_NO_ADAPTADO"
+    },
+    {
+      "id": "A11",
+      "stage": "Adultez",
+      "title": "Te toca resolver un conflicto complejo.",
+      "text_a": "Cuidás las relaciones: +10 AMOR / -1 PERSONALIDAD",
+      "text_b": "Tomás una decisión firme: +6 PERSONALIDAD / -2 AMOR",
+      "effects": {
+        "A": {
+          "A": 10,
+          "P": -1
+        },
+        "B": {
+          "P": 6,
+          "A": -2
+        }
+      },
+      "source_collection": "situaciones_historicas_v0.1",
+      "approval": "HISTORICO_NO_ADAPTADO"
+    },
+    {
+      "id": "A12",
+      "stage": "Adultez",
+      "title": "Aparece un proyecto freelance importante.",
+      "text_a": "Desarrollás nuevas habilidades: +5 PERSONALIDAD / -2 AMOR",
+      "text_b": "Lo convertís en ingresos: +2 DINERO / -5 AMOR",
+      "effects": {
+        "A": {
+          "P": 5,
+          "A": -2
+        },
+        "B": {
+          "M": 2,
+          "A": -5
+        }
+      },
+      "source_collection": "situaciones_historicas_v0.1",
+      "approval": "HISTORICO_NO_ADAPTADO"
+    },
+    {
+      "id": "A13",
+      "stage": "Adultez",
+      "title": "Tu agenda está saturada.",
+      "text_a": "Liberás tiempo para tus vínculos: +12 AMOR / -1 PERSONALIDAD",
+      "text_b": "Te organizás para cumplir con todo: +6 PERSONALIDAD / -5 AMOR",
+      "effects": {
+        "A": {
+          "A": 12,
+          "P": -1
+        },
+        "B": {
+          "P": 6,
+          "A": -5
+        }
+      },
+      "source_collection": "situaciones_historicas_v0.1",
+      "approval": "HISTORICO_NO_ADAPTADO"
+    },
+    {
+      "id": "A14",
+      "stage": "Adultez",
+      "title": "Recibís una propuesta de trabajo adicional.",
+      "text_a": "La aceptás: +1 DINERO / -2 AMOR",
+      "text_b": "Buscás crecer personalmente: +4 PERSONALIDAD / -3 AMOR",
+      "effects": {
+        "A": {
+          "M": 1,
+          "A": -2
+        },
+        "B": {
+          "P": 4,
+          "A": -3
+        }
+      },
+      "source_collection": "situaciones_historicas_v0.1",
+      "approval": "HISTORICO_NO_ADAPTADO"
+    },
+    {
+      "id": "A15",
+      "stage": "Adultez",
+      "title": "Proyecto extraordinario en el trabajo.",
+      "text_a": "Aprovechás la oportunidad económica: +2 DINERO / -6 AMOR",
+      "text_b": "Negociás desde una posición fuerte: +2 DINERO / -3 PERSONALIDAD",
+      "effects": {
+        "A": {
+          "M": 2,
+          "A": -6
+        },
+        "B": {
+          "M": 2,
+          "P": -3
+        }
+      },
+      "source_collection": "situaciones_historicas_v0.1",
+      "approval": "HISTORICO_NO_ADAPTADO"
+    },
+    {
+      "id": "A16",
+      "stage": "Adultez",
+      "title": "Podés monetizar conocimientos que ya tenés.",
+      "text_a": "Lo hacés de inmediato: +2 DINERO / -1 CONOCIMIENTO",
+      "text_b": "Priorizás producir y cobrar: +2 DINERO / -4 AMOR",
+      "effects": {
+        "A": {
+          "M": 2,
+          "K": -1
+        },
+        "B": {
+          "M": 2,
+          "A": -4
+        }
+      },
+      "source_collection": "situaciones_historicas_v0.1",
+      "approval": "HISTORICO_NO_ADAPTADO"
+    },
+    {
+      "id": "A17",
+      "stage": "Adultez",
+      "title": "Fin de semana complicado.",
+      "text_a": "Priorizás a las personas cercanas: +9 AMOR / -1 PERSONALIDAD",
+      "text_b": "Trabajás unas horas extra: +1 DINERO / -2 AMOR",
+      "effects": {
+        "A": {
+          "A": 9,
+          "P": -1
+        },
+        "B": {
+          "M": 1,
+          "A": -2
+        }
+      },
+      "source_collection": "situaciones_historicas_v0.1",
+      "approval": "HISTORICO_NO_ADAPTADO"
+    },
+    {
+      "id": "A18",
+      "stage": "Adultez",
+      "title": "Una oportunidad económica exige sacrificar tiempo.",
+      "text_a": "La aceptás: +2 DINERO / -6 AMOR",
+      "text_b": "Usás conocimientos acumulados para generar ingresos: +2 DINERO / -1 CONOCIMIENTO",
+      "effects": {
+        "A": {
+          "M": 2,
+          "A": -6
+        },
+        "B": {
+          "M": 2,
+          "K": -1
+        }
+      },
+      "source_collection": "situaciones_historicas_v0.1",
+      "approval": "HISTORICO_NO_ADAPTADO"
+    },
+    {
+      "id": "A19",
+      "stage": "Adultez",
+      "title": "Problemas entre trabajo y vida personal.",
+      "text_a": "Priorizás los vínculos: +12 AMOR / -3 PERSONALIDAD",
+      "text_b": "Buscás una solución económica rápida: +1 DINERO / -2 AMOR",
+      "effects": {
+        "A": {
+          "A": 12,
+          "P": -3
+        },
+        "B": {
+          "M": 1,
+          "A": -2
+        }
+      },
+      "source_collection": "situaciones_historicas_v0.1",
+      "approval": "HISTORICO_NO_ADAPTADO"
+    },
+    {
+      "id": "A20",
+      "stage": "Adultez",
+      "title": "Te piden liderar un proyecto comunitario.",
+      "text_a": "Te involucrás personalmente: +8 AMOR / -1 PERSONALIDAD",
+      "text_b": "Coordinás a los demás: +5 PERSONALIDAD / -2 AMOR",
+      "effects": {
+        "A": {
+          "A": 8,
+          "P": -1
+        },
+        "B": {
+          "P": 5,
+          "A": -2
+        }
+      },
+      "source_collection": "situaciones_historicas_v0.1",
+      "approval": "HISTORICO_NO_ADAPTADO"
+    },
+    {
+      "id": "A21",
+      "stage": "Adultez",
+      "title": "Un conocido te propone un trabajo adicional.",
+      "text_a": "Lo convertís en experiencia: +5 PERSONALIDAD / -2 AMOR",
+      "text_b": "Aceptás por el ingreso: +1 DINERO / -1 PERSONALIDAD",
+      "effects": {
+        "A": {
+          "P": 5,
+          "A": -2
+        },
+        "B": {
+          "M": 1,
+          "P": -1
+        }
+      },
+      "source_collection": "situaciones_historicas_v0.1",
+      "approval": "HISTORICO_NO_ADAPTADO"
+    },
+    {
+      "id": "A22",
+      "stage": "Adultez",
+      "title": "Aparece una oportunidad muy rentable pero demandante.",
+      "text_a": "La aceptás: +2 DINERO / -6 AMOR",
+      "text_b": "Priorizás tu vida afectiva: +9 AMOR / -1 PERSONALIDAD",
+      "effects": {
+        "A": {
+          "M": 2,
+          "A": -6
+        },
+        "B": {
+          "A": 9,
+          "P": -1
+        }
+      },
+      "source_collection": "situaciones_historicas_v0.1",
+      "approval": "HISTORICO_NO_ADAPTADO"
+    },
+    {
+      "id": "A23",
+      "stage": "Adultez",
+      "title": "Responsabilidad inesperada.",
+      "text_a": "La enfrentás y crecés con ella: +5 PERSONALIDAD / -3 AMOR",
+      "text_b": "La convertís en una oportunidad económica: +2 DINERO / -3 PERSONALIDAD",
+      "effects": {
+        "A": {
+          "P": 5,
+          "A": -3
+        },
+        "B": {
+          "M": 2,
+          "P": -3
+        }
+      },
+      "source_collection": "situaciones_historicas_v0.1",
+      "approval": "HISTORICO_NO_ADAPTADO"
+    },
+    {
+      "id": "A24",
+      "stage": "Adultez",
+      "title": "Semana intensa de compromisos.",
+      "text_a": "Trabajás para compensar gastos: +1 DINERO / -2 AMOR",
+      "text_b": "Tomás el control de tu agenda: +5 PERSONALIDAD / -2 AMOR",
+      "effects": {
+        "A": {
+          "M": 1,
+          "A": -2
+        },
+        "B": {
+          "P": 5,
+          "A": -2
+        }
+      },
+      "source_collection": "situaciones_historicas_v0.1",
+      "approval": "HISTORICO_NO_ADAPTADO"
+    },
+    {
+      "id": "A25",
+      "stage": "Adultez",
+      "title": "Surge un negocio puntual.",
+      "text_a": "Lo aprovechás intensamente: +2 DINERO / -2 PERSONALIDAD",
+      "text_b": "Trabajás más horas: +2 DINERO / -6 AMOR",
+      "effects": {
+        "A": {
+          "M": 2,
+          "P": -2
+        },
+        "B": {
+          "M": 2,
+          "A": -6
+        }
+      },
+      "source_collection": "situaciones_historicas_v0.1",
+      "approval": "HISTORICO_NO_ADAPTADO"
+    },
+    {
+      "id": "A26",
+      "stage": "Adultez",
+      "title": "Nueva responsabilidad profesional.",
+      "text_a": "Priorizás ingresos: +1 DINERO / -2 AMOR",
+      "text_b": "Asumís liderazgo: +6 PERSONALIDAD / -1 CONOCIMIENTO",
+      "effects": {
+        "A": {
+          "M": 1,
+          "A": -2
+        },
+        "B": {
+          "P": 6,
+          "K": -1
+        }
+      },
+      "source_collection": "situaciones_historicas_v0.1",
+      "approval": "HISTORICO_NO_ADAPTADO"
+    },
+    {
+      "id": "A27",
+      "stage": "Adultez",
+      "title": "Hay que resolver un problema familiar.",
+      "text_a": "Organizás todo: +6 PERSONALIDAD / -4 AMOR",
+      "text_b": "Contratás ayuda y seguís trabajando: +1 DINERO / -3 AMOR",
+      "effects": {
+        "A": {
+          "P": 6,
+          "A": -4
+        },
+        "B": {
+          "M": 1,
+          "A": -3
+        }
+      },
+      "source_collection": "situaciones_historicas_v0.1",
+      "approval": "HISTORICO_NO_ADAPTADO"
+    },
+    {
+      "id": "A28",
+      "stage": "Adultez",
+      "title": "Una oportunidad exige elegir entre tiempo y dinero.",
+      "text_a": "Fortalecés tu capacidad de organización: +5 PERSONALIDAD / -3 AMOR",
+      "text_b": "Trabajás más: +2 DINERO / -6 AMOR",
+      "effects": {
+        "A": {
+          "P": 5,
+          "A": -3
+        },
+        "B": {
+          "M": 2,
+          "A": -6
+        }
+      },
+      "source_collection": "situaciones_historicas_v0.1",
+      "approval": "HISTORICO_NO_ADAPTADO"
+    },
+    {
+      "id": "A29",
+      "stage": "Adultez",
+      "title": "Te ofrecen coordinar un proyecto grande.",
+      "text_a": "Aceptás la responsabilidad: +4 PERSONALIDAD / -3 AMOR",
+      "text_b": "Priorizás tiempo con tu pareja y amigos: +12 AMOR / -2 PERSONALIDAD",
+      "effects": {
+        "A": {
+          "P": 4,
+          "A": -3
+        },
+        "B": {
+          "A": 12,
+          "P": -2
+        }
+      },
+      "source_collection": "situaciones_historicas_v0.1",
+      "approval": "HISTORICO_NO_ADAPTADO"
+    },
+    {
+      "id": "A30",
+      "stage": "Adultez",
+      "title": "Se acerca una decisión importante para tu futuro.",
+      "text_a": "Buscás mejorar tu posición económica: +2 DINERO / -3 PERSONALIDAD",
+      "text_b": "Fortalecés tus vínculos antes de decidir: +12 AMOR / -1 PERSONALIDAD",
+      "effects": {
+        "A": {
+          "M": 2,
+          "P": -3
+        },
+        "B": {
+          "A": 12,
+          "P": -1
+        }
+      },
+      "source_collection": "situaciones_historicas_v0.1",
+      "approval": "HISTORICO_NO_ADAPTADO"
+    }
+  ],
+  "adult_proposals_30": [
+    {
+      "id": "AD-C-01",
+      "role": "Clarisa",
+      "stage": "Adultez",
+      "title": "La Clarisa que no paró nunca",
+      "family": "Decisión individual",
+      "mechanism": "Elección de futuro",
+      "story": "En una foto de otro universo aparecés con una oficina enorme, mucho dinero y ningún fin de semana libre. Ahora tenés delante esa misma elección.",
+      "text": "Elegí: A) invertís 2 👤 libres en trabajo y cobrás 4 💰; B) elegís tiempo propio y recibís 2 ❤️ + 1 👤.",
+      "eligibility_text": "Solo el jugador activo.",
+      "no_participation_text": "No corresponde.",
+      "mirror_id": "AD-L-01",
+      "source_status": "PROPUESTA_v0.2_MULTIVERSO_NO_APROBADA",
+      "mechanics": {
+        "type": "choice",
+        "options": [
+          {
+            "cost": {
+              "P": 2
+            },
+            "gain": {
+              "M": 4
+            }
+          },
+          {
+            "gain": {
+              "A": 2,
+              "P": 1
+            }
+          }
+        ]
+      },
+      "source_id": "AD-C-01",
+      "source_collection": "adultez_multiverso_v0.2",
+      "approval": "PROPUESTA_NO_APROBADA"
+    },
+    {
+      "id": "AD-C-02",
+      "role": "Clarisa",
+      "stage": "Adultez",
+      "title": "Un mensaje de la Clarisa que estudió otra cosa",
+      "family": "Decisión individual",
+      "mechanism": "Elección de aprendizaje",
+      "story": "Una Clarisa de otra realidad te deja un cuaderno lleno de respuestas a preguntas que todavía no te hiciste. ¿Vas a investigar o seguir tu camino?",
+      "text": "Elegí: A) pagás 1 💰 y obtenés 3 📖; B) guardás el cuaderno y recibís 2 👤.",
+      "eligibility_text": "Solo el jugador activo.",
+      "no_participation_text": "No corresponde.",
+      "mirror_id": "AD-L-02",
+      "source_status": "PROPUESTA_v0.2_MULTIVERSO_NO_APROBADA",
+      "mechanics": {
+        "type": "choice",
+        "options": [
+          {
+            "cost": {
+              "M": 1
+            },
+            "gain": {
+              "K": 3
+            }
+          },
+          {
+            "gain": {
+              "P": 2
+            }
+          }
+        ]
+      },
+      "source_id": "AD-C-02",
+      "source_collection": "adultez_multiverso_v0.2",
+      "approval": "PROPUESTA_NO_APROBADA"
+    },
+    {
+      "id": "AD-C-03",
+      "role": "Clarisa",
+      "stage": "Adultez",
+      "title": "La Clarisa que sí volvió",
+      "family": "Decisión individual",
+      "mechanism": "Elección afectiva",
+      "story": "Te cruzás con una Clarisa que se quedó en el lugar del que vos escapaste. Ella tiene la gente que dejaste atrás; vos, las herramientas para empezar de nuevo.",
+      "text": "Elegí: A) recuperás vínculos y recibís 3 ❤️; B) reafirmás tu camino y recibís 2 👤 + 1 📖.",
+      "eligibility_text": "Solo el jugador activo.",
+      "no_participation_text": "No corresponde.",
+      "mirror_id": "AD-L-03",
+      "source_status": "PROPUESTA_v0.2_MULTIVERSO_NO_APROBADA",
+      "mechanics": {
+        "type": "choice",
+        "options": [
+          {
+            "gain": {
+              "A": 3
+            }
+          },
+          {
+            "gain": {
+              "P": 2,
+              "K": 1
+            }
+          }
+        ]
+      },
+      "source_id": "AD-C-03",
+      "source_collection": "adultez_multiverso_v0.2",
+      "approval": "PROPUESTA_NO_APROBADA"
+    },
+    {
+      "id": "AD-C-04",
+      "role": "Clarisa",
+      "stage": "Adultez",
+      "title": "Dos Clarisas, una sola vacante",
+      "family": "Conflicto entre versiones",
+      "mechanism": "Dejar ganar o interceptar",
+      "story": "Recursos Humanos recibe dos currículums idénticos firmados por Clarisa. Una versión tuya tiene todo listo para cobrar. Podés recomendarla o disputar el puesto.",
+      "text": "Elegí otra versión habilitada. A) la dejás cerrar el trato: ella +4 💰 y vos +2 👤; B) pagás 2 👤 a la banca para disputar: vos +2 💰 y ella no cobra.",
+      "eligibility_text": "Otra versión del mismo personaje, en Juventud o Adultez; el activo elige una.",
+      "no_participation_text": "Si no existe una versión habilitada, recibís 2 💰.",
+      "mirror_id": "AD-L-04",
+      "source_status": "PROPUESTA_v0.2_MULTIVERSO_NO_APROBADA",
+      "mechanics": {
+        "type": "choice_target",
+        "target": "same_role_youth_or_adult",
+        "options": [
+          {
+            "active_gain": {
+              "P": 2
+            },
+            "target_gain": {
+              "M": 4
+            }
+          },
+          {
+            "active_cost": {
+              "P": 2
+            },
+            "active_gain": {
+              "M": 2
+            },
+            "target_gain": {}
+          }
+        ],
+        "no_target": {
+          "active_gain": {
+            "M": 2
+          }
+        }
+      },
+      "source_id": "AD-C-04",
+      "source_collection": "adultez_multiverso_v0.2",
+      "approval": "PROPUESTA_NO_APROBADA"
+    },
+    {
+      "id": "AD-C-05",
+      "role": "Clarisa",
+      "stage": "Adultez",
+      "title": "La invitación que recibió la otra Clarisa",
+      "family": "Conflicto entre versiones",
+      "mechanism": "Dejar ganar o interceptar",
+      "story": "En una cena familiar, una Clarisa idéntica a vos escucha una confesión que estaba destinada a tu vida. Nadie advierte el cambio de persona.",
+      "text": "Elegí otra versión. A) dejás que reciba la oportunidad: ella +3 ❤️ y vos +1 👤; B) pagás 1 👤 a la banca para recuperar el contacto: vos +2 ❤️ y ella no cobra.",
+      "eligibility_text": "Otra versión del mismo personaje, de cualquier etapa; el activo elige una.",
+      "no_participation_text": "Si no hay otra versión, recibís 2 ❤️.",
+      "mirror_id": "AD-L-05",
+      "source_status": "PROPUESTA_v0.2_MULTIVERSO_NO_APROBADA",
+      "mechanics": {
+        "type": "choice_target",
+        "target": "same_role_any_stage",
+        "options": [
+          {
+            "active_gain": {
+              "P": 1
+            },
+            "target_gain": {
+              "A": 3
+            }
+          },
+          {
+            "active_cost": {
+              "P": 1
+            },
+            "active_gain": {
+              "A": 2
+            },
+            "target_gain": {}
+          }
+        ],
+        "no_target": {
+          "active_gain": {
+            "A": 2
+          }
+        }
+      },
+      "source_id": "AD-C-05",
+      "source_collection": "adultez_multiverso_v0.2",
+      "approval": "PROPUESTA_NO_APROBADA"
+    },
+    {
+      "id": "AD-C-06",
+      "role": "Clarisa",
+      "stage": "Adultez",
+      "title": "Tu otra Clarisa publicó tu idea primero",
+      "family": "Conflicto entre versiones",
+      "mechanism": "Dejar ganar o reclamar",
+      "story": "Una Clarisa de otra línea temporal presenta el informe que todavía no terminaste. Tu nombre aparece en la portada, pero el reconocimiento es suyo.",
+      "text": "Elegí otra versión habilitada. A) reconocés su trabajo: ella +3 📖 y vos +2 👤; B) pagás 2 💰 a la banca para reclamar la autoría: vos +3 📖 y ella no cobra.",
+      "eligibility_text": "Otra versión del mismo personaje, en Juventud o Adultez; el activo elige una.",
+      "no_participation_text": "Si no hay otra versión habilitada, recibís 2 📖.",
+      "mirror_id": "AD-L-06",
+      "source_status": "PROPUESTA_v0.2_MULTIVERSO_NO_APROBADA",
+      "mechanics": {
+        "type": "choice_target",
+        "target": "same_role_youth_or_adult",
+        "options": [
+          {
+            "active_gain": {
+              "P": 2
+            },
+            "target_gain": {
+              "K": 3
+            }
+          },
+          {
+            "active_cost": {
+              "M": 2
+            },
+            "active_gain": {
+              "K": 3
+            },
+            "target_gain": {}
+          }
+        ],
+        "no_target": {
+          "active_gain": {
+            "K": 2
+          }
+        }
+      },
+      "source_id": "AD-C-06",
+      "source_collection": "adultez_multiverso_v0.2",
+      "approval": "PROPUESTA_NO_APROBADA"
+    },
+    {
+      "id": "AD-C-07",
+      "role": "Clarisa",
+      "stage": "Adultez",
+      "title": "La Clarisa que se quedó con tu reputación",
+      "family": "Conflicto entre versiones",
+      "mechanism": "Reputación o impugnación",
+      "story": "Una versión tuya se atribuye un logro y el resto cree que fuiste vos. Podés dejar que siga o invertir en demostrar cuál de las dos hizo el trabajo.",
+      "text": "Elegí: A) no intervenís y ganás 1 👤; B) pagás 2 💰 a la banca para impugnar a otra versión: ella pierde hasta 3 👤.",
+      "eligibility_text": "Para B: otra versión del mismo personaje, en Juventud o Adultez; el activo elige una. Si no hay, solo A.",
+      "no_participation_text": "Si no hay otra versión habilitada, aplicá A: +1 👤.",
+      "mirror_id": "AD-L-07",
+      "source_status": "PROPUESTA_v0.2_MULTIVERSO_NO_APROBADA",
+      "mechanics": {
+        "type": "choice_target",
+        "target": "same_role_youth_or_adult",
+        "options": [
+          {
+            "active_gain": {
+              "P": 1
+            }
+          },
+          {
+            "active_cost": {
+              "M": 2
+            },
+            "target_loss": {
+              "P": 3
+            }
+          }
+        ],
+        "no_target": {
+          "active_gain": {
+            "P": 1
+          }
+        }
+      },
+      "source_id": "AD-C-07",
+      "source_collection": "adultez_multiverso_v0.2",
+      "approval": "PROPUESTA_NO_APROBADA"
+    },
+    {
+      "id": "AD-C-08",
+      "role": "Clarisa",
+      "stage": "Adultez",
+      "title": "El recuerdo que otra Clarisa te robó",
+      "family": "Conflicto entre versiones",
+      "mechanism": "Aceptar o disputar un vínculo",
+      "story": "En las fotos de una celebración que recordás perfectamente aparece otra Clarisa, no vos. Las personas que querés hablan de ella como si siempre hubiera estado allí.",
+      "text": "Elegí: A) construís tu propio recuerdo y ganás 1 ❤️; B) pagás 2 💰 a la banca para disputar la relación: otra versión pierde hasta 3 ❤️.",
+      "eligibility_text": "Para B: otra versión del mismo personaje, de cualquier etapa; el activo elige una. Si no hay, solo A.",
+      "no_participation_text": "Si no hay otra versión, aplicá A: +1 ❤️.",
+      "mirror_id": "AD-L-08",
+      "source_status": "PROPUESTA_v0.2_MULTIVERSO_NO_APROBADA",
+      "mechanics": {
+        "type": "choice_target",
+        "target": "same_role_any_stage",
+        "options": [
+          {
+            "active_gain": {
+              "A": 1
+            }
+          },
+          {
+            "active_cost": {
+              "M": 2
+            },
+            "target_loss": {
+              "A": 3
+            }
+          }
+        ],
+        "no_target": {
+          "active_gain": {
+            "A": 1
+          }
+        }
+      },
+      "source_id": "AD-C-08",
+      "source_collection": "adultez_multiverso_v0.2",
+      "approval": "PROPUESTA_NO_APROBADA"
+    },
+    {
+      "id": "AD-C-09",
+      "role": "Clarisa",
+      "stage": "Adultez",
+      "title": "La Clarisa que ya sabe cómo termina",
+      "family": "Cooperación entre versiones",
+      "mechanism": "Intercambio de experiencias",
+      "story": "Una Clarisa mayor te reconoce en una estación y te señala exactamente el error que estás por cometer. Te ofrece una solución, pero quiere aprender de tu presente.",
+      "text": "Invitá a otra versión habilitada. Si acepta, ambos pagan 1 💰 a la banca: vos +2 📖 y la versión invitada +2 👤. Si no acepta, +1 📖 para vos.",
+      "eligibility_text": "Otra versión del mismo personaje, en Juventud o Adultez. Invitación voluntaria; solo un invitado.",
+      "no_participation_text": "Sin invitado o si rechaza: el activo recibe 1 📖.",
+      "mirror_id": "AD-L-09",
+      "source_status": "PROPUESTA_v0.2_MULTIVERSO_NO_APROBADA",
+      "mechanics": {
+        "type": "coop",
+        "target": "same_role_youth_or_adult",
+        "active_cost": {
+          "M": 1
+        },
+        "target_cost": {
+          "M": 1
+        },
+        "active_gain": {
+          "K": 2
+        },
+        "target_gain": {
+          "P": 2
+        },
+        "no_accept": {
+          "active_gain": {
+            "K": 1
+          }
+        }
+      },
+      "source_id": "AD-C-09",
+      "source_collection": "adultez_multiverso_v0.2",
+      "approval": "PROPUESTA_NO_APROBADA"
+    },
+    {
+      "id": "AD-C-10",
+      "role": "Clarisa",
+      "stage": "Adultez",
+      "title": "Dos Clarisas contra la misma crisis",
+      "family": "Cooperación entre versiones",
+      "mechanism": "Pacto de emergencia",
+      "story": "Una filtración de agua arruina dos departamentos casi iguales. Una Clarisa consigue materiales; la otra, contactos. Juntas pueden salvar ambas casas.",
+      "text": "Invitá a otra versión. Si acepta, cada una paga 1 👤 a la banca y ambas reciben 2 💰. Si no acepta, recibís 1 💰.",
+      "eligibility_text": "Otra versión del mismo personaje, de cualquier etapa. Invitación voluntaria; solo un invitado.",
+      "no_participation_text": "Sin invitado o si rechaza: el activo recibe 1 💰.",
+      "mirror_id": "AD-L-10",
+      "source_status": "PROPUESTA_v0.2_MULTIVERSO_NO_APROBADA",
+      "mechanics": {
+        "type": "coop",
+        "target": "same_role_any_stage",
+        "active_cost": {
+          "P": 1
+        },
+        "target_cost": {
+          "P": 1
+        },
+        "active_gain": {
+          "M": 2
+        },
+        "target_gain": {
+          "M": 2
+        },
+        "no_accept": {
+          "active_gain": {
+            "M": 1
+          }
+        }
+      },
+      "source_id": "AD-C-10",
+      "source_collection": "adultez_multiverso_v0.2",
+      "approval": "PROPUESTA_NO_APROBADA"
+    },
+    {
+      "id": "AD-C-11",
+      "role": "Clarisa",
+      "stage": "Adultez",
+      "title": "La foto con dos Clarisas",
+      "family": "Cooperación entre versiones",
+      "mechanism": "Reencuentro compartido",
+      "story": "En una foto familiar aparecés dos veces. Para evitar explicar lo imposible, vos y la otra Clarisa deben reconstruir juntos una celebración que nunca ocurrió.",
+      "text": "Invitá a otra versión. Si acepta, cada uno paga 1 📖 a la banca y ambos reciben 2 ❤️. Si no acepta, recibís 1 ❤️.",
+      "eligibility_text": "Otra versión del mismo personaje, de cualquier etapa. Invitación voluntaria; solo un invitado.",
+      "no_participation_text": "Sin invitado o si rechaza: el activo recibe 1 ❤️.",
+      "mirror_id": "AD-L-11",
+      "source_status": "PROPUESTA_v0.2_MULTIVERSO_NO_APROBADA",
+      "mechanics": {
+        "type": "coop",
+        "target": "same_role_any_stage",
+        "active_cost": {
+          "K": 1
+        },
+        "target_cost": {
+          "K": 1
+        },
+        "active_gain": {
+          "A": 2
+        },
+        "target_gain": {
+          "A": 2
+        },
+        "no_accept": {
+          "active_gain": {
+            "A": 1
+          }
+        }
+      },
+      "source_id": "AD-C-11",
+      "source_collection": "adultez_multiverso_v0.2",
+      "approval": "PROPUESTA_NO_APROBADA"
+    },
+    {
+      "id": "AD-C-12",
+      "role": "Clarisa",
+      "stage": "Adultez",
+      "title": "Un cliente contrató a la Clarisa equivocada",
+      "family": "Subasta de apropiación",
+      "mechanism": "Puja única en 👤",
+      "story": "Te acreditan un contrato rentable que, según otra Clarisa, también llevaba su firma. Las demás versiones pueden ofrecerse a asumir parte del trabajo a cambio de tu oportunidad.",
+      "text": "Beneficio 6 💰. Otras versiones pueden ofertar 👤 (mín. 1) en una sola ronda. Si hay oferta válida, adjudicación obligatoria: ganador 4 💰; vos 2 💰 + la oferta pagada. Sin ofertas, vos 6 💰.",
+      "eligibility_text": "Otras versiones del mismo personaje, de cualquier etapa, con 👤 libres; el activo y su pareja excluidos.",
+      "no_participation_text": "Sin ofertas válidas: el activo recibe 6 💰.",
+      "mirror_id": "AD-L-12",
+      "source_status": "PROPUESTA_v0.2_MULTIVERSO_NO_APROBADA",
+      "mechanics": {
+        "type": "auction",
+        "target": "same_role_any_stage",
+        "benefit": {
+          "M": 6
+        },
+        "winner": {
+          "M": 4
+        },
+        "active": {
+          "M": 2
+        },
+        "bid": "P",
+        "min_bid": 1,
+        "mandatory": true,
+        "no_bid": {
+          "active_gain": {
+            "M": 6
+          }
+        }
+      },
+      "source_id": "AD-C-12",
+      "source_collection": "adultez_multiverso_v0.2",
+      "approval": "PROPUESTA_NO_APROBADA"
+    },
+    {
+      "id": "AD-C-13",
+      "role": "Clarisa",
+      "stage": "Adultez",
+      "title": "La carta de amor enviada a todas las Clarisas",
+      "family": "Subasta de apropiación",
+      "mechanism": "Puja única en 💰",
+      "story": "Recibís una declaración preciosa, pero no sos la única Clarisa en el destinatario. Otras versiones intentan quedarse con la atención y te ofrecen compensaciones.",
+      "text": "Beneficio 6 ❤️. Otras versiones pueden ofertar 💰 (mín. 1) en una sola ronda. Si hay oferta válida, adjudicación obligatoria: ganador 4 ❤️; vos 2 ❤️ + la oferta pagada. Sin ofertas, vos 6 ❤️.",
+      "eligibility_text": "Otras versiones del mismo personaje, de cualquier etapa, con 💰 libres; el activo y su pareja excluidos.",
+      "no_participation_text": "Sin ofertas válidas: el activo recibe 6 ❤️.",
+      "mirror_id": "AD-L-13",
+      "source_status": "PROPUESTA_v0.2_MULTIVERSO_NO_APROBADA",
+      "mechanics": {
+        "type": "auction",
+        "target": "same_role_any_stage",
+        "benefit": {
+          "A": 6
+        },
+        "winner": {
+          "A": 4
+        },
+        "active": {
+          "A": 2
+        },
+        "bid": "M",
+        "min_bid": 1,
+        "mandatory": true,
+        "no_bid": {
+          "active_gain": {
+            "A": 6
+          }
+        }
+      },
+      "source_id": "AD-C-13",
+      "source_collection": "adultez_multiverso_v0.2",
+      "approval": "PROPUESTA_NO_APROBADA"
+    },
+    {
+      "id": "AD-C-14",
+      "role": "Clarisa",
+      "stage": "Adultez",
+      "title": "El libro que escribió otra Clarisa",
+      "family": "Subasta de apropiación",
+      "mechanism": "Puja en 💰 o 👤",
+      "story": "Encontrás un libro publicado con tu nombre y recuerdos de decisiones que nunca tomaste. Otras Clarisas quieren quedarse con sus enseñanzas.",
+      "text": "Beneficio 6 📖. Antes de la ronda elegís si se puja con 💰 o 👤 (mín. 1). En una sola ronda, podés aceptar o rechazar todas las ofertas. Si aceptás: ganador 4 📖; vos 2 📖 + oferta pagada. Si rechazás o no hay ofertas: vos 6 📖.",
+      "eligibility_text": "Otras versiones del mismo personaje, de cualquier etapa, con el recurso elegido libre; el activo y su pareja excluidos.",
+      "no_participation_text": "Sin ofertas o si las rechazás: el activo recibe 6 📖.",
+      "mirror_id": "AD-L-14",
+      "source_status": "PROPUESTA_v0.2_MULTIVERSO_NO_APROBADA",
+      "mechanics": {
+        "type": "auction",
+        "target": "same_role_any_stage",
+        "benefit": {
+          "K": 6
+        },
+        "winner": {
+          "K": 4
+        },
+        "active": {
+          "K": 2
+        },
+        "bid_choice": [
+          "M",
+          "P"
+        ],
+        "min_bid": 1,
+        "mandatory": false,
+        "no_bid": {
+          "active_gain": {
+            "K": 6
+          }
+        }
+      },
+      "source_id": "AD-C-14",
+      "source_collection": "adultez_multiverso_v0.2",
+      "approval": "PROPUESTA_NO_APROBADA"
+    },
+    {
+      "id": "AD-C-15",
+      "role": "Clarisa",
+      "stage": "Adultez",
+      "title": "El premio a la Clarisa original",
+      "family": "Subasta de apropiación",
+      "mechanism": "Ofertas heterogéneas",
+      "story": "Te invitan a recibir un reconocimiento por ser «la verdadera Clarisa». La sorpresa: todas las demás recibieron la misma invitación y quieren parte del prestigio.",
+      "text": "Beneficio 6 👤. Otras versiones hacen UNA oferta libre en ❤️, 👤, 📖 o 💰 (mín. 1 unidad), sin equivalencia fija entre recursos. Podés aceptar una mejor oferta o rechazarlas todas. Si aceptás: ganador 4 👤; vos 2 👤 + los recursos ofertados. Si no, vos 6 👤.",
+      "eligibility_text": "Otras versiones del mismo personaje, de cualquier etapa, con recursos libres; el activo y su pareja excluidos.",
+      "no_participation_text": "Sin ofertas o si las rechazás: el activo recibe 6 👤.",
+      "mirror_id": "AD-L-15",
+      "source_status": "PROPUESTA_v0.2_MULTIVERSO_NO_APROBADA",
+      "mechanics": {
+        "type": "auction",
+        "target": "same_role_any_stage",
+        "benefit": {
+          "P": 6
+        },
+        "winner": {
+          "P": 4
+        },
+        "active": {
+          "P": 2
+        },
+        "bid_any": [
+          "A",
+          "P",
+          "K",
+          "M"
+        ],
+        "min_bid": 1,
+        "mandatory": false,
+        "no_bid": {
+          "active_gain": {
+            "P": 6
+          }
+        }
+      },
+      "source_id": "AD-C-15",
+      "source_collection": "adultez_multiverso_v0.2",
+      "approval": "PROPUESTA_NO_APROBADA"
+    },
+    {
+      "id": "AD-L-01",
+      "role": "Lucas",
+      "stage": "Adultez",
+      "title": "El Lucas que no supo frenar",
+      "family": "Decisión individual",
+      "mechanism": "Elección de futuro",
+      "story": "Una versión tuya llega en auto de lujo. Te cuenta cuánto ganó... y cuántas veces se perdió los momentos importantes.",
+      "text": "Elegí: A) invertís 2 👤 libres en trabajo y cobrás 4 💰; B) elegís tiempo propio y recibís 2 ❤️ + 1 👤.",
+      "eligibility_text": "Solo el jugador activo.",
+      "no_participation_text": "No corresponde.",
+      "mirror_id": "AD-C-01",
+      "source_status": "PROPUESTA_v0.2_MULTIVERSO_NO_APROBADA",
+      "mechanics": {
+        "type": "choice",
+        "options": [
+          {
+            "cost": {
+              "P": 2
+            },
+            "gain": {
+              "M": 4
+            }
+          },
+          {
+            "gain": {
+              "A": 2,
+              "P": 1
+            }
+          }
+        ]
+      },
+      "source_id": "AD-L-01",
+      "source_collection": "adultez_multiverso_v0.2",
+      "approval": "PROPUESTA_NO_APROBADA"
+    },
+    {
+      "id": "AD-L-02",
+      "role": "Lucas",
+      "stage": "Adultez",
+      "title": "La nota del Lucas que cambió de carrera",
+      "family": "Decisión individual",
+      "mechanism": "Elección de aprendizaje",
+      "story": "Encontrás tus propios apuntes de una profesión que jamás ejerciste. Parecen imposibles de entender, pero podrían cambiar tu próximo paso.",
+      "text": "Elegí: A) pagás 1 💰 y obtenés 3 📖; B) guardás el cuaderno y recibís 2 👤.",
+      "eligibility_text": "Solo el jugador activo.",
+      "no_participation_text": "No corresponde.",
+      "mirror_id": "AD-C-02",
+      "source_status": "PROPUESTA_v0.2_MULTIVERSO_NO_APROBADA",
+      "mechanics": {
+        "type": "choice",
+        "options": [
+          {
+            "cost": {
+              "M": 1
+            },
+            "gain": {
+              "K": 3
+            }
+          },
+          {
+            "gain": {
+              "P": 2
+            }
+          }
+        ]
+      },
+      "source_id": "AD-L-02",
+      "source_collection": "adultez_multiverso_v0.2",
+      "approval": "PROPUESTA_NO_APROBADA"
+    },
+    {
+      "id": "AD-L-03",
+      "role": "Lucas",
+      "stage": "Adultez",
+      "title": "El Lucas que nunca se fue",
+      "family": "Decisión individual",
+      "mechanism": "Elección afectiva",
+      "story": "Conocés al Lucas que no tomó aquel vuelo. Lo ves rodeado de amigos, pero también de todas las dudas que creías haber superado.",
+      "text": "Elegí: A) recuperás vínculos y recibís 3 ❤️; B) reafirmás tu camino y recibís 2 👤 + 1 📖.",
+      "eligibility_text": "Solo el jugador activo.",
+      "no_participation_text": "No corresponde.",
+      "mirror_id": "AD-C-03",
+      "source_status": "PROPUESTA_v0.2_MULTIVERSO_NO_APROBADA",
+      "mechanics": {
+        "type": "choice",
+        "options": [
+          {
+            "gain": {
+              "A": 3
+            }
+          },
+          {
+            "gain": {
+              "P": 2,
+              "K": 1
+            }
+          }
+        ]
+      },
+      "source_id": "AD-L-03",
+      "source_collection": "adultez_multiverso_v0.2",
+      "approval": "PROPUESTA_NO_APROBADA"
+    },
+    {
+      "id": "AD-L-04",
+      "role": "Lucas",
+      "stage": "Adultez",
+      "title": "Dos Lucases, un único contrato",
+      "family": "Conflicto entre versiones",
+      "mechanism": "Dejar ganar o interceptar",
+      "story": "Alguien encuentra dos propuestas iguales con tu firma, presentadas en universos distintos. El cliente solo acepta una; la otra versión está por llevárselo.",
+      "text": "Elegí otra versión habilitada. A) la dejás cerrar el trato: ella +4 💰 y vos +2 👤; B) pagás 2 👤 a la banca para disputar: vos +2 💰 y ella no cobra.",
+      "eligibility_text": "Otra versión del mismo personaje, en Juventud o Adultez; el activo elige una.",
+      "no_participation_text": "Si no existe una versión habilitada, recibís 2 💰.",
+      "mirror_id": "AD-C-04",
+      "source_status": "PROPUESTA_v0.2_MULTIVERSO_NO_APROBADA",
+      "mechanics": {
+        "type": "choice_target",
+        "target": "same_role_youth_or_adult",
+        "options": [
+          {
+            "active_gain": {
+              "P": 2
+            },
+            "target_gain": {
+              "M": 4
+            }
+          },
+          {
+            "active_cost": {
+              "P": 2
+            },
+            "active_gain": {
+              "M": 2
+            },
+            "target_gain": {}
+          }
+        ],
+        "no_target": {
+          "active_gain": {
+            "M": 2
+          }
+        }
+      },
+      "source_id": "AD-L-04",
+      "source_collection": "adultez_multiverso_v0.2",
+      "approval": "PROPUESTA_NO_APROBADA"
+    },
+    {
+      "id": "AD-L-05",
+      "role": "Lucas",
+      "stage": "Adultez",
+      "title": "El WhatsApp que contestó otro Lucas",
+      "family": "Conflicto entre versiones",
+      "mechanism": "Dejar ganar o interceptar",
+      "story": "Otro Lucas atiende tu teléfono y recibe la invitación que esperabas desde hace meses. Puede quedársela, a menos que actúes.",
+      "text": "Elegí otra versión. A) dejás que reciba la oportunidad: ella +3 ❤️ y vos +1 👤; B) pagás 1 👤 a la banca para recuperar el contacto: vos +2 ❤️ y ella no cobra.",
+      "eligibility_text": "Otra versión del mismo personaje, de cualquier etapa; el activo elige una.",
+      "no_participation_text": "Si no hay otra versión, recibís 2 ❤️.",
+      "mirror_id": "AD-C-05",
+      "source_status": "PROPUESTA_v0.2_MULTIVERSO_NO_APROBADA",
+      "mechanics": {
+        "type": "choice_target",
+        "target": "same_role_any_stage",
+        "options": [
+          {
+            "active_gain": {
+              "P": 1
+            },
+            "target_gain": {
+              "A": 3
+            }
+          },
+          {
+            "active_cost": {
+              "P": 1
+            },
+            "active_gain": {
+              "A": 2
+            },
+            "target_gain": {}
+          }
+        ],
+        "no_target": {
+          "active_gain": {
+            "A": 2
+          }
+        }
+      },
+      "source_id": "AD-L-05",
+      "source_collection": "adultez_multiverso_v0.2",
+      "approval": "PROPUESTA_NO_APROBADA"
+    },
+    {
+      "id": "AD-L-06",
+      "role": "Lucas",
+      "stage": "Adultez",
+      "title": "Otro Lucas patentó tu idea antes que vos",
+      "family": "Conflicto entre versiones",
+      "mechanism": "Dejar ganar o reclamar",
+      "story": "Un Lucas presenta una solución que apenas tenés dibujada en una servilleta. Hasta los errores son exactamente los mismos que los tuyos.",
+      "text": "Elegí otra versión habilitada. A) reconocés su trabajo: ella +3 📖 y vos +2 👤; B) pagás 2 💰 a la banca para reclamar la autoría: vos +3 📖 y ella no cobra.",
+      "eligibility_text": "Otra versión del mismo personaje, en Juventud o Adultez; el activo elige una.",
+      "no_participation_text": "Si no hay otra versión habilitada, recibís 2 📖.",
+      "mirror_id": "AD-C-06",
+      "source_status": "PROPUESTA_v0.2_MULTIVERSO_NO_APROBADA",
+      "mechanics": {
+        "type": "choice_target",
+        "target": "same_role_youth_or_adult",
+        "options": [
+          {
+            "active_gain": {
+              "P": 2
+            },
+            "target_gain": {
+              "K": 3
+            }
+          },
+          {
+            "active_cost": {
+              "M": 2
+            },
+            "active_gain": {
+              "K": 3
+            },
+            "target_gain": {}
+          }
+        ],
+        "no_target": {
+          "active_gain": {
+            "K": 2
+          }
+        }
+      },
+      "source_id": "AD-L-06",
+      "source_collection": "adultez_multiverso_v0.2",
+      "approval": "PROPUESTA_NO_APROBADA"
+    },
+    {
+      "id": "AD-L-07",
+      "role": "Lucas",
+      "stage": "Adultez",
+      "title": "El Lucas que firmó con tu nombre",
+      "family": "Conflicto entre versiones",
+      "mechanism": "Reputación o impugnación",
+      "story": "El otro Lucas se presenta como autor de un proyecto; todos creen que lo hiciste vos. Desmentirlo te costará, pero puede afectar su credibilidad.",
+      "text": "Elegí: A) no intervenís y ganás 1 👤; B) pagás 2 💰 a la banca para impugnar a otra versión: ella pierde hasta 3 👤.",
+      "eligibility_text": "Para B: otra versión del mismo personaje, en Juventud o Adultez; el activo elige una. Si no hay, solo A.",
+      "no_participation_text": "Si no hay otra versión habilitada, aplicá A: +1 👤.",
+      "mirror_id": "AD-C-07",
+      "source_status": "PROPUESTA_v0.2_MULTIVERSO_NO_APROBADA",
+      "mechanics": {
+        "type": "choice_target",
+        "target": "same_role_youth_or_adult",
+        "options": [
+          {
+            "active_gain": {
+              "P": 1
+            }
+          },
+          {
+            "active_cost": {
+              "M": 2
+            },
+            "target_loss": {
+              "P": 3
+            }
+          }
+        ],
+        "no_target": {
+          "active_gain": {
+            "P": 1
+          }
+        }
+      },
+      "source_id": "AD-L-07",
+      "source_collection": "adultez_multiverso_v0.2",
+      "approval": "PROPUESTA_NO_APROBADA"
+    },
+    {
+      "id": "AD-L-08",
+      "role": "Lucas",
+      "stage": "Adultez",
+      "title": "El Lucas que vivió tu mejor cita",
+      "family": "Conflicto entre versiones",
+      "mechanism": "Aceptar o disputar un vínculo",
+      "story": "Una persona especial recuerda una cita increíble con Lucas. Vos no estuviste; otra versión tuya ocupó ese lugar. Podés intentar recuperar tu historia.",
+      "text": "Elegí: A) construís tu propio recuerdo y ganás 1 ❤️; B) pagás 2 💰 a la banca para disputar la relación: otra versión pierde hasta 3 ❤️.",
+      "eligibility_text": "Para B: otra versión del mismo personaje, de cualquier etapa; el activo elige una. Si no hay, solo A.",
+      "no_participation_text": "Si no hay otra versión, aplicá A: +1 ❤️.",
+      "mirror_id": "AD-C-08",
+      "source_status": "PROPUESTA_v0.2_MULTIVERSO_NO_APROBADA",
+      "mechanics": {
+        "type": "choice_target",
+        "target": "same_role_any_stage",
+        "options": [
+          {
+            "active_gain": {
+              "A": 1
+            }
+          },
+          {
+            "active_cost": {
+              "M": 2
+            },
+            "target_loss": {
+              "A": 3
+            }
+          }
+        ],
+        "no_target": {
+          "active_gain": {
+            "A": 1
+          }
+        }
+      },
+      "source_id": "AD-L-08",
+      "source_collection": "adultez_multiverso_v0.2",
+      "approval": "PROPUESTA_NO_APROBADA"
+    },
+    {
+      "id": "AD-L-09",
+      "role": "Lucas",
+      "stage": "Adultez",
+      "title": "El Lucas que ya cometió ese error",
+      "family": "Cooperación entre versiones",
+      "mechanism": "Intercambio de experiencias",
+      "story": "Otro Lucas aparece con la pieza que te falta. Dice que él perdió años buscando la respuesta y está dispuesto a compartirla si lo ayudás a empezar de nuevo.",
+      "text": "Invitá a otra versión habilitada. Si acepta, ambos pagan 1 💰 a la banca: vos +2 📖 y la versión invitada +2 👤. Si no acepta, +1 📖 para vos.",
+      "eligibility_text": "Otra versión del mismo personaje, en Juventud o Adultez. Invitación voluntaria; solo un invitado.",
+      "no_participation_text": "Sin invitado o si rechaza: el activo recibe 1 📖.",
+      "mirror_id": "AD-C-09",
+      "source_status": "PROPUESTA_v0.2_MULTIVERSO_NO_APROBADA",
+      "mechanics": {
+        "type": "coop",
+        "target": "same_role_youth_or_adult",
+        "active_cost": {
+          "M": 1
+        },
+        "target_cost": {
+          "M": 1
+        },
+        "active_gain": {
+          "K": 2
+        },
+        "target_gain": {
+          "P": 2
+        },
+        "no_accept": {
+          "active_gain": {
+            "K": 1
+          }
+        }
+      },
+      "source_id": "AD-L-09",
+      "source_collection": "adultez_multiverso_v0.2",
+      "approval": "PROPUESTA_NO_APROBADA"
+    },
+    {
+      "id": "AD-L-10",
+      "role": "Lucas",
+      "stage": "Adultez",
+      "title": "Los dos Lucas y el mismo imprevisto",
+      "family": "Cooperación entre versiones",
+      "mechanism": "Pacto de emergencia",
+      "story": "En dos universos se corta la luz a la vez. Dos Lucas tienen la mitad de la solución cada uno, pero ninguno puede arreglarlo solo.",
+      "text": "Invitá a otra versión. Si acepta, cada una paga 1 👤 a la banca y ambas reciben 2 💰. Si no acepta, recibís 1 💰.",
+      "eligibility_text": "Otra versión del mismo personaje, de cualquier etapa. Invitación voluntaria; solo un invitado.",
+      "no_participation_text": "Sin invitado o si rechaza: el activo recibe 1 💰.",
+      "mirror_id": "AD-C-10",
+      "source_status": "PROPUESTA_v0.2_MULTIVERSO_NO_APROBADA",
+      "mechanics": {
+        "type": "coop",
+        "target": "same_role_any_stage",
+        "active_cost": {
+          "P": 1
+        },
+        "target_cost": {
+          "P": 1
+        },
+        "active_gain": {
+          "M": 2
+        },
+        "target_gain": {
+          "M": 2
+        },
+        "no_accept": {
+          "active_gain": {
+            "M": 1
+          }
+        }
+      },
+      "source_id": "AD-L-10",
+      "source_collection": "adultez_multiverso_v0.2",
+      "approval": "PROPUESTA_NO_APROBADA"
+    },
+    {
+      "id": "AD-L-11",
+      "role": "Lucas",
+      "stage": "Adultez",
+      "title": "El cumpleaños con dos Lucases",
+      "family": "Cooperación entre versiones",
+      "mechanism": "Reencuentro compartido",
+      "story": "Tu familia insiste en que estuvo Lucas en dos cumpleaños simultáneos. El otro Lucas tiene la torta; vos, la historia. Deciden celebrar de nuevo.",
+      "text": "Invitá a otra versión. Si acepta, cada uno paga 1 📖 a la banca y ambos reciben 2 ❤️. Si no acepta, recibís 1 ❤️.",
+      "eligibility_text": "Otra versión del mismo personaje, de cualquier etapa. Invitación voluntaria; solo un invitado.",
+      "no_participation_text": "Sin invitado o si rechaza: el activo recibe 1 ❤️.",
+      "mirror_id": "AD-C-11",
+      "source_status": "PROPUESTA_v0.2_MULTIVERSO_NO_APROBADA",
+      "mechanics": {
+        "type": "coop",
+        "target": "same_role_any_stage",
+        "active_cost": {
+          "K": 1
+        },
+        "target_cost": {
+          "K": 1
+        },
+        "active_gain": {
+          "A": 2
+        },
+        "target_gain": {
+          "A": 2
+        },
+        "no_accept": {
+          "active_gain": {
+            "A": 1
+          }
+        }
+      },
+      "source_id": "AD-L-11",
+      "source_collection": "adultez_multiverso_v0.2",
+      "approval": "PROPUESTA_NO_APROBADA"
+    },
+    {
+      "id": "AD-L-12",
+      "role": "Lucas",
+      "stage": "Adultez",
+      "title": "Una factura llegó al Lucas equivocado",
+      "family": "Subasta de apropiación",
+      "mechanism": "Puja única en 👤",
+      "story": "Te llega un pago por una operación hecha por otro Lucas. El cliente no distingue las versiones; ellas pueden ofrecerse a quedarse con parte del ingreso.",
+      "text": "Beneficio 6 💰. Otras versiones pueden ofertar 👤 (mín. 1) en una sola ronda. Si hay oferta válida, adjudicación obligatoria: ganador 4 💰; vos 2 💰 + la oferta pagada. Sin ofertas, vos 6 💰.",
+      "eligibility_text": "Otras versiones del mismo personaje, de cualquier etapa, con 👤 libres; el activo y su pareja excluidos.",
+      "no_participation_text": "Sin ofertas válidas: el activo recibe 6 💰.",
+      "mirror_id": "AD-C-12",
+      "source_status": "PROPUESTA_v0.2_MULTIVERSO_NO_APROBADA",
+      "mechanics": {
+        "type": "auction",
+        "target": "same_role_any_stage",
+        "benefit": {
+          "M": 6
+        },
+        "winner": {
+          "M": 4
+        },
+        "active": {
+          "M": 2
+        },
+        "bid": "P",
+        "min_bid": 1,
+        "mandatory": true,
+        "no_bid": {
+          "active_gain": {
+            "M": 6
+          }
+        }
+      },
+      "source_id": "AD-L-12",
+      "source_collection": "adultez_multiverso_v0.2",
+      "approval": "PROPUESTA_NO_APROBADA"
+    },
+    {
+      "id": "AD-L-13",
+      "role": "Lucas",
+      "stage": "Adultez",
+      "title": "El mensaje romántico enviado a todos los Lucas",
+      "family": "Subasta de apropiación",
+      "mechanism": "Puja única en 💰",
+      "story": "Alguien confiesa estar enamorado de Lucas. El mensaje llega a varios universos y tus otras versiones quieren apropiarse de esa oportunidad.",
+      "text": "Beneficio 6 ❤️. Otras versiones pueden ofertar 💰 (mín. 1) en una sola ronda. Si hay oferta válida, adjudicación obligatoria: ganador 4 ❤️; vos 2 ❤️ + la oferta pagada. Sin ofertas, vos 6 ❤️.",
+      "eligibility_text": "Otras versiones del mismo personaje, de cualquier etapa, con 💰 libres; el activo y su pareja excluidos.",
+      "no_participation_text": "Sin ofertas válidas: el activo recibe 6 ❤️.",
+      "mirror_id": "AD-C-13",
+      "source_status": "PROPUESTA_v0.2_MULTIVERSO_NO_APROBADA",
+      "mechanics": {
+        "type": "auction",
+        "target": "same_role_any_stage",
+        "benefit": {
+          "A": 6
+        },
+        "winner": {
+          "A": 4
+        },
+        "active": {
+          "A": 2
+        },
+        "bid": "M",
+        "min_bid": 1,
+        "mandatory": true,
+        "no_bid": {
+          "active_gain": {
+            "A": 6
+          }
+        }
+      },
+      "source_id": "AD-L-13",
+      "source_collection": "adultez_multiverso_v0.2",
+      "approval": "PROPUESTA_NO_APROBADA"
+    },
+    {
+      "id": "AD-L-14",
+      "role": "Lucas",
+      "stage": "Adultez",
+      "title": "El cuaderno que firmaron varios Lucas",
+      "family": "Subasta de apropiación",
+      "mechanism": "Puja en 💰 o 👤",
+      "story": "Aparece un cuaderno técnico firmado por Lucas con soluciones de distintos futuros. Las otras versiones compiten por aprender lo que contiene.",
+      "text": "Beneficio 6 📖. Antes de la ronda elegís si se puja con 💰 o 👤 (mín. 1). En una sola ronda, podés aceptar o rechazar todas las ofertas. Si aceptás: ganador 4 📖; vos 2 📖 + oferta pagada. Si rechazás o no hay ofertas: vos 6 📖.",
+      "eligibility_text": "Otras versiones del mismo personaje, de cualquier etapa, con el recurso elegido libre; el activo y su pareja excluidos.",
+      "no_participation_text": "Sin ofertas o si las rechazás: el activo recibe 6 📖.",
+      "mirror_id": "AD-C-14",
+      "source_status": "PROPUESTA_v0.2_MULTIVERSO_NO_APROBADA",
+      "mechanics": {
+        "type": "auction",
+        "target": "same_role_any_stage",
+        "benefit": {
+          "K": 6
+        },
+        "winner": {
+          "K": 4
+        },
+        "active": {
+          "K": 2
+        },
+        "bid_choice": [
+          "M",
+          "P"
+        ],
+        "min_bid": 1,
+        "mandatory": false,
+        "no_bid": {
+          "active_gain": {
+            "K": 6
+          }
+        }
+      },
+      "source_id": "AD-L-14",
+      "source_collection": "adultez_multiverso_v0.2",
+      "approval": "PROPUESTA_NO_APROBADA"
+    },
+    {
+      "id": "AD-L-15",
+      "role": "Lucas",
+      "stage": "Adultez",
+      "title": "¿Cuál de los Lucas es el auténtico?",
+      "family": "Subasta de apropiación",
+      "mechanism": "Ofertas heterogéneas",
+      "story": "Te entregan un premio «al Lucas más Lucas». Hay varias versiones en la sala y cada una cree ser la auténtica. Negocian quién se queda con el reconocimiento.",
+      "text": "Beneficio 6 👤. Otras versiones hacen UNA oferta libre en ❤️, 👤, 📖 o 💰 (mín. 1 unidad), sin equivalencia fija entre recursos. Podés aceptar una mejor oferta o rechazarlas todas. Si aceptás: ganador 4 👤; vos 2 👤 + los recursos ofertados. Si no, vos 6 👤.",
+      "eligibility_text": "Otras versiones del mismo personaje, de cualquier etapa, con recursos libres; el activo y su pareja excluidos.",
+      "no_participation_text": "Sin ofertas o si las rechazás: el activo recibe 6 👤.",
+      "mirror_id": "AD-C-15",
+      "source_status": "PROPUESTA_v0.2_MULTIVERSO_NO_APROBADA",
+      "mechanics": {
+        "type": "auction",
+        "target": "same_role_any_stage",
+        "benefit": {
+          "P": 6
+        },
+        "winner": {
+          "P": 4
+        },
+        "active": {
+          "P": 2
+        },
+        "bid_any": [
+          "A",
+          "P",
+          "K",
+          "M"
+        ],
+        "min_bid": 1,
+        "mandatory": false,
+        "no_bid": {
+          "active_gain": {
+            "P": 6
+          }
+        }
+      },
+      "source_id": "AD-L-15",
+      "source_collection": "adultez_multiverso_v0.2",
+      "approval": "PROPUESTA_NO_APROBADA"
+    }
+  ]
+}
