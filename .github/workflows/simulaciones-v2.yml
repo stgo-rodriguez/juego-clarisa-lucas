@@ -1,4 +1,4 @@
-name: Simulaciones v2 - Fases 1 a 4
+name: Simulaciones v2 - Fases 1 a 5
 on:
   push:
     branches:
@@ -8,14 +8,17 @@ on:
       - 'simulador/turnos_v2.py'
       - 'simulador/economia_v2.py'
       - 'simulador/transiciones_v2.py'
+      - 'simulador/agentes_v2.py'
       - 'tests/test_movimiento_v2.py'
       - 'tests/test_turnos_v2.py'
       - 'tests/test_economia_v2.py'
       - 'tests/test_transiciones_v2.py'
+      - 'tests/test_agentes_v2.py'
       - 'laboratorio/smoke_turnos_v2.py'
       - 'laboratorio/smoke_economia_v2.py'
       - 'laboratorio/smoke_transiciones_v2.py'
       - 'laboratorio/comparar_dublin_v2.py'
+      - 'laboratorio/experimento_agentes_v2.py'
       - '.github/workflows/simulaciones-v2.yml'
   workflow_dispatch:
 
@@ -32,7 +35,7 @@ jobs:
         with:
           python-version: ${{ matrix.python-version }}
       - name: Sintaxis del motor y pruebas v2
-        run: python -m compileall -q simulador/movimiento_v2.py simulador/turnos_v2.py tests/test_movimiento_v2.py tests/test_turnos_v2.py tests/test_economia_v2.py simulador/economia_v2.py simulador/transiciones_v2.py tests/test_transiciones_v2.py laboratorio/smoke_transiciones_v2.py laboratorio/comparar_dublin_v2.py
+        run: python -m compileall -q simulador/movimiento_v2.py simulador/turnos_v2.py tests/test_movimiento_v2.py tests/test_turnos_v2.py tests/test_economia_v2.py simulador/economia_v2.py simulador/transiciones_v2.py tests/test_transiciones_v2.py laboratorio/smoke_transiciones_v2.py laboratorio/comparar_dublin_v2.py simulador/agentes_v2.py laboratorio/experimento_agentes_v2.py tests/test_agentes_v2.py
       - name: Pruebas geométricas v2
         run: python -m unittest discover -s tests -p 'test_movimiento_v2.py' -v
       - name: Pruebas de orquestador v2
@@ -49,3 +52,7 @@ jobs:
         run: python -m laboratorio.smoke_transiciones_v2 --dublin-policy both
       - name: Comparación contrafactual con 50 semillas
         run: python -m laboratorio.comparar_dublin_v2 --semillas 50 --out resultados/fase4
+      - name: Pruebas de agente, mercado y corrección del RNG (Fase 5)
+        run: python -m unittest discover -s tests -p 'test_agentes_v2.py' -v
+      - name: Integración de partidas sintéticas de 6 y 10 jugadores
+        run: python -m laboratorio.experimento_agentes_v2 --semillas 5 --rondas 60 --mano 3 --out resultados/fase5_ci
