@@ -1,0 +1,31 @@
+name: Simulaciones v2 - Fase 2
+on:
+  push:
+    branches:
+      - feature/simulaciones-v2-movimiento
+    paths:
+      - 'simulador/movimiento_v2.py'
+      - 'simulador/turnos_v2.py'
+      - 'tests/test_movimiento_v2.py'
+      - 'tests/test_turnos_v2.py'
+      - '.github/workflows/simulaciones-v2.yml'
+  workflow_dispatch:
+
+jobs:
+  movimiento-y-turnos-v2:
+    runs-on: ubuntu-latest
+    strategy:
+      fail-fast: false
+      matrix:
+        python-version: ['3.11', '3.13']
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: ${{ matrix.python-version }}
+      - name: Sintaxis del motor y pruebas v2
+        run: python -m compileall -q simulador/movimiento_v2.py simulador/turnos_v2.py tests/test_movimiento_v2.py tests/test_turnos_v2.py
+      - name: Pruebas geométricas v2
+        run: python -m unittest discover -s tests -p 'test_movimiento_v2.py' -v
+      - name: Pruebas de orquestador v2
+        run: python -m unittest discover -s tests -p 'test_turnos_v2.py' -v
