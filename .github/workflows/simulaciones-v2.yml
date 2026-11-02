@@ -8,6 +8,7 @@ on:
       - 'simulador/turnos_v2.py'
       - 'tests/test_movimiento_v2.py'
       - 'tests/test_turnos_v2.py'
+      - 'laboratorio/smoke_turnos_v2.py'
       - '.github/workflows/simulaciones-v2.yml'
   workflow_dispatch:
 
@@ -29,3 +30,5 @@ jobs:
         run: python -m unittest discover -s tests -p 'test_movimiento_v2.py' -v
       - name: Pruebas de orquestador v2
         run: python -m unittest discover -s tests -p 'test_turnos_v2.py' -v
+      - name: Integración 6 y 10 jugadores sin efectos económicos
+        run: python -m laboratorio.smoke_turnos_v2 --rondas 2
