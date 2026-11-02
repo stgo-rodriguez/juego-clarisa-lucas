@@ -304,7 +304,10 @@ class EconomyV2:
             ac=self._account(q.id)
             if not (ac.title and ac.passport==PASSPORT_KIND[q.role] and ac.pair_a>=5):
                 return False
-        if not self._pool_to_quota(a.id,b.id,{'K':5,'M':5}):return False
+        # K/M son requisitos puntuales INDIVIDUALES, no aportes conjuntos.
+        # No se transfieren ni se inmovilizan recursos automáticamente.
+        if any(self._account(q.id).free[r]<5 for q in (a,b) for r in ('K','M')):
+            return False
         for q in (a,b):q.stage=Stage.DUBLIN;q.position=Stage.DUBLIN.value
         self.events.append(dict(action='enter_dublin',players=(a.id,b.id)))
         return True
