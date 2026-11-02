@@ -1,14 +1,14 @@
 # Simulaciones v2.x — Fase 1: movimiento aislado
 
-**Fuente normativa:** \`Clarisa_y_Lucas_Especificacion_Integral_v2.0_Consolidada.docx\`, edición 1/11/2026 (secciones 5, 7, 11–13 y anexo).  
-**Rama:** \`feature/simulaciones-v2-movimiento\`.  
+**Fuente normativa:** `Clarisa_y_Lucas_Especificacion_Integral_v2.0_Consolidada.docx`, edición 1/11/2026 (secciones 5, 7, 11–13 y anexo).  
+**Rama:** `feature/simulaciones-v2-movimiento`.  
 **Naturaleza:** implementación geométrica y pruebas, no simulación integral de partidas.
 
 ## Archivos nuevos
 
-- \`simulador/movimiento_v2.py\`: motor puro de recorridos, rebotes, salidas, cartas A/B y manos individuales.
-- \`tests/test_movimiento_v2.py\`: pruebas de invariantes y casos límite.
-- \`laboratorio/analisis_movimiento_v2.py\`: enumerador de trayectorias, CSV y resumen JSON.
+- `simulador/movimiento_v2.py`: motor puro de recorridos, rebotes, salidas, cartas A/B y manos individuales.
+- `tests/test_movimiento_v2.py`: pruebas de invariantes y casos límite.
+- `laboratorio/analisis_movimiento_v2.py`: enumerador de trayectorias, CSV y resumen JSON.
 
 El motor v1.3, el adaptador económico, la interfaz Streamlit y la web pública no fueron modificados.
 
@@ -18,7 +18,7 @@ El motor v1.3, el adaptador económico, la interfaz Streamlit y la web pública 
 2. **Juventud:** generador de 30 pares ordenados A/B con A ≠ B, con alternativa de 36 pares y mezcla aleatoria antes de repartir. Una carta individual diferente por extracción; la asociación con la Situación compartida se implementará en Fase 2.
 3. **Adultez:** cuadrícula confirmada de 25 posiciones (Casa 3,3; Cobrar perfil 5,3; tres conexiones superiores).
 4. **Geometría:** ocho direcciones internas posibles, primer paso siempre válido, rebote sin gasto, reflexión simultánea de ambas componentes en esquinas, longitud exacta, activación solo del destino y posibilidad de terminar en origen.
-5. **Casamiento:** salida opcional desde (1,2), (1,3), (1,4), un paso consumido y descarte del resto. El motor recibe \`marriage_eligible=True\` **únicamente si** el motor integral ya verificó requisitos.
+5. **Casamiento:** salida opcional desde (1,2), (1,3), (1,4), un paso consumido y descarte del resto. El motor recibe `marriage_eligible=True` **únicamente si** el motor integral ya verificó requisitos.
 6. **Manos:** uso de una carta del jugador activo, A o B; el acompañante conserva íntegra su mano; nuevo lote únicamente al agotarse la mano anterior. Tamaño 3/4 como parámetro experimental.
 7. **Mazos:** ningún reciclado silencioso. El motor deja su oportunidad/criterio pendiente; el descarte puede reciclarse mediante llamada explícita.
 
@@ -35,12 +35,12 @@ El motor v1.3, el adaptador económico, la interfaz Streamlit y la web pública 
 
 Desde la raíz del repositorio:
 
-\`\`\`bash
+```bash
 python -m unittest discover -s tests -p 'test_movimiento_v2.py' -v
 python -m laboratorio.analisis_movimiento_v2 --out resultados/movimiento_v2
-\`\`\`
+```
 
-Se generan \`transiciones_adultez_v2.csv\` (864 filas) y \`resumen_geometria_v2.json\`.
+Se generan `transiciones_adultez_v2.csv` (864 filas) y `resumen_geometria_v2.json`.
 
 ## Deliberadamente fuera de esta fase
 
