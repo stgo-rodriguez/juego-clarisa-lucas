@@ -1,0 +1,47 @@
+{
+  "warning": "Cartas y decisiones sintéticas. NO representa balance de Clarisa y Lucas.",
+  "seeds": 50,
+  "total_auctions": 200,
+  "summary": [
+    {
+      "size": 6,
+      "mode": "fixed",
+      "auctions": 50,
+      "awarded": 42,
+      "no_bids": 0,
+      "rejected": 8,
+      "mean_valid_offers": 2.0,
+      "mean_passes": 3.0
+    },
+    {
+      "size": 6,
+      "mode": "heterogeneous",
+      "auctions": 50,
+      "awarded": 40,
+      "no_bids": 2,
+      "rejected": 8,
+      "mean_valid_offers": 1.88,
+      "mean_passes": 3.12
+    },
+    {
+      "size": 10,
+      "mode": "fixed",
+      "auctions": 50,
+      "awarded": 42,
+      "no_bids": 0,
+      "rejected": 8,
+      "mean_valid_offers": 2.68,
+      "mean_passes": 6.32
+    },
+    {
+      "size": 10,
+      "mode": "heterogeneous",
+      "auctions": 50,
+      "awarded": 41,
+      "no_bids": 0,
+      "rejected": 9,
+      "mean_valid_offers": 2.62,
+      "mean_passes": 6.38
+    }
+  ]
+}
