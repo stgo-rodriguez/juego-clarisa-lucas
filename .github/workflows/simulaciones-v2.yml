@@ -1,4 +1,4 @@
-name: Simulaciones v2 - Fases 1 a 3
+name: Simulaciones v2 - Fases 1 a 4
 on:
   push:
     branches:
@@ -7,11 +7,15 @@ on:
       - 'simulador/movimiento_v2.py'
       - 'simulador/turnos_v2.py'
       - 'simulador/economia_v2.py'
+      - 'simulador/transiciones_v2.py'
       - 'tests/test_movimiento_v2.py'
       - 'tests/test_turnos_v2.py'
       - 'tests/test_economia_v2.py'
+      - 'tests/test_transiciones_v2.py'
       - 'laboratorio/smoke_turnos_v2.py'
       - 'laboratorio/smoke_economia_v2.py'
+      - 'laboratorio/smoke_transiciones_v2.py'
+      - 'laboratorio/comparar_dublin_v2.py'
       - '.github/workflows/simulaciones-v2.yml'
   workflow_dispatch:
 
@@ -28,7 +32,7 @@ jobs:
         with:
           python-version: ${{ matrix.python-version }}
       - name: Sintaxis del motor y pruebas v2
-        run: python -m compileall -q simulador/movimiento_v2.py simulador/turnos_v2.py tests/test_movimiento_v2.py tests/test_turnos_v2.py tests/test_economia_v2.py simulador/economia_v2.py
+        run: python -m compileall -q simulador/movimiento_v2.py simulador/turnos_v2.py tests/test_movimiento_v2.py tests/test_turnos_v2.py tests/test_economia_v2.py simulador/economia_v2.py simulador/transiciones_v2.py tests/test_transiciones_v2.py laboratorio/smoke_transiciones_v2.py laboratorio/comparar_dublin_v2.py
       - name: Pruebas geométricas v2
         run: python -m unittest discover -s tests -p 'test_movimiento_v2.py' -v
       - name: Pruebas de orquestador v2
@@ -39,3 +43,9 @@ jobs:
         run: python -m unittest discover -s tests -p 'test_economia_v2.py' -v
       - name: Integración de economía sin Situaciones aprobadas
         run: python -m laboratorio.smoke_economia_v2 --rondas 4
+      - name: Pruebas UTN, Perfil y Dublín (Fase 4)
+        run: python -m unittest discover -s tests -p 'test_transiciones_v2.py' -v
+      - name: Integración de 6 y 10 en ambas políticas de Dublín
+        run: python -m laboratorio.smoke_transiciones_v2 --dublin-policy both
+      - name: Comparación contrafactual con 50 semillas
+        run: python -m laboratorio.comparar_dublin_v2 --semillas 50 --out resultados/fase4
