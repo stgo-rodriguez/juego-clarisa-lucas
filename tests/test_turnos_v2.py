@@ -102,8 +102,9 @@ class TestFase2(unittest.TestCase):
             with self.assertRaises(PendingRuleError):g.play_turn(1)
 
     def test_marry_exit_requires_gate(self):
-        p=PlayerState(1,'Lucas',Stage.ADULTEZ,Coord(1,3))
-        g=make_game([p],RuleHooks(marriage_eligible=lambda e,p:True))
+        p=PlayerState(1,'Lucas',Stage.ADULTEZ,Coord(1,3),partner_id=2)
+        q=PlayerState(2,'Clarisa',Stage.ADULTEZ,Coord(1,3),partner_id=1)
+        g=make_game([p,q],RuleHooks(marriage_eligible=lambda e,p:True))
         g.start_round()
         out=g.play_turn(1,adult_choice=lambda p,s,h:
                         AdultChoice(h.cards[0].id,'A',None,exit_after=0))
