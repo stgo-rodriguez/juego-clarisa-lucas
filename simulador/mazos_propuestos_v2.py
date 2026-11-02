@@ -9,6 +9,7 @@ from __future__ import annotations
 from collections import Counter
 from dataclasses import dataclass, field
 import json
+import math
 from pathlib import Path
 import random
 from typing import Callable
@@ -78,6 +79,19 @@ def build_decks(catalog: dict, seed: int, *, recycle: bool = True):
     return result
 
 
+@dataclass(frozen=True)
+class BalanceVariant:
+    """Solo para simulaciones; nunca altera los JSON originales de las cartas."""
+    early_gain: float = 1.0  # Infancia + Juventud
+    adult_gain: float = 1.0  # Adultez, incluyendo premios de subasta
+    loss_multiplier: float = 1.0  # Pérdidas explícitas, no costos voluntarios
+
+    def __post_init__(self):
+        for x in (self.early_gain, self.adult_gain, self.loss_multiplier):
+            if type(x) not in (int, float) or not math.isfinite(x) or not 0 < x <= 3:
+                raise ValueError('Factor de calibración debe estar en (0,3]')
+
+
 @dataclass
 class ProposedResolver:
     """Bot experimental: decisión propia de situación separada del movimiento.
@@ -89,6 +103,22 @@ class ProposedResolver:
     competition_controller: object | None = None
     rng: random.Random = field(default_factory=lambda:random.Random(7))
     events: list[dict] = field(default_factory=list)
+    balance: BalanceVariant = field(default_factory=BalanceVariant)
+    _current_stage: Stage | None = field(default=None, init=False, repr=False)
+
+    @staticmethod
+    def _scale(n: int, factor: float) -> int:
+        """Redondeo decimal fijo; sin dados adicionales ni cambios al RNG del bot."""
+        return int(n * factor + 0.5)
+
+    def _gain_factor(self) -> float:
+        return self.balance.adult_gain if self._current_stage == Stage.ADULTEZ else self.balance.early_gain
+
+    def _scaled_gains(self, values: dict | None) -> dict:
+        return {r:self._scale(n,self._gain_factor()) for r,n in (values or {}).items()}
+
+    def _scaled_losses(self, values: dict | None) -> dict:
+        return {r:self._scale(n,self.balance.loss_multiplier) for r,n in (values or {}).items()}
 
     def __post_init__(self):
         if self.policy not in ('planificador','aleatorio'):
@@ -111,17 +141,17 @@ class ProposedResolver:
         if not self._can_pay(pid,costs):raise ValueError('Opción no financiable')
         for r, n in (costs or {}).items():
             if n:self.eco.spend(pid,r,n,source+'_costo')
-        for r, n in (losses or {}).items():
+        for r, n in self._scaled_losses(losses).items():
             amount=min(n,self.eco.accounts[pid].free[r])
             if amount:self.eco.spend(pid,r,amount,source+'_perdida_libre')
-        for r, n in (gains or {}).items():
+        for r, n in self._scaled_gains(gains).items():
             if n:self.eco.issue(pid,r,n,source+'_premio')
 
     def _pick(self,choices:list[tuple[int,dict,dict]], pid:int)->int:
         eligible=[(idx,gain,cost) for idx,gain,cost in choices if self._can_pay(pid,cost)]
         if not eligible:raise PendingRuleError('Carta sin opciones financiables ni alternativa')
         if self.policy=='aleatorio':return self.rng.choice(eligible)[0]
-        return max(eligible,key=lambda it:(self._score(pid,it[1],it[2]),-it[0]))[0]
+        return max(eligible,key=lambda it:(self._score(pid,self._scaled_gains(it[1]),it[2]),-it[0]))[0]
 
     def _targets(self,engine:RoundEngine,p:PlayerState,mode:str)->list[PlayerState]:
         if mode not in ('same_role_any_stage','same_role_youth_or_adult'):
@@ -132,6 +162,7 @@ class ProposedResolver:
                      (Stage.JUVENTUD,Stage.ADULTEZ))]
 
     def resolve(self,engine:RoundEngine,p:PlayerState,card:SituationCard,letter:str|None):
+        self._current_stage=card.stage
         payload=card.payload
         origin=payload.get('origin')
         result=''
@@ -195,7 +226,9 @@ class ProposedResolver:
                 elif 'bid_any' in mechanic:mode='heterogeneous';currencies=tuple(mechanic['bid_any'])
                 else:raise PendingRuleError('Modalidad de puja no documentada')
                 reject=not mechanic['mandatory']
-                card_auction=AuctionCard(card.id,resource,n,winner[resource],mode,currencies,
+                scaled_total=self._scale(n,self.balance.adult_gain)
+                scaled_winner=self._scale(scaled_total*winner[resource]/n,1.0)
+                card_auction=AuctionCard(card.id,resource,scaled_total,scaled_winner,mode,currencies,
                       eligible_roles=(p.role,),allow_reject=reject,no_bid_effect='full',reject_effect='full')
                 as_card=SituationCard(card.id,Stage.ADULTEZ,p.role,card_auction)
                 self.competition_controller.resolve_social_situation(
@@ -206,5 +239,8 @@ class ProposedResolver:
         self.events.append({'action':'proposed_situation','round':engine.round_no,
                             'player':p.id,'card':card.id,'stage':card.stage.value,
                             'family':payload.get('family','historical'),
-                            'result':result,'source':origin})
+                            'result':result,'source':origin,
+                            'early_gain':self.balance.early_gain,
+                            'adult_gain':self.balance.adult_gain,
+                            'loss_multiplier':self.balance.loss_multiplier})
         self.eco.audit()
