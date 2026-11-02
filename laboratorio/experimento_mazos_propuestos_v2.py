@@ -16,18 +16,19 @@ from simulador.agentes_v2 import AgentConfig, GameAgent
 from simulador.competencia_v2 import CompetitionConfig, CompetitiveController
 from simulador.economia_v2 import EconomyScenario, EconomyV2, PASSPORT_KIND
 from simulador.interacciones_v2 import InteractionV2, SocialAuctionsV2
-from simulador.mazos_propuestos_v2 import CATALOG_PATH, ProposedResolver, build_decks, load_catalog
+from simulador.mazos_propuestos_v2 import CATALOG_PATH, ProposedResolver, BalanceVariant, build_decks, load_catalog
 from simulador.movimiento_v2 import youth_cards
 from simulador.transiciones_v2 import ProfileDecksV2, transition_hooks
 from simulador.turnos_v2 import CardPool, PlayerState, RoundEngine, SituationCard, Stage
 from laboratorio.experimento_agentes_v2 import adult_cards
-from laboratorio.sensibilidad_v2 import StressScenario, run_game as synthetic_game
+from laboratorio.sensibilidad_v2 import StressScenario, run_game as synthetic_game, progress_score
 
 
-def run_proposal(n:int,seed:int,policy:str,competition:bool,*,catalog=None,rounds:int=100,hand_size:int=3):
+def run_proposal(n:int,seed:int,policy:str,competition:bool,*,catalog=None,rounds:int=100,hand_size:int=3,balance:BalanceVariant|None=None):
     if n not in (6,10) or policy not in ('aleatorio','planificador') or type(competition) is not bool:
         raise ValueError('Parámetros de partida inválidos')
     catalog = catalog if catalog is not None else load_catalog()
+    balance=balance or BalanceVariant()
     players=[PlayerState(i+1,'Clarisa' if i<n//2 else 'Lucas') for i in range(n)]
     eco=EconomyV2(players,scenario=EconomyScenario(
         adult_square_amounts=dict.fromkeys('APKM',2),neutral_situations=False),
@@ -48,7 +49,7 @@ def run_proposal(n:int,seed:int,policy:str,competition:bool,*,catalog=None,round
     controller=CompetitiveController(engine,eco,agent,interactions,auctions,
          CompetitionConfig(enabled=competition,youth_return_pos=None),seed*97+66)
     resolver=ProposedResolver(eco,policy=policy,competition_controller=controller,
-                              rng=random.Random(seed*97+99))
+                              rng=random.Random(seed*97+99),balance=balance)
     hooks.apply_situation=resolver.resolve
     prior_after=hooks.after_turn
     def after(e,p,out):
@@ -62,13 +63,15 @@ def run_proposal(n:int,seed:int,policy:str,competition:bool,*,catalog=None,round
         effects=card.payload['effects']
         proxy=SituationCard(card.id,Stage.JUVENTUD,p.role,effects)
         return agent.choose_youth(p,proxy,movement)
-    stop='round_limit';turns=0
+    stop='round_limit';turns=0;no_progress=0
     for _ in range(rounds):
         engine.start_round()
         for p in players:
+            prev_progress=progress_score(engine,eco)
             engine.play_turn(p.id,youth_choice=youth,adult_choice=agent.choose_adult,
                              choose_utn=True,choose_dublin=True)
             turns+=1
+            if progress_score(engine,eco)<=prev_progress:no_progress+=1
             if eco.married is not None:
                 stop='marriage';break
         if stop=='marriage':break
@@ -79,9 +82,14 @@ def run_proposal(n:int,seed:int,policy:str,competition:bool,*,catalog=None,round
     for d in engine.situation_decks.values():d.assert_conservation()
     events=Counter((e['stage'],e['family']) for e in resolver.events)
     outcomes=Counter(e['result'] for e in resolver.events)
+    resource_card_gains=sum(e['amount'] for e in eco.events if e['action']=='issue' and e.get('source')=='propuesta_situacion_premio')
+    resource_card_losses=sum(e['amount'] for e in eco.events if e['action']=='spend' and e.get('source')=='propuesta_situacion_perdida_libre')
     return {
         'size':n,'seed':seed,'policy':policy,'competition':competition,'model':'propuestas_documentadas',
+        'early_gain_factor':balance.early_gain,'adult_gain_factor':balance.adult_gain,'loss_multiplier':balance.loss_multiplier,
         'rounds':engine.round_no,'turns_executed':turns,'won':eco.married is not None,'stop':stop,
+        'no_progress_ratio':round(no_progress/turns,5) if turns else 0,
+        'card_gains_units':resource_card_gains,'card_losses_units':resource_card_losses,
         'situations_resolved':len(resolver.events),'situations_adult':sum(e['stage']=='Adultez' for e in resolver.events),
         'individual_choices':sum(v for (stage,family),v in events.items() if stage=='Adultez' and family=='Decisión individual'),
         'conflicts':sum(v for (stage,family),v in events.items() if stage=='Adultez' and family=='Conflicto entre versiones'),
