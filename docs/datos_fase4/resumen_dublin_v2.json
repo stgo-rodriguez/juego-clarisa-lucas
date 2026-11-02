@@ -1,0 +1,42 @@
+{
+  "scope": "Contrafactual técnico; recursos e hitos inyectados, situaciones neutrales; no es balance ni Monte Carlo integral",
+  "seeds_per_configuration": 50,
+  "results": [
+    {
+      "players": 6,
+      "policy": "next_round",
+      "runs": 50,
+      "dublin_wait_turns_total": 36,
+      "round_moves_mean": 18.24,
+      "adult_pair_turns_round_mean": 3.16,
+      "initial_dublin_entry_round_mean": 2.16
+    },
+    {
+      "players": 6,
+      "policy": "next_turn",
+      "runs": 50,
+      "dublin_wait_turns_total": 0,
+      "round_moves_mean": 18.96,
+      "adult_pair_turns_round_mean": 3.16,
+      "initial_dublin_entry_round_mean": 2.16
+    },
+    {
+      "players": 10,
+      "policy": "next_round",
+      "runs": 50,
+      "dublin_wait_turns_total": 36,
+      "round_moves_mean": 30.68,
+      "adult_pair_turns_round_mean": 3.14,
+      "initial_dublin_entry_round_mean": 2.14
+    },
+    {
+      "players": 10,
+      "policy": "next_turn",
+      "runs": 50,
+      "dublin_wait_turns_total": 0,
+      "round_moves_mean": 31.4,
+      "adult_pair_turns_round_mean": 3.14,
+      "initial_dublin_entry_round_mean": 2.14
+    }
+  ]
+}
