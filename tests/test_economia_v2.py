@@ -204,5 +204,44 @@ class TestEconomyV2(unittest.TestCase):
         self.assertEqual(e.accounts[1].house_a,8)
         self.assertTrue(e.audit())
 
+    def test_perfil_adulto_caida_activa_a_ambos(self):
+        ps=players(Stage.ADULTEZ,Coord(5,2))
+        e=EconomyV2(ps,scenario=EconomyScenario({'A':0,'P':0,'K':0,'M':0},True))
+        for p in ps:e.issue(p.id,'A',5,'test');e.set_profile(p.id,0,affinity=1)
+        e.form_pair(*ps)
+        synthetic=[MovementCard(f'ONE-{i}',1,2) for i in range(20)]
+        g=game(ps,e,adult_cards=synthetic)
+        g.start_round()
+        result=g.play_turn(1,adult_choice=lambda p,s,h:AdultChoice(h.cards[0].id,'A','E'))
+        self.assertEqual(result.target,'Perfil')
+        self.assertEqual(ps[0].position,Coord(5,3))
+        self.assertEqual(ps[1].position,Coord(5,3))
+        self.assertEqual(e.accounts[1].free['A'],2)
+        self.assertEqual(e.accounts[2].free['A'],2)
+        self.assertEqual(len([x for x in e.events if x['action']=='issue' and
+                              x['source']=='caida_perfil_adultez' and x['resource']=='A']),2)
+        self.assertTrue(e.audit())
+
+    def test_casamiento_via_entrada_real_y_pago(self):
+        ps=players(Stage.ADULTEZ,Coord(3,3))
+        e=EconomyV2(ps,scenario=EconomyScenario({'A':0,'P':0,'K':0,'M':0},True))
+        for p in ps:
+            for r,n in {'A':25,'P':15,'M':20}.items():e.issue(p.id,r,n,'test')
+        e.form_pair(*ps)
+        e.buy_house(ps[0],dice=[(12,2)])
+        for p in ps:
+            ac=e.accounts[p.id]
+            ac.title=True;ac.passport='Italia' if p.role=='Clarisa' else 'Polonia'
+            e.set_profile(p.id,0,affinity=2)
+            p.position=Coord(1,3)
+        g=game(ps,e,adult_cards=[MovementCard(f'T-{i}',1,2) for i in range(20)])
+        g.start_round()
+        out=g.play_turn(1,adult_choice=lambda p,s,h:AdultChoice(h.cards[0].id,'A',None,exit_after=0))
+        self.assertEqual(out.target,'Casamiento')
+        self.assertEqual(e.married,(1,2))
+        self.assertEqual(e.burned['A'],24)
+        self.assertEqual(e.burned['P'],20)
+        self.assertTrue(e.audit())
+
 
 if __name__=='__main__':unittest.main()
