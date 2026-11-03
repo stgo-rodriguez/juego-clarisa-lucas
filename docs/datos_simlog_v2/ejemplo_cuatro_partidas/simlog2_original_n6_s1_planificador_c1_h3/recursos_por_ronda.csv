@@ -1,4 +1,4 @@
-Partida,Ronda,Turnos_observados,Termino_partida,Casa_duenios,Casados,Activos_por_etapa_JSON,A_libre_total,P_libre_total,K_libre_total,M_libre_total
+﻿Partida,Ronda,Turnos_observados,Termino_partida,Casa_duenios,Casados,Activos_por_etapa_JSON,A_libre_total,P_libre_total,K_libre_total,M_libre_total
 simlog2_original_n6_s1_planificador_c1_h3,1,6,False,null,null,"{""Infancia"":5,""UTN"":1}",32,18,2,0
 simlog2_original_n6_s1_planificador_c1_h3,2,6,False,null,null,"{""Infancia"":5,""Juventud"":1}",56,23,4,0
 simlog2_original_n6_s1_planificador_c1_h3,3,6,False,null,null,"{""Infancia"":4,""Juventud"":1,""UTN"":1}",85,33,10,1
