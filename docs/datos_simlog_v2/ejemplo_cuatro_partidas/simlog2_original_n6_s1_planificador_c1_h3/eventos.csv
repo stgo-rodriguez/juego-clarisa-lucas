@@ -1,4 +1,4 @@
-Partida,Secuencia,Ronda,Turno_global,Jugador_activo,Fase,Fuente,Accion,Jugador_afectado,Detalle_JSON
+﻿Partida,Secuencia,Ronda,Turno_global,Jugador_activo,Fase,Fuente,Accion,Jugador_afectado,Detalle_JSON
 simlog2_original_n6_s1_planificador_c1_h3,1,1,,,round_start,motor,round_start,,"{""action"":""round_start"",""cohorts"":0,""round"":1}"
 simlog2_original_n6_s1_planificador_c1_h3,2,1,1,1,turn,observador,turno_inicio,1,"{""action"":""turno_inicio"",""player"":1}"
 simlog2_original_n6_s1_planificador_c1_h3,3,1,1,1,turn,economia,issue,1,"{""action"":""issue"",""amount"":4,""player"":1,""resource"":""P"",""source"":""propuesta_situacion_premio""}"
