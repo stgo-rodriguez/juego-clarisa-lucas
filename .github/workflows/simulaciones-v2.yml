@@ -1,4 +1,4 @@
-name: Simulaciones v2 - Fases 1 a 11
+name: Simulaciones v2 - Fases 1 a 12 - SIMLOG v2
 on:
   push:
     branches:
@@ -25,6 +25,10 @@ on:
       - 'laboratorio/calibracion_cartas_v2.py'
       - 'laboratorio/consolidar_calibracion_v2.py'
       - 'tests/test_calibracion_v2.py'
+      - 'simulador/simlog_v2.py'
+      - 'laboratorio/ejecutar_simlog_v2.py'
+      - 'laboratorio/crear_muestra_simlog_xlsx.py'
+      - 'tests/test_simlog_v2.py'
       - 'tests/test_movimiento_v2.py'
       - 'tests/test_turnos_v2.py'
       - 'tests/test_economia_v2.py'
@@ -55,7 +59,7 @@ jobs:
         with:
           python-version: ${{ matrix.python-version }}
       - name: Sintaxis del motor y pruebas v2
-        run: python -m compileall -q simulador/movimiento_v2.py simulador/turnos_v2.py tests/test_movimiento_v2.py tests/test_turnos_v2.py tests/test_economia_v2.py simulador/economia_v2.py simulador/transiciones_v2.py tests/test_transiciones_v2.py laboratorio/smoke_transiciones_v2.py laboratorio/comparar_dublin_v2.py simulador/agentes_v2.py laboratorio/experimento_agentes_v2.py tests/test_agentes_v2.py simulador/interacciones_v2.py laboratorio/experimento_interacciones_v2.py tests/test_interacciones_v2.py simulador/competencia_v2.py laboratorio/experimento_competencia_v2.py tests/test_competencia_v2.py laboratorio/sensibilidad_v2.py laboratorio/consolidar_sensibilidad_v2.py tests/test_sensibilidad_v2.py tests/test_fase9_v2.py laboratorio/factorial_v2.py laboratorio/rupturas_v2.py simulador/mazos_propuestos_v2.py laboratorio/experimento_mazos_propuestos_v2.py laboratorio/auditoria_mazos_propuestos_v2.py tests/test_mazos_propuestos_v2.py laboratorio/calibracion_cartas_v2.py laboratorio/consolidar_calibracion_v2.py tests/test_calibracion_v2.py
+        run: python -m compileall -q simulador/movimiento_v2.py simulador/turnos_v2.py tests/test_movimiento_v2.py tests/test_turnos_v2.py tests/test_economia_v2.py simulador/economia_v2.py simulador/transiciones_v2.py tests/test_transiciones_v2.py laboratorio/smoke_transiciones_v2.py laboratorio/comparar_dublin_v2.py simulador/agentes_v2.py laboratorio/experimento_agentes_v2.py tests/test_agentes_v2.py simulador/interacciones_v2.py laboratorio/experimento_interacciones_v2.py tests/test_interacciones_v2.py simulador/competencia_v2.py laboratorio/experimento_competencia_v2.py tests/test_competencia_v2.py laboratorio/sensibilidad_v2.py laboratorio/consolidar_sensibilidad_v2.py tests/test_sensibilidad_v2.py tests/test_fase9_v2.py laboratorio/factorial_v2.py laboratorio/rupturas_v2.py simulador/mazos_propuestos_v2.py laboratorio/experimento_mazos_propuestos_v2.py laboratorio/auditoria_mazos_propuestos_v2.py tests/test_mazos_propuestos_v2.py laboratorio/calibracion_cartas_v2.py laboratorio/consolidar_calibracion_v2.py tests/test_calibracion_v2.py simulador/simlog_v2.py laboratorio/ejecutar_simlog_v2.py laboratorio/crear_muestra_simlog_xlsx.py tests/test_simlog_v2.py
       - name: Pruebas geométricas v2
         run: python -m unittest discover -s tests -p 'test_movimiento_v2.py' -v
       - name: Pruebas de orquestador v2
@@ -104,3 +108,7 @@ jobs:
         run: python -m unittest discover -s tests -p 'test_calibracion_v2.py' -v
       - name: Smoke factorial con cartas documentadas (16 partidas)
         run: python -m laboratorio.calibracion_cartas_v2 --semillas 1 --rondas 80 --solo-planificador --solo-competencia --out resultados/fase11_ci
+      - name: SIMLOG v2 - traza de turnos y sin cambios a resultados
+        run: python -m unittest discover -s tests -p 'test_simlog_v2.py' -v
+      - name: SIMLOG v2 - exportación reproducible de una partida
+        run: python -m laboratorio.ejecutar_simlog_v2 --semillas 1 --rondas 40 --mesas 6 --agentes planificador --competencia si --escenario original --out resultados/simlog_v2_ci
