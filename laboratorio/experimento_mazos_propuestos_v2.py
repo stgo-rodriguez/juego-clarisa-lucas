@@ -18,13 +18,15 @@ from simulador.economia_v2 import EconomyScenario, EconomyV2, PASSPORT_KIND
 from simulador.interacciones_v2 import InteractionV2, SocialAuctionsV2
 from simulador.mazos_propuestos_v2 import CATALOG_PATH, ProposedResolver, BalanceVariant, build_decks, load_catalog
 from simulador.movimiento_v2 import youth_cards
+from simulador.simlog_v2 import SIMLogV2
 from simulador.transiciones_v2 import ProfileDecksV2, transition_hooks
 from simulador.turnos_v2 import CardPool, PlayerState, RoundEngine, SituationCard, Stage
 from laboratorio.experimento_agentes_v2 import adult_cards
 from laboratorio.sensibilidad_v2 import StressScenario, run_game as synthetic_game, progress_score
 
 
-def run_proposal(n:int,seed:int,policy:str,competition:bool,*,catalog=None,rounds:int=100,hand_size:int=3,balance:BalanceVariant|None=None):
+def run_proposal(n:int,seed:int,policy:str,competition:bool,*,catalog=None,rounds:int=100,hand_size:int=3,balance:BalanceVariant|None=None,
+                 simlog_dir: str | Path | None = None, simlog_run_id: str | None = None):
     if n not in (6,10) or policy not in ('aleatorio','planificador') or type(competition) is not bool:
         raise ValueError('Parámetros de partida inválidos')
     catalog = catalog if catalog is not None else load_catalog()
@@ -63,17 +65,31 @@ def run_proposal(n:int,seed:int,policy:str,competition:bool,*,catalog=None,round
         effects=card.payload['effects']
         proxy=SituationCard(card.id,Stage.JUVENTUD,p.role,effects)
         return agent.choose_youth(p,proxy,movement)
+    logger = None
+    if simlog_dir is not None:
+        logger = SIMLogV2(engine,eco,profiles,resolver,interactions,auctions,controller,
+                          run_id=simlog_run_id or f'simlog_n{n}_s{seed}_{policy}_c{int(competition)}',
+                          seed=seed,policy=policy,competition=competition,
+                          round_limit=rounds,catalog=catalog,balance=balance)
+        logger.attach_hooks(hooks)
     stop='round_limit';turns=0;no_progress=0
     for _ in range(rounds):
+        if logger:logger.begin_round()
         engine.start_round()
+        if logger:logger.end_round_start()
         for p in players:
             prev_progress=progress_score(engine,eco)
-            engine.play_turn(p.id,youth_choice=youth,adult_choice=agent.choose_adult,
+            if logger:logger.begin_turn(p.id)
+            outcome=engine.play_turn(p.id,
+                             youth_choice=logger.wrap_youth_choice(youth) if logger else youth,
+                             adult_choice=logger.wrap_adult_choice(agent.choose_adult) if logger else agent.choose_adult,
                              choose_utn=True,choose_dublin=True)
+            if logger:logger.end_turn(outcome)
             turns+=1
             if progress_score(engine,eco)<=prev_progress:no_progress+=1
             if eco.married is not None:
                 stop='marriage';break
+        if logger:logger.end_round(ended=stop=='marriage')
         if stop=='marriage':break
         eco.audit()
     eco.audit();profiles.audit()
@@ -84,7 +100,7 @@ def run_proposal(n:int,seed:int,policy:str,competition:bool,*,catalog=None,round
     outcomes=Counter(e['result'] for e in resolver.events)
     resource_card_gains=sum(e['amount'] for e in eco.events if e['action']=='issue' and e.get('source')=='propuesta_situacion_premio')
     resource_card_losses=sum(e['amount'] for e in eco.events if e['action']=='spend' and e.get('source')=='propuesta_situacion_perdida_libre')
-    return {
+    result = {
         'size':n,'seed':seed,'policy':policy,'competition':competition,'model':'propuestas_documentadas',
         'early_gain_factor':balance.early_gain,'adult_gain_factor':balance.adult_gain,'loss_multiplier':balance.loss_multiplier,
         'rounds':engine.round_no,'turns_executed':turns,'won':eco.married is not None,'stop':stop,
@@ -105,6 +121,9 @@ def run_proposal(n:int,seed:int,policy:str,competition:bool,*,catalog=None,round
         'source_legacy':'v0.1_histórica_duplicación_experimental',
         'source_adult':'v0.2_multiverso_propuesta_no_aprobada',
     }
+    if logger:
+        logger.write(simlog_dir, status=stop, summary=result)
+    return result
 
 
 def run_paired(seeds:int=8,rounds:int=100,policies=('planificador','aleatorio'),competitions=(True,False),catalog=None):
