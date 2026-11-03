@@ -320,6 +320,9 @@ class SIMLogV2:
         situ=situation_events[0] if situation_events else None
         outcome_situation=json.loads(situ['Detalle_JSON']) if situ else {}
         result = outcome_situation.get('result')
+        situation_stage = outcome_situation.get('stage') if situ else None
+        movement_stage = ('Adultez' if self._movement_decision is not None else
+                          'Juventud' if outcome.movement_card_id and x['stage']=='Juventud' else None)
         if result in ('A','B'):
             situation_letter=result
         elif result in ('choice_0','choice_target_0'):
@@ -359,6 +362,7 @@ class SIMLogV2:
             'Etapa_antes':x['stage'],'Pos_antes':x['position'],
             'Dado':dice,'Casillero_resuelto':outcome.target,
             'Etapa_despues':y['stage'],'Pos_despues':y['position'],
+            'Etapa_situacion':situation_stage,'Etapa_movimiento':movement_stage,
             'Carta_ID':outcome.situation_id,'Carta_fuente_ID':title_source,
             'Situacion':title,'Desenlace_elegido':situation_letter,
             'Desenlace_texto':self._option_text.get(outcome.situation_id,{}).get(situation_letter)
@@ -366,7 +370,7 @@ class SIMLogV2:
             'Carta_familia':self._option_text.get(outcome.situation_id,{}).get('family'),
             'Resultado_situacion':result,
             'Carta_Movimiento':outcome.movement_card_id,
-            'Desenlace_movimiento':outcome.choice if x['stage'] in ('Juventud','Adultez') else None,
+            'Desenlace_movimiento':outcome.choice if movement_stage is not None else None,
             'Distancia_movimiento':outcome.distance,'Direccion':self._movement_decision.direction if self._movement_decision else None,
             'Salida_despues_de':self._movement_decision.exit_after if self._movement_decision else None,
             'Ruta_JSON':_json(route.get('visited',[])) if route else None,
@@ -422,7 +426,8 @@ class SIMLogV2:
             card=row['Carta_ID'] if key=='situacion' else row['Carta_Movimiento']
             if not card:continue
             choice=row['Desenlace_elegido'] if key=='situacion' else row['Desenlace_movimiento']
-            k=(row['Rol'],row['Etapa_antes'],card,row['Carta_fuente_ID'] if key=='situacion' else None)
+            effective_stage=row['Etapa_situacion'] if key=='situacion' else row['Etapa_movimiento']
+            k=(row['Rol'],effective_stage,card,row['Carta_fuente_ID'] if key=='situacion' else None)
             groups[k][choice if choice in ('A','B') else 'OTRO']+=1
         result=[]
         for (role,stage,card,source),counter in sorted(groups.items()):
@@ -453,7 +458,7 @@ class SIMLogV2:
             if t['Etapa_antes']=='Juventud' and t['Carta_ID']:
                 if t['Desenlace_elegido']!=t['Desenlace_movimiento']:
                     raise AssertionError('A/B juvenil divergentes')
-            if t['Etapa_antes']=='Adultez' and t['Carta_ID']:
+            if t['Etapa_movimiento']=='Adultez' and t['Carta_ID']:
                 if t['Desenlace_movimiento'] not in ('A','B'):
                     raise AssertionError('Falta selección A/B de Movimiento adulto')
         if self._current_turn is not None:
