@@ -1,4 +1,4 @@
-run_id,size,seed,policy,competition,rounds,won,stop,turns,events,source
+﻿run_id,size,seed,policy,competition,rounds,won,stop,turns,events,source
 simlog2_original_n6_s1_aleatorio_c1_h3,6,1,aleatorio,True,27,True,marriage,162,3806,propuestas_documentadas_NO_APROBADAS
 simlog2_original_n6_s1_planificador_c1_h3,6,1,planificador,True,15,True,marriage,86,1880,propuestas_documentadas_NO_APROBADAS
 simlog2_original_n10_s1_aleatorio_c1_h3,10,1,aleatorio,True,39,True,marriage,389,8999,propuestas_documentadas_NO_APROBADAS
