@@ -68,6 +68,16 @@ class SIMLOGTests(unittest.TestCase):
         self.assertTrue(any(x['Direccion'] or x['Salida_despues_de']!=''
                             for x in adults))
 
+    def test_dublin_entry_same_turn_records_actual_adult_choices(self):
+        entrants=[x for x in self.turns if x['Etapa_antes']=='Vuelo a Dublín'
+                  and x['Carta_Movimiento']]
+        self.assertTrue(entrants)
+        self.assertTrue(all(x['Etapa_situacion']=='Adultez' and
+                            x['Etapa_movimiento']=='Adultez' and
+                            x['Desenlace_movimiento'] in ('A','B') for x in entrants))
+        movement_prefs=read_csv(self.out/'p6'/'preferencias_movimientos.csv')
+        self.assertFalse(any(x['Etapa']=='Vuelo a Dublín' for x in movement_prefs))
+
     def test_all_events_in_order_with_real_economy_changes(self):
         sequences=[int(x['Secuencia']) for x in self.events]
         self.assertEqual(sequences,list(range(1,len(sequences)+1)))
