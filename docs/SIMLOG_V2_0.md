@@ -34,7 +34,7 @@ Para varias partidas se generan `partidas.csv`, `preferencias_por_carta.csv` (ag
 - **Infancia:** `Desenlace_elegido=A/B` registra la opción de Situación; Movimiento se decide con D6 y no se inventa una opción A/B para ese dado.
 - **Juventud:** `Desenlace_elegido` y `Desenlace_movimiento` coinciden por regla; se valida esa identidad en cada turno.
 - **Adultez:** `Desenlace_elegido` registra A/B solo cuando la carta ofrece alternativas explícitas. `Resultado_situacion` distingue `choice_0`, `choice_target_1`, `coop_accepted`, `auction`, etc. `Desenlace_movimiento` registra **independientemente** A/B, carta, dirección, rebotes y pasos descartados.
-- **UTN/Dublín:** si se está en un turno de tránsito sin Situación, la elección se deja nula, sin fabricar una carta.
+- **UTN/Dublín:** si se está en un turno de tránsito sin Situación, la elección se deja nula. Si una pareja entra desde Dublín a Adultez y **juega en ese mismo turno** (`next_turn` experimental), se conservan `Etapa_antes=Vuelo a Dublín` y `Etapa_situacion=Etapa_movimiento=Adultez`; sus elecciones reales no se pierden ni se clasifican erróneamente como una carta de Dublín.
 - `Desenlace_texto` conserva el desenlace histórico narrativo cuando es A/B de Infancia/Juventud.
 - `A_antes / A_despues` y `P_antes / P_despues` incluyen saldos libres y reservas propias de A/P; K/M contabilizan saldos libres. Las columnas `*_libre_antes` y `*_libre_despues` son explícitas. Recursos invertidos no se cuentan como recursos libres y están en `estados_globales.csv` y `estados_jugadores.csv`.
 
@@ -72,7 +72,7 @@ Los directorios se nombran mediante semilla, tamaño, estrategia, competencia y 
 
 Las pruebas cubren: igualdad de partidas con y sin registro, 6/10 jugadores, comparación en escenario calibrado, una fila por turno, estados de *todos* los jugadores antes/después, secuencia sin saltos, referencia de cada evento por turno, elecciones de Juventud A/B coincidentes, separación de decisiones adultas, cambios económicos de terceros, preferencias por carta obtenidas a partir de turnos, integridad de hashes y agrupación de varias partidas.
 
-La suite completa consta de **170 pruebas locales aprobadas** (159 previas + 11 nuevas). La prueba de CI se configura por separado; no declararla exitosa sin comprobar el resultado remoto.
+La suite completa consta de **171 pruebas locales aprobadas** (159 previas + 12 nuevas). La prueba de CI se configura por separado; no declararla exitosa sin comprobar el resultado remoto.
 
 ## 6. Diferencias y límites del modelo actual
 
