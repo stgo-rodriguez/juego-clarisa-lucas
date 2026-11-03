@@ -1,4 +1,4 @@
-Partida,Tipo,Rol,Etapa,Carta_ID,Carta_fuente_ID,Veces_resuelta,Elecciones_A,Elecciones_B,Otras_resoluciones,Porcentaje_A_sobre_AB,Porcentaje_B_sobre_AB
+﻿Partida,Tipo,Rol,Etapa,Carta_ID,Carta_fuente_ID,Veces_resuelta,Elecciones_A,Elecciones_B,Otras_resoluciones,Porcentaje_A_sobre_AB,Porcentaje_B_sobre_AB
 simlog2_original_n6_s1_planificador_c1_h3,situacion,Clarisa,Adultez,AD-C-15,AD-C-15,2,0,0,2,,
 simlog2_original_n6_s1_planificador_c1_h3,situacion,Clarisa,Infancia,I-C-I01,I01,1,1,0,0,100.0,0.0
 simlog2_original_n6_s1_planificador_c1_h3,situacion,Clarisa,Infancia,I-C-I02,I02,1,1,0,0,100.0,0.0
