@@ -1,0 +1,15 @@
+{
+  "schema": "SIMLOG-2.0",
+  "status": "EXPERIMENTAL_NO_APROBADO",
+  "round_limit": 100,
+  "scenario": "original",
+  "hand_size": 3,
+  "n_games": 4,
+  "turns": 755,
+  "events": 17088,
+  "source_dataset": "Fase 10 - 78 cartas históricas y 30 propuestas adultas",
+  "file_hashes": {
+    "partidas.csv": "cc21d1618aadd95225e002463e2ed0d676a24fa5b2b9df8a6137d609cd1d7988",
+    "preferencias_por_carta.csv": "ba77bb0ae0443b609d3cb693d898fd4d14232a6c4c61e0b4e81f70ce6f512f1e"
+  }
+}
