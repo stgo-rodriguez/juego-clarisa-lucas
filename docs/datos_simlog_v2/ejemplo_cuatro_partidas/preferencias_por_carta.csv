@@ -39,12 +39,14 @@ movimiento,Clarisa,Adultez,SYN-A-2-3-5,,aleatorio,1,1,1,0,0,100.0,0.0
 movimiento,Clarisa,Adultez,SYN-A-2-3-6,,planificador,1,1,0,1,0,0.0,100.0
 movimiento,Clarisa,Adultez,SYN-A-2-4-1,,aleatorio,1,1,1,0,0,100.0,0.0
 movimiento,Clarisa,Adultez,SYN-A-2-4-3,,aleatorio,1,1,1,0,0,100.0,0.0
+movimiento,Clarisa,Adultez,SYN-A-2-4-6,,aleatorio,1,1,1,0,0,100.0,0.0
 movimiento,Clarisa,Adultez,SYN-A-2-5-2,,aleatorio,1,1,0,1,0,0.0,100.0
 movimiento,Clarisa,Adultez,SYN-A-2-5-3,,aleatorio,1,1,0,1,0,0.0,100.0
 movimiento,Clarisa,Adultez,SYN-A-2-5-4,,aleatorio,1,1,0,1,0,0.0,100.0
 movimiento,Clarisa,Adultez,SYN-A-2-5-6,,aleatorio,1,1,0,1,0,0.0,100.0
 movimiento,Clarisa,Adultez,SYN-A-2-6-1,,aleatorio,1,1,1,0,0,100.0,0.0
 movimiento,Clarisa,Adultez,SYN-A-2-6-3,,planificador,1,1,1,0,0,100.0,0.0
+movimiento,Clarisa,Adultez,SYN-A-2-6-4,,planificador,1,1,0,1,0,0.0,100.0
 movimiento,Clarisa,Adultez,SYN-A-3-1-5,,aleatorio,1,1,0,1,0,0.0,100.0
 movimiento,Clarisa,Adultez,SYN-A-3-1-6,,aleatorio,1,1,1,0,0,100.0,0.0
 movimiento,Clarisa,Adultez,SYN-A-3-2-3,,aleatorio,1,1,0,1,0,0.0,100.0
@@ -115,8 +117,6 @@ movimiento,Clarisa,Juventud,J-6-4,,aleatorio,2,9,5,4,0,55.56,44.44
 movimiento,Clarisa,Juventud,J-6-4,,planificador,2,2,0,2,0,0.0,100.0
 movimiento,Clarisa,Juventud,J-6-5,,aleatorio,2,9,3,6,0,33.33,66.67
 movimiento,Clarisa,Juventud,J-6-5,,planificador,1,2,2,0,0,100.0,0.0
-movimiento,Clarisa,Vuelo a Dublín,SYN-A-2-4-6,,aleatorio,1,1,0,0,1,,
-movimiento,Clarisa,Vuelo a Dublín,SYN-A-2-6-4,,planificador,1,1,0,0,1,,
 movimiento,Lucas,Adultez,SYN-A-0-1-2,,aleatorio,1,1,0,1,0,0.0,100.0
 movimiento,Lucas,Adultez,SYN-A-0-1-3,,aleatorio,1,1,0,1,0,0.0,100.0
 movimiento,Lucas,Adultez,SYN-A-0-1-6,,aleatorio,2,2,2,0,0,100.0,0.0
@@ -152,20 +152,23 @@ movimiento,Lucas,Adultez,SYN-A-1-6-2,,aleatorio,1,1,1,0,0,100.0,0.0
 movimiento,Lucas,Adultez,SYN-A-1-6-3,,aleatorio,1,1,0,1,0,0.0,100.0
 movimiento,Lucas,Adultez,SYN-A-1-6-4,,aleatorio,1,1,1,0,0,100.0,0.0
 movimiento,Lucas,Adultez,SYN-A-2-1-3,,aleatorio,1,1,1,0,0,100.0,0.0
+movimiento,Lucas,Adultez,SYN-A-2-1-4,,aleatorio,1,1,0,1,0,0.0,100.0
 movimiento,Lucas,Adultez,SYN-A-2-1-4,,planificador,1,1,0,1,0,0.0,100.0
 movimiento,Lucas,Adultez,SYN-A-2-2-6,,aleatorio,1,1,1,0,0,100.0,0.0
 movimiento,Lucas,Adultez,SYN-A-2-3-2,,aleatorio,1,1,1,0,0,100.0,0.0
 movimiento,Lucas,Adultez,SYN-A-2-3-4,,aleatorio,1,1,0,1,0,0.0,100.0
 movimiento,Lucas,Adultez,SYN-A-2-3-5,,aleatorio,1,1,1,0,0,100.0,0.0
+movimiento,Lucas,Adultez,SYN-A-2-3-6,,aleatorio,2,2,1,1,0,50.0,50.0
 movimiento,Lucas,Adultez,SYN-A-2-4-2,,aleatorio,1,1,0,1,0,0.0,100.0
 movimiento,Lucas,Adultez,SYN-A-2-4-3,,aleatorio,1,1,1,0,0,100.0,0.0
 movimiento,Lucas,Adultez,SYN-A-2-4-5,,aleatorio,1,1,0,1,0,0.0,100.0
 movimiento,Lucas,Adultez,SYN-A-2-5-1,,aleatorio,1,1,1,0,0,100.0,0.0
 movimiento,Lucas,Adultez,SYN-A-2-5-2,,aleatorio,1,1,0,1,0,0.0,100.0
-movimiento,Lucas,Adultez,SYN-A-2-5-2,,planificador,1,1,0,1,0,0.0,100.0
+movimiento,Lucas,Adultez,SYN-A-2-5-2,,planificador,2,2,0,2,0,0.0,100.0
 movimiento,Lucas,Adultez,SYN-A-2-6-2,,aleatorio,1,1,1,0,0,100.0,0.0
 movimiento,Lucas,Adultez,SYN-A-2-6-3,,aleatorio,2,2,1,1,0,50.0,50.0
 movimiento,Lucas,Adultez,SYN-A-2-6-4,,aleatorio,2,2,0,2,0,0.0,100.0
+movimiento,Lucas,Adultez,SYN-A-2-6-4,,planificador,1,1,0,1,0,0.0,100.0
 movimiento,Lucas,Adultez,SYN-A-2-6-5,,aleatorio,1,1,0,1,0,0.0,100.0
 movimiento,Lucas,Adultez,SYN-A-3-1-2,,aleatorio,1,1,1,0,0,100.0,0.0
 movimiento,Lucas,Adultez,SYN-A-3-1-3,,aleatorio,1,1,1,0,0,100.0,0.0
@@ -179,6 +182,7 @@ movimiento,Lucas,Adultez,SYN-A-3-5-1,,aleatorio,1,1,1,0,0,100.0,0.0
 movimiento,Lucas,Adultez,SYN-A-3-5-3,,aleatorio,1,1,0,1,0,0.0,100.0
 movimiento,Lucas,Adultez,SYN-A-3-5-6,,aleatorio,1,1,1,0,0,100.0,0.0
 movimiento,Lucas,Adultez,SYN-A-3-6-1,,aleatorio,1,1,0,1,0,0.0,100.0
+movimiento,Lucas,Adultez,SYN-A-3-6-4,,aleatorio,1,1,1,0,0,100.0,0.0
 movimiento,Lucas,Juventud,J-1-2,,aleatorio,2,7,3,4,0,42.86,57.14
 movimiento,Lucas,Juventud,J-1-2,,planificador,1,1,1,0,0,100.0,0.0
 movimiento,Lucas,Juventud,J-1-3,,aleatorio,2,8,4,4,0,50.0,50.0
@@ -237,11 +241,6 @@ movimiento,Lucas,Juventud,J-6-4,,aleatorio,2,2,1,1,0,50.0,50.0
 movimiento,Lucas,Juventud,J-6-4,,planificador,1,1,1,0,0,100.0,0.0
 movimiento,Lucas,Juventud,J-6-5,,aleatorio,1,2,2,0,0,100.0,0.0
 movimiento,Lucas,Juventud,J-6-5,,planificador,1,2,1,1,0,50.0,50.0
-movimiento,Lucas,Vuelo a Dublín,SYN-A-2-1-4,,aleatorio,1,1,0,0,1,,
-movimiento,Lucas,Vuelo a Dublín,SYN-A-2-3-6,,aleatorio,2,2,0,0,2,,
-movimiento,Lucas,Vuelo a Dublín,SYN-A-2-5-2,,planificador,1,1,0,0,1,,
-movimiento,Lucas,Vuelo a Dublín,SYN-A-2-6-4,,planificador,1,1,0,0,1,,
-movimiento,Lucas,Vuelo a Dublín,SYN-A-3-6-4,,aleatorio,1,1,0,0,1,,
 situacion,Clarisa,Adultez,AD-C-01,AD-C-01,aleatorio,2,6,3,3,0,50.0,50.0
 situacion,Clarisa,Adultez,AD-C-02,AD-C-02,aleatorio,2,3,3,0,0,100.0,0.0
 situacion,Clarisa,Adultez,AD-C-03,AD-C-03,aleatorio,1,1,1,0,0,100.0,0.0
@@ -249,7 +248,7 @@ situacion,Clarisa,Adultez,AD-C-04,AD-C-04,aleatorio,1,5,2,3,0,40.0,60.0
 situacion,Clarisa,Adultez,AD-C-05,AD-C-05,aleatorio,1,4,2,2,0,50.0,50.0
 situacion,Clarisa,Adultez,AD-C-06,AD-C-06,aleatorio,2,6,0,6,0,0.0,100.0
 situacion,Clarisa,Adultez,AD-C-06,AD-C-06,planificador,1,1,1,0,0,100.0,0.0
-situacion,Clarisa,Adultez,AD-C-07,AD-C-07,aleatorio,1,4,2,2,0,50.0,50.0
+situacion,Clarisa,Adultez,AD-C-07,AD-C-07,aleatorio,1,5,2,3,0,40.0,60.0
 situacion,Clarisa,Adultez,AD-C-08,AD-C-08,aleatorio,1,2,0,2,0,0.0,100.0
 situacion,Clarisa,Adultez,AD-C-09,AD-C-09,aleatorio,1,5,0,0,5,,
 situacion,Clarisa,Adultez,AD-C-10,AD-C-10,aleatorio,2,6,0,0,6,,
@@ -260,7 +259,7 @@ situacion,Clarisa,Adultez,AD-C-13,AD-C-13,aleatorio,1,4,0,0,4,,
 situacion,Clarisa,Adultez,AD-C-14,AD-C-14,aleatorio,2,6,0,0,6,,
 situacion,Clarisa,Adultez,AD-C-14,AD-C-14,planificador,1,1,0,0,1,,
 situacion,Clarisa,Adultez,AD-C-15,AD-C-15,aleatorio,2,3,0,0,3,,
-situacion,Clarisa,Adultez,AD-C-15,AD-C-15,planificador,1,2,0,0,2,,
+situacion,Clarisa,Adultez,AD-C-15,AD-C-15,planificador,2,3,0,0,3,,
 situacion,Clarisa,Infancia,I-C-I01,I01,planificador,2,2,1,1,0,50.0,50.0
 situacion,Clarisa,Infancia,I-C-I02,I02,aleatorio,2,2,0,2,0,0.0,100.0
 situacion,Clarisa,Infancia,I-C-I02,I02,planificador,2,2,2,0,0,100.0,0.0
@@ -337,8 +336,6 @@ situacion,Clarisa,Juventud,J-C-J22,J22,aleatorio,2,10,7,3,0,70.0,30.0
 situacion,Clarisa,Juventud,J-C-J22,J22,planificador,2,6,1,5,0,16.67,83.33
 situacion,Clarisa,Juventud,J-C-J23,J23,aleatorio,2,10,5,5,0,50.0,50.0
 situacion,Clarisa,Juventud,J-C-J24,J24,aleatorio,2,9,3,6,0,33.33,66.67
-situacion,Clarisa,Vuelo a Dublín,AD-C-07,AD-C-07,aleatorio,1,1,0,1,0,0.0,100.0
-situacion,Clarisa,Vuelo a Dublín,AD-C-15,AD-C-15,planificador,1,1,0,0,1,,
 situacion,Lucas,Adultez,AD-L-01,AD-L-01,aleatorio,1,5,2,3,0,40.0,60.0
 situacion,Lucas,Adultez,AD-L-02,AD-L-02,aleatorio,2,3,2,1,0,66.67,33.33
 situacion,Lucas,Adultez,AD-L-03,AD-L-03,aleatorio,1,4,3,1,0,75.0,25.0
@@ -349,12 +346,12 @@ situacion,Lucas,Adultez,AD-L-05,AD-L-05,planificador,1,1,0,1,0,0.0,100.0
 situacion,Lucas,Adultez,AD-L-06,AD-L-06,aleatorio,2,6,4,2,0,66.67,33.33
 situacion,Lucas,Adultez,AD-L-07,AD-L-07,aleatorio,1,4,3,1,0,75.0,25.0
 situacion,Lucas,Adultez,AD-L-08,AD-L-08,aleatorio,1,3,0,3,0,0.0,100.0
-situacion,Lucas,Adultez,AD-L-09,AD-L-09,aleatorio,1,3,0,0,3,,
-situacion,Lucas,Adultez,AD-L-09,AD-L-09,planificador,1,1,0,0,1,,
+situacion,Lucas,Adultez,AD-L-09,AD-L-09,aleatorio,2,6,0,0,6,,
+situacion,Lucas,Adultez,AD-L-09,AD-L-09,planificador,2,3,0,0,3,,
 situacion,Lucas,Adultez,AD-L-10,AD-L-10,aleatorio,2,6,0,0,6,,
 situacion,Lucas,Adultez,AD-L-10,AD-L-10,planificador,1,1,0,0,1,,
 situacion,Lucas,Adultez,AD-L-11,AD-L-11,aleatorio,1,5,0,0,5,,
-situacion,Lucas,Adultez,AD-L-12,AD-L-12,aleatorio,1,4,0,0,4,,
+situacion,Lucas,Adultez,AD-L-12,AD-L-12,aleatorio,1,5,0,0,5,,
 situacion,Lucas,Adultez,AD-L-13,AD-L-13,aleatorio,1,1,0,0,1,,
 situacion,Lucas,Adultez,AD-L-14,AD-L-14,aleatorio,2,6,0,0,6,,
 situacion,Lucas,Adultez,AD-L-15,AD-L-15,aleatorio,1,5,0,0,5,,
@@ -438,6 +435,3 @@ situacion,Lucas,Juventud,J-L-J22,J22,aleatorio,2,10,2,8,0,20.0,80.0
 situacion,Lucas,Juventud,J-L-J22,J22,planificador,2,7,3,4,0,42.86,57.14
 situacion,Lucas,Juventud,J-L-J23,J23,aleatorio,2,4,1,3,0,25.0,75.0
 situacion,Lucas,Juventud,J-L-J24,J24,aleatorio,2,4,4,0,0,100.0,0.0
-situacion,Lucas,Vuelo a Dublín,AD-L-09,AD-L-09,aleatorio,2,3,0,0,3,,
-situacion,Lucas,Vuelo a Dublín,AD-L-09,AD-L-09,planificador,1,2,0,0,2,,
-situacion,Lucas,Vuelo a Dublín,AD-L-12,AD-L-12,aleatorio,1,1,0,0,1,,
