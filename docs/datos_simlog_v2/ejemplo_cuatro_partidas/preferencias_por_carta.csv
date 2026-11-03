@@ -1,4 +1,4 @@
-Tipo,Rol,Etapa,Carta_ID,Carta_fuente_ID,Politica,Partidas_con_carta,Veces_resuelta,Elecciones_A,Elecciones_B,Otras_resoluciones,Porcentaje_A_sobre_AB,Porcentaje_B_sobre_AB
+﻿Tipo,Rol,Etapa,Carta_ID,Carta_fuente_ID,Politica,Partidas_con_carta,Veces_resuelta,Elecciones_A,Elecciones_B,Otras_resoluciones,Porcentaje_A_sobre_AB,Porcentaje_B_sobre_AB
 movimiento,Clarisa,Adultez,SYN-A-0-1-4,,aleatorio,1,1,0,1,0,0.0,100.0
 movimiento,Clarisa,Adultez,SYN-A-0-1-5,,aleatorio,1,1,1,0,0,100.0,0.0
 movimiento,Clarisa,Adultez,SYN-A-0-2-1,,aleatorio,1,1,1,0,0,100.0,0.0
