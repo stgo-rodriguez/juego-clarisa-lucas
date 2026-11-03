@@ -1,4 +1,4 @@
-Partida,Ronda,Turno_global,Momento,Jugador,Rol,Etapa,Posicion,Pareja,Perfil_ID,Afinidad_heredada,Produccion_perfil,Res_pareja_A,Res_casa_A,Res_casa_P,Titulo,Pasaporte,Carta_juvenil,Mano_adulta_JSON,Comprobantes_JSON,Inversiones_JSON,A_libre,P_libre,K_libre,M_libre
+﻿Partida,Ronda,Turno_global,Momento,Jugador,Rol,Etapa,Posicion,Pareja,Perfil_ID,Afinidad_heredada,Produccion_perfil,Res_pareja_A,Res_casa_A,Res_casa_P,Titulo,Pasaporte,Carta_juvenil,Mano_adulta_JSON,Comprobantes_JSON,Inversiones_JSON,A_libre,P_libre,K_libre,M_libre
 simlog2_original_n6_s1_planificador_c1_h3,1,1,antes,1,Clarisa,Infancia,1,,,,null,0,0,0,False,,,[],[],{},0,0,0,0
 simlog2_original_n6_s1_planificador_c1_h3,1,1,antes,2,Clarisa,Infancia,1,,,,null,0,0,0,False,,,[],[],{},0,0,0,0
 simlog2_original_n6_s1_planificador_c1_h3,1,1,antes,3,Clarisa,Infancia,1,,,,null,0,0,0,False,,,[],[],{},0,0,0,0
