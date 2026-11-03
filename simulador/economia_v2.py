@@ -346,7 +346,9 @@ class EconomyV2:
             else:
                 buy_roll=sum(self.rng.randint(1,6) for _ in range(2))
                 sell_roll=sum(self.rng.randint(1,6) for _ in range(2))
-            self.events.append(dict(action='house_attempt',price_per_player=price,won=buy_roll>sell_roll))
+            self.events.append(dict(action='house_attempt',price_per_player=price,
+                                    dice_buyers=buy_roll,dice_owners_or_bank=sell_roll,
+                                    won=buy_roll>sell_roll))
             if buy_roll<=sell_roll:continue
             old=self.house_owner
             if old is not None:
