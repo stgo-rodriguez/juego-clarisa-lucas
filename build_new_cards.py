@@ -2,7 +2,7 @@
 from pathlib import Path
 import csv,io,re,json,hashlib
 
-SOURCE=Path(__file__).parent/'docs/datos_v2_nuevas_cartas/fuentes/Clarisa_Lucas_Infancia_24_Cartas_v0_3_Narrativas.txt'
+SOURCE=Path(__file__).parent/'docs/datos_v2_nuevas_cartas/fuentes/Infancia_v0_3_extraccion.json'
 YOUTH = '''P1 M3 -A2|A2 K2 -M1
 P2 M2 -A2|A2 K2 -M1
 P1 M3 -A3|P1 K2 -M1
@@ -61,25 +61,11 @@ def effects(text):
     return out
 
 def childhood(role):
-    s=SOURCE.read_text(encoding='utf-8')
-    t=s.split('TAB NAME: '+role+'>')[1].split('<PARSED TEXT FOR SHEET:')[0].strip()
-    rows=list(csv.reader(io.StringIO(t)))
-    cards=[r for r in rows if len(r)>9 and re.match(r'INF-[CL]-\d+$',r[1])]
-    assert len(cards)==12
-    # Saldo neto validado contra los 16 indicadores por desenlace de la hoja.
-    entries=[]
-    for r in cards:
-        def numeric(start):
-            got={}
-            for i,key in enumerate('APKM'):
-                plus,minus=int(r[start+2*i]),int(r[start+2*i+1])
-                if plus or minus:got[key]=plus-minus
-            return got
-        a,b=numeric(10),numeric(18)
-        entries.append({'id':r[1],'title':r[2],'context':r[3],
-                        'text_a':r[4],'text_b':r[6],
-                        'effects':{'A':a,'B':b},'source':'Infancia v0.3'})
-    return entries
+    """Reconstruye el catálogo desde las 24 cartas infantiles exportadas de la Biblioteca."""
+    extracted=json.loads(SOURCE.read_text(encoding='utf-8'))
+    chosen=[c for c in extracted if c['role']==role and c['stage']=='Infancia']
+    assert len(chosen)==12 and len({c['id'] for c in chosen})==12
+    return [{k:c[k] for k in ('id','title','context','text_a','text_b','effects','source')} for c in chosen]
 
 cards=[]
 for role in ('Clarisa','Lucas'):
