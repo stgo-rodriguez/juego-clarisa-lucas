@@ -82,15 +82,21 @@ class SIMLogV2:
         self.balance = _safe(balance)
         self._title = {}
         self._option_text = {}
-        for x in catalog['historical_78']:
-            if x['stage'] in ('Infancia', 'Juventud'):
-                for role in ('C', 'L'):
-                    physical = f'{x["id"][0]}-{role}-{x["id"]}'
-                    self._title[physical] = (x['id'], x['title'])
-                    self._option_text[physical] = {'A':x['text_a'], 'B':x['text_b']}
-        for x in catalog['adult_proposals_30']:
-            self._title[x['id']] = (x['id'], x['title'])
-            self._option_text[x['id']] = {'description':x['text'], 'family':x['family']}
+        if catalog.get('schema')=='clarisa-lucas-cartas-2026-11-04-v2x':
+            for x in catalog['cards']:
+                self._title[x['id']]=(x['id'],x['title'])
+                self._option_text[x['id']]={'A':x.get('text_a'), 'B':x.get('text_b'),
+                                            'family':'A/B v0.3/v0.4'}
+        else:
+            for x in catalog['historical_78']:
+                if x['stage'] in ('Infancia', 'Juventud'):
+                    for role in ('C', 'L'):
+                        physical = f'{x["id"][0]}-{role}-{x["id"]}'
+                        self._title[physical] = (x['id'], x['title'])
+                        self._option_text[physical] = {'A':x['text_a'], 'B':x['text_b']}
+            for x in catalog['adult_proposals_30']:
+                self._title[x['id']] = (x['id'], x['title'])
+                self._option_text[x['id']] = {'description':x['text'], 'family':x['family']}
         self._streams = {}
         for src, owner in (('motor', engine), ('economia', eco),
                            ('situacion', resolver), ('duelo', interactions),
@@ -167,7 +173,19 @@ class SIMLogV2:
         card = self.profiles.active.get(p.id)
         receipts = [r for r in self.eco.receipts.values() if r.owner == p.id]
         ongoing = [r for r in receipts if not self.eco.projects[r.project_id].complete]
+        dynamic=getattr(self.eco,'dynamic_affinity',None)
+        pos=dynamic[p.id] if dynamic is not None else None
+        partner_pos=(dynamic[p.partner_id] if dynamic is not None and p.partner_id is not None else None)
+        if dynamic is not None:
+            from simulador.afinidad_v2 import zone
+            zone_value=zone(pos)
+            partner_zone=zone(partner_pos) if partner_pos is not None else None
+        else:
+            zone_value=partner_zone=None
         return {
+            'afinidad_pos':pos,'afinidad_zona':zone_value,
+            'afinidad_pareja_pos':partner_pos,'afinidad_pareja_zona':partner_zone,
+            'afinidad_compatible':(zone_value==partner_zone if partner_zone is not None else None),
             'id':p.id,'role':p.role,'stage':p.stage.value,'position':_position(p.position),
             'partner':p.partner_id,'free':dict(ac.free),
             'pair_a':ac.pair_a,'house_a':ac.house_a,'house_p':ac.house_p,
@@ -263,7 +281,12 @@ class SIMLogV2:
                  'Turno_global':turn,'Momento':stage,'Jugador':pid,
                  'Rol':p['role'],'Etapa':p['stage'],'Posicion':p['position'],
                  'Pareja':p['partner'],'Perfil_ID':p['profile_id'],
-                 'Afinidad_heredada':p['affinity'],'Produccion_perfil':_json(p['profile_production']),
+                 'Afinidad_heredada':p['affinity'],
+                 'Afinidad_posicion':p['afinidad_pos'],'Afinidad_zona':p['afinidad_zona'],
+                 'Pareja_afinidad_posicion':p['afinidad_pareja_pos'],
+                 'Pareja_afinidad_zona':p['afinidad_pareja_zona'],
+                 'Pareja_compatible':p['afinidad_compatible'],
+                 'Produccion_perfil':_json(p['profile_production']),
                  'Res_pareja_A':p['pair_a'],'Res_casa_A':p['house_a'],'Res_casa_P':p['house_p'],
                  'Titulo':p['title'],'Pasaporte':p['passport'],
                  'Carta_juvenil':(p['youth_card'] or (None,))[0],
@@ -287,7 +310,7 @@ class SIMLogV2:
     def _milestone_changes(self, before: dict, after: dict, world_before: dict,
                            world_after: dict, turn:int) -> None:
         keys=('stage','position','partner','title','passport','pair_a','house_a','house_p',
-              'profile_id','affinity','receipts','active_investments')
+              'profile_id','affinity','afinidad_pos','afinidad_zona','afinidad_compatible','receipts','active_investments')
         for pid in self.engine.turn_order:
             for field in keys:
                 x,y=before[pid][field],after[pid][field]
@@ -388,6 +411,16 @@ class SIMLogV2:
             'Casa_duenios':_json(world_after['house_owner']),
             'Casamiento_duenios':_json(world_after['married']),
             'Perfil_ID':y['profile_id'],'Afinidad_heredada':y['affinity'],
+            'Afinidad_posicion_antes':x['afinidad_pos'],
+            'Afinidad_posicion_despues':y['afinidad_pos'],
+            'Afinidad_zona_antes':x['afinidad_zona'],
+            'Afinidad_zona_despues':y['afinidad_zona'],
+            'Pareja_afinidad_posicion_antes':x['afinidad_pareja_pos'],
+            'Pareja_afinidad_posicion_despues':y['afinidad_pareja_pos'],
+            'Pareja_afinidad_zona_antes':x['afinidad_pareja_zona'],
+            'Pareja_afinidad_zona_despues':y['afinidad_pareja_zona'],
+            'Pareja_compatible_antes':x['afinidad_compatible'],
+            'Pareja_compatible_despues':y['afinidad_compatible'],
             'Res_pareja_A':y['pair_a'],'Res_casa_A':y['house_a'],
             'Res_casa_P':y['house_p'],
             'Titulo':y['title'],'Pasaporte':y['passport'],
@@ -479,13 +512,15 @@ class SIMLogV2:
             'preferencias_situaciones.csv':self._preferencias('situacion'),
             'preferencias_movimientos.csv':self._preferencias('movimiento'),
         }
-        manifest={'schema':SCHEMA_VERSION,'run_id':self.run_id,'seed':self.seed,
+        manifest={'schema':('SIMLOG-2.1' if hasattr(self.eco,'dynamic_affinity') else SCHEMA_VERSION),'run_id':self.run_id,'seed':self.seed,
                   'player_count':len(self.engine.players),'roles':{str(pid):p.role for pid,p in self.engine.players.items()},
                   'policy':self.policy,'competition':self.competition,
                   'round_limit':self.round_limit,'balance_variant':self.balance,
-                  'cards_status':'EXPERIMENTAL_NO_APROBADO','sources':{
+                  'cards_status':'EXPERIMENTAL_NO_APROBADO',
+                  'sources':getattr(self,'new_sources',None) or {
                       'Infancia_Juventud':'78 históricas v0.1 duplicadas por personaje',
                       'Adultez':'30 propuestas multiverso v0.2 NO APROBADAS'},
+                  'affinity_model':('zona_A_menos3_neutro_menos2_a2_B_mas3' if hasattr(self.eco,'dynamic_affinity') else 'heredada'),
                   'validation':'PASS','status':status,'summary':summary,
                   'counts':{name:len(rows) for name,rows in formats.items()},
                   'file_sha256':{}}
