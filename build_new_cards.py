@@ -2,7 +2,7 @@
 from pathlib import Path
 import csv,io,re,json,hashlib
 
-SOURCE=Path(__file__).with_name('Clarisa_Lucas_Infancia_24_Cartas_v0_3_Narrativas.txt')
+SOURCE=Path(__file__).parent/'docs/datos_v2_nuevas_cartas/fuentes/Clarisa_Lucas_Infancia_24_Cartas_v0_3_Narrativas.txt'
 YOUTH = '''P1 M3 -A2|A2 K2 -M1
 P2 M2 -A2|A2 K2 -M1
 P1 M3 -A3|P1 K2 -M1
