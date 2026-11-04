@@ -86,6 +86,11 @@ class GameAgent:
             effect=payload.get(letter,{}) if isinstance(payload,dict) else {}
             score+=sum(float(amount)*({'K':2.5,'P':1.8,'M':1.8,'A':1.6}.get(r,1))
                        for r,amount in effect.items())
+            if p.partner_id is not None and hasattr(self.eco,'dynamic_affinity'):
+                from simulador.afinidad_v2 import shift,zone
+                pa=self.eco.dynamic_affinity[p.id]+shift(letter)
+                mate=self.eco.dynamic_affinity[p.partner_id]
+                if zone(pa)==zone(mate):score+=8
             scores.append((score,letter))
         return max(scores,key=lambda x:(x[0],x[1]=='A'))[1]
 
@@ -174,6 +179,7 @@ class GameAgent:
             break
 
     def _change_affinity(self,p:PlayerState):
+        if hasattr(self.eco,'dynamic_affinity'):return  # Perfil y zona A/B son sistemas independientes
         if self.profiles is None or p.partner_id is None:return
         ac=self.eco.accounts[p.id]
         mate=self.eco.accounts[p.partner_id]
@@ -208,7 +214,7 @@ class GameAgent:
                     q.partner_id is None and q.role!=p.role and q.stage==p.stage and
                     q.position==p.position]
                 if self.config.policy=='planificador':
-                    rivals.sort(key=lambda q:(self.eco.accounts[q.id].affinity!=self.eco.accounts[p.id].affinity,q.id))
+                    rivals.sort(key=lambda q:(not self.eco.affinity_compatible(q.id,p.id),q.id))
                 else:self.rng.shuffle(rivals)
                 for q in rivals:
                     if self.eco.form_pair(p,q):
