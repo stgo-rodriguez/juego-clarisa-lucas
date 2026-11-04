@@ -1,0 +1,143 @@
+{
+  "schema": "SIMLOG-2.1 analisis",
+  "n_partidas": 200,
+  "semillas_por_tamano": 100,
+  "total_turnos": 21800,
+  "total_eventos": 511194,
+  "total_situaciones_resueltas": 20286,
+  "barajados_independientes_verificados": 600,
+  "marriages": 200,
+  "winners_by_zone": {
+    "A": 12,
+    "Neutro": 155,
+    "B": 33
+  },
+  "tables_by_size": [
+    {
+      "Jugadores": 6,
+      "Partidas": 100,
+      "Casamientos": 100,
+      "Media_rondas": 14.3,
+      "Mediana_rondas": 14.0,
+      "P90_rondas": 17,
+      "Media_turnos": 83.42,
+      "Neutro": 76,
+      "A": 6,
+      "B": 18
+    },
+    {
+      "Jugadores": 10,
+      "Partidas": 100,
+      "Casamientos": 100,
+      "Media_rondas": 13.88,
+      "Mediana_rondas": 14.0,
+      "P90_rondas": 16,
+      "Media_turnos": 134.58,
+      "Neutro": 79,
+      "A": 6,
+      "B": 15
+    }
+  ],
+  "stage_role": [
+    {
+      "Etapa": "Adultez",
+      "Rol": "Clarisa",
+      "Resoluciones": 1504,
+      "A": 877,
+      "B": 627,
+      "A_pct": 58.31,
+      "Cartas": 15,
+      "Cartas_dominancia_80": 5,
+      "Cartas_dominancia_90": 0
+    },
+    {
+      "Etapa": "Adultez",
+      "Rol": "Lucas",
+      "Resoluciones": 1515,
+      "A": 914,
+      "B": 601,
+      "A_pct": 60.33,
+      "Cartas": 15,
+      "Cartas_dominancia_80": 7,
+      "Cartas_dominancia_90": 1
+    },
+    {
+      "Etapa": "Infancia",
+      "Rol": "Clarisa",
+      "Resoluciones": 3704,
+      "A": 1533,
+      "B": 2171,
+      "A_pct": 41.39,
+      "Cartas": 12,
+      "Cartas_dominancia_80": 4,
+      "Cartas_dominancia_90": 3
+    },
+    {
+      "Etapa": "Infancia",
+      "Rol": "Lucas",
+      "Resoluciones": 2067,
+      "A": 845,
+      "B": 1222,
+      "A_pct": 40.88,
+      "Cartas": 12,
+      "Cartas_dominancia_80": 4,
+      "Cartas_dominancia_90": 3
+    },
+    {
+      "Etapa": "Juventud",
+      "Rol": "Clarisa",
+      "Resoluciones": 7659,
+      "A": 3728,
+      "B": 3931,
+      "A_pct": 48.67,
+      "Cartas": 24,
+      "Cartas_dominancia_80": 0,
+      "Cartas_dominancia_90": 0
+    },
+    {
+      "Etapa": "Juventud",
+      "Rol": "Lucas",
+      "Resoluciones": 3837,
+      "A": 1904,
+      "B": 1933,
+      "A_pct": 49.62,
+      "Cartas": 24,
+      "Cartas_dominancia_80": 0,
+      "Cartas_dominancia_90": 0
+    }
+  ],
+  "shared_choice_agreement": [
+    {
+      "Etapa": "Juventud",
+      "Mesa": "6",
+      "Ocasiones_con_dos_o_mas": 1449,
+      "Todos_igual": 586,
+      "Porcentaje_igual": 40.44
+    },
+    {
+      "Etapa": "Juventud",
+      "Mesa": "10",
+      "Ocasiones_con_dos_o_mas": 1864,
+      "Todos_igual": 517,
+      "Porcentaje_igual": 27.74
+    },
+    {
+      "Etapa": "Adultez",
+      "Mesa": "6",
+      "Ocasiones_con_dos_o_mas": 298,
+      "Todos_igual": 206,
+      "Porcentaje_igual": 69.13
+    },
+    {
+      "Etapa": "Adultez",
+      "Mesa": "10",
+      "Ocasiones_con_dos_o_mas": 576,
+      "Todos_igual": 330,
+      "Porcentaje_igual": 57.29
+    }
+  ],
+  "incompatible_winner_turns": 646,
+  "winning_pairs_ever_incompatible": 125,
+  "cards_dominance_over_90": 7,
+  "source_catalog_sha256": "38e8ae238ff4e64d9657d12d461f64ae3fb5ac4d54f2c03d27a7d8dae52c8d64"
+}
