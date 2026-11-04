@@ -371,6 +371,13 @@ class EconomyV2:
             return True
         return False
 
+    def affinity_compatible(self, a:int, b:int) -> bool:
+        if hasattr(self,'dynamic_affinity'):
+            from simulador.afinidad_v2 import compatible
+            return compatible(self.dynamic_affinity,a,b)
+        x,y=self._account(a).affinity,self._account(b).affinity
+        return x is not None and x==y
+
     def marriage_eligible(self, p: PlayerState) -> bool:
         if p.partner_id is None or p.stage!=Stage.ADULTEZ:return False
         a,b=self._pair(p)
@@ -379,7 +386,7 @@ class EconomyV2:
             ac=self._account(q.id)
             if not (ac.title and ac.passport==PASSPORT_KIND[q.role] and
                     ac.pair_a>=5 and ac.house_a>=8 and ac.house_p>=5):return False
-        if self._account(a.id).affinity is None or self._account(a.id).affinity!=self._account(b.id).affinity:
+        if not self.affinity_compatible(a.id,b.id):
             return False
         return all(sum(self._account(q.id).free[r] for q in (a,b))>=2*n
                    for r,n in {'A':12,'P':10,'M':5}.items())
@@ -396,7 +403,7 @@ class EconomyV2:
             if not (ac.title and ac.passport==PASSPORT_KIND[q.role] and
                     ac.pair_a>=5 and ac.house_a>=8 and ac.house_p>=5):
                 raise ValueError('Requisitos individuales incompletos')
-        if self._account(a.id).affinity is None or self._account(a.id).affinity!=self._account(b.id).affinity:
+        if not self.affinity_compatible(a.id,b.id):
             raise ValueError('Afinidad incompatible')
         if not self._pool_to_quota(a.id,b.id,{'A':12,'P':10,'M':5}):
             raise ValueError('No alcanzan recursos libres para Casamiento')
