@@ -1,0 +1,520 @@
+[
+  {
+    "id": "INF-C-01",
+    "title": "La tortuga necesita un hogar",
+    "context": "La tortuga del aula necesita un terrario nuevo. Clarisa puede aprender a construirlo con el encargado de la escuela o ayudar a reunir fondos para comprarlo.",
+    "text_a": "Construís el terrario, aprendés a cuidarlo y ponés una parte de tus ahorros para comprar materiales.",
+    "text_b": "Organizás una rifa con amigos y conseguís dinero para la tortuga. Te da mucha vergüenza pedir colaboración a las familias.",
+    "effects": {
+      "A": {
+        "P": 1,
+        "K": 1,
+        "M": -2
+      },
+      "B": {
+        "A": 1,
+        "P": -2,
+        "M": 3
+      }
+    },
+    "source": "Infancia v0.3",
+    "stage": "Infancia",
+    "role": "Clarisa"
+  },
+  {
+    "id": "INF-C-02",
+    "title": "El cumpleaños y la feria de libros",
+    "context": "El sábado es el cumpleaños de una amiga de Clarisa, pero ese mismo día la biblioteca escolar necesita voluntarios para vender libros usados.",
+    "text_a": "Trabajás en la feria de libros, aprendés de los títulos que recomendás y recibís una parte de lo recaudado. Tu amigo se siente dejado de lado.",
+    "text_b": "Vas al cumpleaños, elegís un regalo y ayudás a organizar la sorpresa.",
+    "effects": {
+      "A": {
+        "A": -2,
+        "K": 1,
+        "M": 2
+      },
+      "B": {
+        "A": 2,
+        "P": 1,
+        "M": -2
+      }
+    },
+    "source": "Infancia v0.3",
+    "stage": "Infancia",
+    "role": "Clarisa"
+  },
+  {
+    "id": "INF-C-03",
+    "title": "La semana de la feria escolar",
+    "context": "La escuela organiza una feria. Clarisa puede preparar un proyecto para el concurso académico o hacerse cargo de un puesto de ventas con sus compañeros. Ambas actividades requieren tiempo y no puede hacer las dos.",
+    "text_a": "Dedicás la semana a investigar y preparar la presentación. Ganás conocimientos y seguridad, pero te perdés encuentros importantes con amigos.",
+    "text_b": "Organizás el puesto de ventas con tus compañeros, compartís buenos momentos y aprendés a coordinar. Contribuís con tus ahorros para preparar el puesto.",
+    "effects": {
+      "A": {
+        "A": -2,
+        "P": 1,
+        "K": 1
+      },
+      "B": {
+        "A": 2,
+        "P": 1,
+        "M": -2
+      }
+    },
+    "source": "Infancia v0.3",
+    "stage": "Infancia",
+    "role": "Clarisa"
+  },
+  {
+    "id": "INF-C-04",
+    "title": "El mural que podía ser tuyo",
+    "context": "Clarisa puede pintar un mural con sus amigas o presentarse sola a un concurso artístico con premio. Las fechas coinciden.",
+    "text_a": "Preparás tu obra en solitario y ganás un reconocimiento con premio. Los demás se enojan porque contaban con vos para el mural.",
+    "text_b": "Pintás con el grupo, aprendés a mezclar colores y ayudás a comprar pintura.",
+    "effects": {
+      "A": {
+        "A": -2,
+        "P": 2,
+        "M": 1
+      },
+      "B": {
+        "A": 2,
+        "K": 1,
+        "M": -2
+      }
+    },
+    "source": "Infancia v0.3",
+    "stage": "Infancia",
+    "role": "Clarisa"
+  },
+  {
+    "id": "INF-C-05",
+    "title": "El desafío del campamento",
+    "context": "En el campamento, el equipo de Clarisa recibe dos tareas simultáneas: preparar un refugio o entretener a los chicos más pequeños.",
+    "text_a": "Organizás el refugio, aprendés a utilizar herramientas y gastás en cuerdas y materiales que faltan.",
+    "text_b": "Inventás juegos que entusiasman a los más chicos. Después, te incomoda el reto del coordinador por no haber cumplido la tarea de montaje.",
+    "effects": {
+      "A": {
+        "P": 1,
+        "K": 1,
+        "M": -2
+      },
+      "B": {
+        "A": 3,
+        "P": -2
+      }
+    },
+    "source": "Infancia v0.3",
+    "stage": "Infancia",
+    "role": "Clarisa"
+  },
+  {
+    "id": "INF-C-06",
+    "title": "Las galletitas de la abuela",
+    "context": "Clarisa aprende una receta familiar y puede vender galletitas con su abuela. Sus amigas, en cambio, quieren cocinar para compartirlas en una merienda.",
+    "text_a": "Comprás ingredientes para hacer galletitas para todos. Cocinan juntos y vos te animás a coordinar el grupo.",
+    "text_b": "Cocinás con tu familia, aprendés la receta y vendés las galletitas. Te perdés la merienda con tus amigos.",
+    "effects": {
+      "A": {
+        "A": 2,
+        "P": 1,
+        "M": -2
+      },
+      "B": {
+        "A": -2,
+        "K": 1,
+        "M": 2
+      }
+    },
+    "source": "Infancia v0.3",
+    "stage": "Infancia",
+    "role": "Clarisa"
+  },
+  {
+    "id": "INF-C-07",
+    "title": "Un secreto en el patio",
+    "context": "Una amiga rompe una maceta del colegio y le pide a Clarisa que no diga nada. La directora pregunta delante de todos quién estuvo cerca.",
+    "text_a": "Guardás el secreto para proteger a tu amiga, pero la culpa te hace sentir menos segura de vos misma.",
+    "text_b": "Contás lo que viste. Te sentís en paz con tu decisión, aunque tu amiga se enoja y se aleja.",
+    "effects": {
+      "A": {
+        "A": 3,
+        "P": -2
+      },
+      "B": {
+        "A": -2,
+        "P": 2
+      }
+    },
+    "source": "Infancia v0.3",
+    "stage": "Infancia",
+    "role": "Clarisa"
+  },
+  {
+    "id": "INF-C-08",
+    "title": "El sobre con dinero",
+    "context": "Clarisa encuentra un sobre con dinero y el nombre de otra alumna en el patio del colegio. Nadie parece haberla visto.",
+    "text_a": "Te quedás con el dinero. Tenés más para gastar, pero el secreto te genera culpa y algunos amigos pierden confianza en vos.",
+    "text_b": "Devolvés el dinero. La otra persona te agradece y sentís orgullo por haber hecho lo correcto.",
+    "effects": {
+      "A": {
+        "A": -1,
+        "P": -2,
+        "M": 4
+      },
+      "B": {
+        "A": 1,
+        "P": 1
+      }
+    },
+    "source": "Infancia v0.3",
+    "stage": "Infancia",
+    "role": "Clarisa"
+  },
+  {
+    "id": "INF-C-09",
+    "title": "Las entradas del festival",
+    "context": "El festival escolar necesita alguien que venda entradas y también personas que preparen la escenografía. Clarisa no puede comprometerse con ambos equipos.",
+    "text_a": "Te encargás de vender entradas, organizás la fila y reunís fondos. Tus amigos de la obra se molestan porque no los acompañás en los ensayos.",
+    "text_b": "Trabajás con tus amigos construyendo el escenario, aprendés a usar herramientas y comprás materiales de tus ahorros.",
+    "effects": {
+      "A": {
+        "A": -2,
+        "P": 1,
+        "M": 2
+      },
+      "B": {
+        "A": 1,
+        "K": 1,
+        "M": -2
+      }
+    },
+    "source": "Infancia v0.3",
+    "stage": "Infancia",
+    "role": "Clarisa"
+  },
+  {
+    "id": "INF-C-10",
+    "title": "El video que nadie quiere editar",
+    "context": "La clase debe grabar un video para el aniversario de la escuela. Clarisa puede preparar la edición o actuar en una escena cómica frente a todos.",
+    "text_a": "Actuás en una escena cómica con tus amigos. Se divierten mucho, aunque verte en pantalla te da vergüenza y te baja la confianza.",
+    "text_b": "Aprendés a editar el video, planificás las escenas y ponés parte de tus ahorros para alquilar un micrófono.",
+    "effects": {
+      "A": {
+        "A": 3,
+        "P": -2
+      },
+      "B": {
+        "P": 1,
+        "K": 1,
+        "M": -2
+      }
+    },
+    "source": "Infancia v0.3",
+    "stage": "Infancia",
+    "role": "Clarisa"
+  },
+  {
+    "id": "INF-C-11",
+    "title": "Los juguetes que ya no usás",
+    "context": "Clarisa revisa juguetes que ya no usa. Puede donar algunos al centro comunitario con sus amigas o venderlos en la feria escolar.",
+    "text_a": "Comprás algunos juegos para completar la donación y colaborás con el centro comunitario. Te sentís parte de algo importante.",
+    "text_b": "Vendés los juguetes, aprendés a poner precios y ganás dinero. Tus amigos se decepcionan porque esperaban que colaboraras con la colecta.",
+    "effects": {
+      "A": {
+        "A": 2,
+        "P": 1,
+        "M": -2
+      },
+      "B": {
+        "A": -2,
+        "K": 1,
+        "M": 3
+      }
+    },
+    "source": "Infancia v0.3",
+    "stage": "Infancia",
+    "role": "Clarisa"
+  },
+  {
+    "id": "INF-C-12",
+    "title": "La flauta que se rompió",
+    "context": "Clarisa rompe accidentalmente la flauta de la escuela durante un ensayo. Puede contar lo sucedido o intentar arreglarla sin decir nada.",
+    "text_a": "Intentás repararla en secreto con la ayuda de un amigo. Aprendés a arreglar cosas, pero te ponés nervioso ante la posibilidad de que descubran lo ocurrido.",
+    "text_b": "Lo contás, ofrecés pagar parte del arreglo y agradecés a quienes te apoyan. Te sentís más segura por asumir el error.",
+    "effects": {
+      "A": {
+        "A": 1,
+        "P": -2,
+        "K": 1
+      },
+      "B": {
+        "A": 2,
+        "P": 1,
+        "M": -2
+      }
+    },
+    "source": "Infancia v0.3",
+    "stage": "Infancia",
+    "role": "Clarisa"
+  },
+  {
+    "id": "INF-L-01",
+    "title": "¿Quién cuida a la tortuga?",
+    "context": "La tortuga de la clase necesita un nuevo terrario. Lucas puede aprender a montarlo o encargarse de recaudar dinero con sus compañeros.",
+    "text_a": "Construís el terrario, aprendés a cuidarlo y ponés una parte de tus ahorros para comprar materiales.",
+    "text_b": "Organizás una rifa con amigos y conseguís dinero para la tortuga. Te da mucha vergüenza pedir colaboración a las familias.",
+    "effects": {
+      "A": {
+        "P": 1,
+        "K": 1,
+        "M": -2
+      },
+      "B": {
+        "A": 1,
+        "P": -2,
+        "M": 3
+      }
+    },
+    "source": "Infancia v0.3",
+    "stage": "Infancia",
+    "role": "Lucas"
+  },
+  {
+    "id": "INF-L-02",
+    "title": "Dos invitaciones para el sábado",
+    "context": "Lucas tiene invitación al cumpleaños de un amigo y también le ofrecieron ayudar a vender libros en una feria de la biblioteca.",
+    "text_a": "Trabajás en la feria de libros, aprendés de los títulos que recomendás y recibís una parte de lo recaudado. Tu amigo se siente dejado de lado.",
+    "text_b": "Vas al cumpleaños, elegís un regalo y ayudás a organizar la sorpresa.",
+    "effects": {
+      "A": {
+        "A": -2,
+        "K": 1,
+        "M": 2
+      },
+      "B": {
+        "A": 2,
+        "P": 1,
+        "M": -2
+      }
+    },
+    "source": "Infancia v0.3",
+    "stage": "Infancia",
+    "role": "Lucas"
+  },
+  {
+    "id": "INF-L-03",
+    "title": "Una semana, dos puestos",
+    "context": "En la semana de la feria, Lucas debe elegir entre presentar un proyecto para el concurso académico o ayudar a sus compañeros a organizar un puesto de ventas. Los preparativos se superponen.",
+    "text_a": "Dedicás la semana a investigar y preparar la presentación. Ganás conocimientos y seguridad, pero te perdés encuentros importantes con amigos.",
+    "text_b": "Organizás el puesto de ventas con tus compañeros, compartís buenos momentos y aprendés a coordinar. Contribuís con tus ahorros para preparar el puesto.",
+    "effects": {
+      "A": {
+        "A": -2,
+        "P": 1,
+        "K": 1
+      },
+      "B": {
+        "A": 2,
+        "P": 1,
+        "M": -2
+      }
+    },
+    "source": "Infancia v0.3",
+    "stage": "Infancia",
+    "role": "Lucas"
+  },
+  {
+    "id": "INF-L-04",
+    "title": "El concurso del mural",
+    "context": "Lucas fue invitado a pintar un mural con su grupo. En paralelo, un concurso ofrece un premio a quien presente una obra individual.",
+    "text_a": "Preparás tu obra en solitario y ganás un reconocimiento con premio. Los demás se enojan porque contaban con vos para el mural.",
+    "text_b": "Pintás con el grupo, aprendés a mezclar colores y ayudás a comprar pintura.",
+    "effects": {
+      "A": {
+        "A": -2,
+        "P": 2,
+        "M": 1
+      },
+      "B": {
+        "A": 2,
+        "K": 1,
+        "M": -2
+      }
+    },
+    "source": "Infancia v0.3",
+    "stage": "Infancia",
+    "role": "Lucas"
+  },
+  {
+    "id": "INF-L-05",
+    "title": "La misión del campamento",
+    "context": "Durante una salida de campamento, Lucas puede coordinar el armado del refugio o hacerse cargo de los juegos del grupo menor.",
+    "text_a": "Organizás el refugio, aprendés a utilizar herramientas y gastás en cuerdas y materiales que faltan.",
+    "text_b": "Inventás juegos que entusiasman a los más chicos. Después, te incomoda el reto del coordinador por no haber cumplido la tarea de montaje.",
+    "effects": {
+      "A": {
+        "P": 1,
+        "K": 1,
+        "M": -2
+      },
+      "B": {
+        "A": 3,
+        "P": -2
+      }
+    },
+    "source": "Infancia v0.3",
+    "stage": "Infancia",
+    "role": "Lucas"
+  },
+  {
+    "id": "INF-L-06",
+    "title": "El puesto de las galletitas",
+    "context": "Lucas aprende una receta que se vende muy bien. Puede preparar una tanda para vender con su familia o cocinar gratis para la merienda de sus amigos.",
+    "text_a": "Comprás ingredientes para hacer galletitas para todos. Cocinan juntos y vos te animás a coordinar el grupo.",
+    "text_b": "Cocinás con tu familia, aprendés la receta y vendés las galletitas. Te perdés la merienda con tus amigos.",
+    "effects": {
+      "A": {
+        "A": 2,
+        "P": 1,
+        "M": -2
+      },
+      "B": {
+        "A": -2,
+        "K": 1,
+        "M": 2
+      }
+    },
+    "source": "Infancia v0.3",
+    "stage": "Infancia",
+    "role": "Lucas"
+  },
+  {
+    "id": "INF-L-07",
+    "title": "La maceta rota",
+    "context": "Un amigo rompe una maceta durante el recreo y le pide a Lucas que lo cubra. El profesor está averiguando qué pasó.",
+    "text_a": "Guardás el secreto para proteger a tu amiga, pero la culpa te hace sentir menos segura de vos misma.",
+    "text_b": "Contás lo que viste. Te sentís en paz con tu decisión, aunque tu amiga se enoja y se aleja.",
+    "effects": {
+      "A": {
+        "A": 3,
+        "P": -2
+      },
+      "B": {
+        "A": -2,
+        "P": 2
+      }
+    },
+    "source": "Infancia v0.3",
+    "stage": "Infancia",
+    "role": "Lucas"
+  },
+  {
+    "id": "INF-L-08",
+    "title": "La billetera de la cancha",
+    "context": "Lucas encuentra una billetera con dinero junto a la cancha. Tiene una tarjeta con el nombre de su dueño, pero nadie lo vio recogerla.",
+    "text_a": "Te quedás con el dinero. Tenés más para gastar, pero el secreto te genera culpa y algunos amigos pierden confianza en vos.",
+    "text_b": "Devolvés el dinero. La otra persona te agradece y sentís orgullo por haber hecho lo correcto.",
+    "effects": {
+      "A": {
+        "A": -1,
+        "P": -2,
+        "M": 4
+      },
+      "B": {
+        "A": 1,
+        "P": 1
+      }
+    },
+    "source": "Infancia v0.3",
+    "stage": "Infancia",
+    "role": "Lucas"
+  },
+  {
+    "id": "INF-L-09",
+    "title": "Entre entradas y telones",
+    "context": "El festival del colegio está en problemas: hay que recaudar con las entradas o arreglar la escenografía. Lucas debe elegir dónde ayudar.",
+    "text_a": "Te encargás de vender entradas, organizás la fila y reunís fondos. Tus amigos de la obra se molestan porque no los acompañás en los ensayos.",
+    "text_b": "Trabajás con tus amigos construyendo el escenario, aprendés a usar herramientas y comprás materiales de tus ahorros.",
+    "effects": {
+      "A": {
+        "A": -2,
+        "P": 1,
+        "M": 2
+      },
+      "B": {
+        "A": 1,
+        "K": 1,
+        "M": -2
+      }
+    },
+    "source": "Infancia v0.3",
+    "stage": "Infancia",
+    "role": "Lucas"
+  },
+  {
+    "id": "INF-L-10",
+    "title": "La cámara frente a todos",
+    "context": "Lucas participa en un video escolar. El grupo necesita a alguien que edite el material o que aparezca en una escena divertida delante de la cámara.",
+    "text_a": "Actuás en una escena cómica con tus amigos. Se divierten mucho, aunque verte en pantalla te da vergüenza y te baja la confianza.",
+    "text_b": "Aprendés a editar el video, planificás las escenas y ponés parte de tus ahorros para alquilar un micrófono.",
+    "effects": {
+      "A": {
+        "A": 3,
+        "P": -2
+      },
+      "B": {
+        "P": 1,
+        "K": 1,
+        "M": -2
+      }
+    },
+    "source": "Infancia v0.3",
+    "stage": "Infancia",
+    "role": "Lucas"
+  },
+  {
+    "id": "INF-L-11",
+    "title": "La feria de juguetes usados",
+    "context": "Lucas encuentra una caja de juguetes viejos. Sus amigos organizan una donación, pero el colegio también abre una feria de objetos usados.",
+    "text_a": "Comprás algunos juegos para completar la donación y colaborás con el centro comunitario. Te sentís parte de algo importante.",
+    "text_b": "Vendés los juguetes, aprendés a poner precios y ganás dinero. Tus amigos se decepcionan porque esperaban que colaboraras con la colecta.",
+    "effects": {
+      "A": {
+        "A": 2,
+        "P": 1,
+        "M": -2
+      },
+      "B": {
+        "A": -2,
+        "K": 1,
+        "M": 3
+      }
+    },
+    "source": "Infancia v0.3",
+    "stage": "Infancia",
+    "role": "Lucas"
+  },
+  {
+    "id": "INF-L-12",
+    "title": "La guitarra del ensayo",
+    "context": "Lucas daña una guitarra del colegio mientras la guarda. Sus amigos ofrecen ayudarlo a repararla antes de que se entere el profesor.",
+    "text_a": "Intentás repararla en secreto con la ayuda de un amigo. Aprendés a arreglar cosas, pero te ponés nervioso ante la posibilidad de que descubran lo ocurrido.",
+    "text_b": "Lo contás, ofrecés pagar parte del arreglo y agradecés a quienes te apoyan. Te sentís más segura por asumir el error.",
+    "effects": {
+      "A": {
+        "A": 1,
+        "P": -2,
+        "K": 1
+      },
+      "B": {
+        "A": 2,
+        "P": 1,
+        "M": -2
+      }
+    },
+    "source": "Infancia v0.3",
+    "stage": "Infancia",
+    "role": "Lucas"
+  }
+]
