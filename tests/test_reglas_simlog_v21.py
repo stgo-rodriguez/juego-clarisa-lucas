@@ -9,9 +9,10 @@ from pathlib import Path
 from simulador.economia_v2 import EconomyScenario
 from simulador.movimiento_v2 import youth_cards, Coord
 from simulador.mazos_vigentes_v2 import CurrentResolver, load_current, new_decks
-from simulador.reglas_v21 import EconomyV21, RoundEngineV21, transition_hooks_v21
+from simulador.reglas_v21 import EconomyV21, RoundEngineV21, transition_hooks_v21, CurrentResolverV21
 from simulador.transiciones_v2 import ProfileDecksV2
-from simulador.turnos_v2 import AdultChoice, CardPool, PlayerState, RuleHooks, Stage
+from simulador.turnos_v2 import AdultChoice, CardPool, PlayerState, RuleHooks, Stage, PendingRuleError
+from simulador.interacciones_v2 import InteractionV2
 
 
 def game(players, *, hooks=None):
@@ -167,6 +168,76 @@ class MotorV21Tests(unittest.TestCase):
         self.assertEqual(eco.accounts[4].free['M'], before[4] - 20)
         self.assertEqual(eco.accounts[1].free['M'], before[1] + 20)
         self.assertEqual(eco.accounts[2].free['M'], before[2] + 20)
+        eco.audit()
+
+    def test_ordinary_love_loss_uses_pair_reserve_then_partner_repairs(self):
+        a = PlayerState(1, 'Clarisa', Stage.JUVENTUD, 1)
+        b = PlayerState(2, 'Lucas', Stage.JUVENTUD, 1)
+        g, eco, profiles = game([a, b])
+        for player in (a, b):
+            eco.issue(player.id, 'A', 5, 'fixture')
+        self.assertTrue(eco.form_pair(a, b))
+        eco.issue(1, 'A', 1, 'fixture')
+        eco.issue(2, 'A', 3, 'fixture')
+        interactions = InteractionV2(g, eco, profiles)
+        resolver = CurrentResolverV21(eco, interactions)
+        resolver._apply(a, {'A': -3})
+        self.assertEqual(eco.accounts[1].pair_a, 5)
+        self.assertEqual(eco.accounts[1].free['A'], 0)
+        self.assertEqual(eco.accounts[2].free['A'], 1)
+        self.assertEqual((a.partner_id, b.partner_id), (2, 1))
+        self.assertEqual(sum(x['amount'] for x in eco.events
+                             if x.get('action') == 'reserve_loss'), 2)
+        eco.audit()
+
+    def test_unrepairable_pair_reserve_loss_breaks_youth_pair(self):
+        a = PlayerState(1, 'Clarisa', Stage.JUVENTUD, 1)
+        b = PlayerState(2, 'Lucas', Stage.JUVENTUD, 1)
+        g, eco, profiles = game([a, b])
+        for player in (a, b):
+            eco.issue(player.id, 'A', 5, 'fixture')
+        eco.form_pair(a, b)
+        resolver = CurrentResolverV21(eco, InteractionV2(g, eco, profiles))
+        resolver._apply(a, {'A': -1})
+        self.assertIsNone(a.partner_id)
+        self.assertIsNone(b.partner_id)
+        self.assertEqual(eco.accounts[1].pair_a, 0)
+        self.assertEqual(eco.accounts[2].pair_a, 0)
+        eco.audit()
+
+    def test_ordinary_personality_loss_revokes_house(self):
+        a = PlayerState(1, 'Clarisa', Stage.ADULTEZ, Coord(3, 3))
+        b = PlayerState(2, 'Lucas', Stage.ADULTEZ, Coord(3, 3))
+        g, eco, profiles = game([a, b])
+        for player in (a, b):
+            for resource, amount in {'A': 30, 'P': 10, 'M': 20}.items():
+                eco.issue(player.id, resource, amount, 'fixture')
+        eco.form_pair(a, b)
+        self.assertTrue(eco.buy_house(a, dice=[(12, 2)]))
+        remaining = eco.accounts[1].free['P']
+        eco.spend(1, 'P', remaining, 'fixture')
+        resolver = CurrentResolverV21(eco, InteractionV2(g, eco, profiles))
+        resolver._apply(a, {'P': -1})
+        self.assertIsNone(eco.house_owner)
+        self.assertEqual(eco.accounts[1].house_p, 0)
+        self.assertEqual(eco.accounts[2].house_p, 0)
+        self.assertTrue(any(e['action'] == 'reserve_loss'
+                            for e in eco.events))
+        eco.audit()
+
+    def test_unsupported_adult_break_preflight_is_atomic(self):
+        a = PlayerState(1, 'Clarisa', Stage.ADULTEZ, Coord(5, 3))
+        b = PlayerState(2, 'Lucas', Stage.ADULTEZ, Coord(5, 3))
+        g, eco, profiles = game([a, b])
+        eco.issue(1, 'A', 5, 'fixture')
+        eco.issue(2, 'A', 5, 'fixture')
+        eco.form_pair(a, b)
+        resolver = CurrentResolverV21(eco, InteractionV2(g, eco, profiles))
+        before = (eco.accounts[1].pair_a, eco.burned['A'], eco.accounts[1].free['A'])
+        with self.assertRaises(PendingRuleError):
+            resolver._apply(a, {'A': -1})
+        self.assertEqual(before, (eco.accounts[1].pair_a,
+                                  eco.burned['A'], eco.accounts[1].free['A']))
         eco.audit()
 
     def test_dublin_lands_before_first_adult_turn_with_movement(self):
