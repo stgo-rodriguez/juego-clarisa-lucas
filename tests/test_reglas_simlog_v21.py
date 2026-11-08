@@ -86,6 +86,8 @@ class MotorV21Tests(unittest.TestCase):
         g, eco, profiles = game([p])
         eco.issue(1, 'P', 2, 'fixture')
         eco.issue(1, 'K', 1, 'fixture')
+        # Neutralizar la carta para comprobar exclusivamente la secuencia UTN.
+        g.hooks.apply_situation = lambda engine, player, card, letter: None
         g.start_round()
         outcome = g.play_turn(1, childhood_die=3, utn_die=6, choose_utn=True)
         self.assertEqual(outcome.target, 'UTN')
