@@ -4,7 +4,7 @@ from __future__ import annotations
 import json
 import unittest
 
-from laboratorio.narrativa_simlog_v21 import summarize_player_round
+from laboratorio.narrativa_simlog_v21 import recursos_fin_ronda, summarize_player_round
 
 
 def event(seq, rnd, turn, active, source, action, detail):
@@ -116,6 +116,60 @@ class NarrativaTests(unittest.TestCase):
         self.assertIn("perdió 1 de Dinero", choice["texto"])
         self.assertNotIn("perdió 2 de Dinero", choice["texto"])
         self.assertIn("afinidad pasó de 0", choice["texto"])
+
+    def test_opciones_y_perdidas_realmente_aplicadas(self):
+        relato = summarize_player_round(fake_game(), 1, 1, CATALOG)
+        carta = next(e for e in relato["eventos"] if e["tipo"] == "Situación")
+        self.assertEqual(carta["opciones_efectos"]["A"], {"P": 1, "K": 1, "M": -2})
+        self.assertEqual(carta["opciones_efectos"]["B"], {"M": 3})
+        # Solo se pudo pagar 1 M en la ronda aunque la carta indique -2 M.
+        self.assertEqual(carta["efecto_aplicado"], {"P": 1, "K": 1, "M": -1})
+
+    def test_saldos_cierre_ronda_incluyen_terceros_y_reservas(self):
+        game = fake_game()
+        def state(ronda, turn, jugador, amor, personalidad, conocimiento, dinero,
+                  pareja=0, casa_a=0, casa_p=0):
+            return {
+                "Ronda": str(ronda), "Turno_global": str(turn),
+                "Momento": "despues", "Jugador": str(jugador),
+                "A_libre": str(amor), "P_libre": str(personalidad),
+                "K_libre": str(conocimiento), "M_libre": str(dinero),
+                "Res_pareja_A": str(pareja), "Res_casa_A": str(casa_a),
+                "Res_casa_P": str(casa_p),
+            }
+        # El turno del jugador ocurrió antes; otro participante cambió luego sus recursos.
+        game["estados_jugadores.csv"] = [
+            state(1, 1, 1, 9, 2, 2, 9),
+            state(1, 4, 1, 3, 4, 3, 7, pareja=5, casa_p=2),
+            state(2, 8, 1, 2, 7, 3, 5, pareja=5, casa_p=2),
+        ]
+        ronda1 = recursos_fin_ronda(game, 1, 1)
+        self.assertEqual(ronda1["A"]["total"], 8)
+        self.assertEqual(ronda1["A"]["libre"], 3)
+        self.assertEqual(ronda1["A"]["reservado"], 5)
+        self.assertEqual(ronda1["P"]["total"], 6)
+        self.assertIsNone(ronda1["A"]["variacion"])
+        ronda2 = recursos_fin_ronda(game, 2, 1)
+        self.assertEqual([ronda2[r]["variacion"] for r in ("A", "P", "K", "M")],
+                         [-1, 3, 0, -2])
+        self.assertEqual(ronda2["M"]["total"], 5)
+        self.assertIsNone(recursos_fin_ronda(game, 3, 1))
+        self.assertIsNone(recursos_fin_ronda(game, 1, 4))
+
+    def test_saldos_faltantes_no_se_completan_con_ceros(self):
+        game = fake_game()
+        self.assertIsNone(recursos_fin_ronda(game, 1, 1))
+        game["estados_jugadores.csv"] = [{
+            "Ronda": "1", "Turno_global": "4", "Momento": "despues",
+            "Jugador": "1", "A_libre": "3",
+        }]
+        self.assertIsNone(recursos_fin_ronda(game, 1, 1))
+
+    def test_carta_sin_catalogo_no_inventa_cambios(self):
+        relato = summarize_player_round(fake_game(), 1, 1, {})
+        carta = next(e for e in relato["eventos"] if e["tipo"] == "Situación")
+        self.assertEqual(carta["opciones_efectos"], {"A": None, "B": None})
+        self.assertEqual(carta["efecto_aplicado"], {"P": 1, "K": 1, "M": -1})
 
     def test_canje_subhito_noviazgo_y_duelo_ajeno(self):
         data = summarize_player_round(fake_game(), 1, 1, CATALOG)
