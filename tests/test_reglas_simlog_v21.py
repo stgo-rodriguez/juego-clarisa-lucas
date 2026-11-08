@@ -141,6 +141,34 @@ class MotorV21Tests(unittest.TestCase):
         self.assertEqual((p.stage, p.position), (Stage.INFANCIA, 5))
         self.assertFalse(p.utn_return_pending)
 
+    def test_house_price_escalates_against_existing_owners(self):
+        players = [
+            PlayerState(1, 'Clarisa', Stage.ADULTEZ, Coord(3, 3)),
+            PlayerState(2, 'Lucas', Stage.ADULTEZ, Coord(3, 3)),
+            PlayerState(3, 'Clarisa', Stage.ADULTEZ, Coord(3, 3)),
+            PlayerState(4, 'Lucas', Stage.ADULTEZ, Coord(3, 3)),
+        ]
+        _, eco, _ = game(players)
+        for p in players:
+            for resource, amount in {'A': 30, 'P': 15, 'M': 60}.items():
+                eco.issue(p.id, resource, amount, 'fixture')
+        eco.form_pair(players[0], players[1])
+        eco.form_pair(players[2], players[3])
+        self.assertTrue(eco.buy_house(players[0], dice=[(12, 2)], max_attempts=1))
+        before = {pid: eco.accounts[pid].free['M'] for pid in (1, 2, 3, 4)}
+        result = eco.buy_house(players[2], dice=[(2, 12), (12, 2)],
+                               max_attempts=2)
+        self.assertTrue(result)
+        self.assertEqual(eco.house_owner, (3, 4))
+        self.assertEqual(
+            [e['price_per_player'] for e in eco.events
+             if e['action'] == 'house_attempt'][-2:], [15, 20])
+        self.assertEqual(eco.accounts[3].free['M'], before[3] - 20)
+        self.assertEqual(eco.accounts[4].free['M'], before[4] - 20)
+        self.assertEqual(eco.accounts[1].free['M'], before[1] + 20)
+        self.assertEqual(eco.accounts[2].free['M'], before[2] + 20)
+        eco.audit()
+
     def test_dublin_lands_before_first_adult_turn_with_movement(self):
         a = PlayerState(1, 'Clarisa', Stage.DUBLIN, Stage.DUBLIN.value, partner_id=2)
         b = PlayerState(2, 'Lucas', Stage.DUBLIN, Stage.DUBLIN.value, partner_id=1)
