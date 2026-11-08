@@ -326,7 +326,7 @@ def build_gantt(game, items, winners, first, last, focus=None):
     if focus is not None:
         fig.add_vline(x=focus, line_width=1, line_dash="dot", line_color="#0f172a")
     fig.update_layout(
-        title=None, height=490, margin=dict(l=20, r=20, t=12, b=65),
+        title=None, height=max(490, 150*len(winners)+150), margin=dict(l=20, r=20, t=12, b=65),
         paper_bgcolor="rgba(0,0,0,0)", plot_bgcolor="rgba(0,0,0,0)",
         legend=dict(orientation="h", y=-.26, x=0, font=dict(size=11)),
         hovermode="closest", dragmode="pan",
@@ -388,73 +388,134 @@ st.title("Visualizador de partidas · SIMLOG v2.1")
 st.caption("Decisiones y eventos SIMLOG v2.1 por partida y jugadores seleccionados. "
            "Solo lectura: no modifica simulaciones ni inventa resultados.")
 
-with st.expander("Origen de los datos · carpeta o ZIP SIMLOG v2.1", expanded=False):
+with st.expander("Origen de los datos · carpetas y ZIP SIMLOG v2.1", expanded=False):
     src1, src2 = st.columns([2.4, 1.5], vertical_alignment="bottom")
     with src1:
         root_path = st.text_input(
-            "Carpeta local de resultados",
+            "Carpeta principal de resultados",
             value=str(ROOT / "resultados"),
-            help="Debe contener trazas/n6_s1/manifest.json, etc. "
-                 "También puede apuntar directamente a una carpeta de partida.")
+            help="Se buscan de forma recursiva TODAS las partidas SIMLOG v2.1 "
+                 "de esta carpeta, sin limitar semillas ni tamaño de mesa.")
     with src2:
-        uploaded = st.file_uploader("Alternativamente, cargar ZIP de trazas",
-                                    type=["zip"], help="El ZIP tiene prioridad sobre la carpeta.")
+        uploaded = st.file_uploader(
+            "Agregar ZIP de trazas", type=["zip"],
+            help="Las partidas del ZIP se suman a las de las carpetas locales.")
+    extra_roots = st.text_area(
+        "Otras carpetas de simulaciones (opcional, una ruta por línea)",
+        value="", height=78, placeholder="/ruta/a/otra/corrida",
+        help="Se suman al índice, incluso cuando están fuera de resultados/.")
+    st.button(
+        "Actualizar listado de partidas",
+        on_click=lambda: (cached_discovery.clear(), cached_game.clear()),
+        help="Volvé a buscar archivos nuevos o modificados, sin reiniciar el laboratorio.")
     zip_bytes = uploaded.getvalue() if uploaded is not None else None
     if zip_bytes is not None and len(zip_bytes) > 120_000_000:
-        st.error("ZIP demasiado grande para carga directa (>120 MB). Usá la carpeta local.")
+        st.error("ZIP demasiado grande (>120 MB). Usá una carpeta local.")
         st.stop()
 
+roots = list(dict.fromkeys(
+    [root_path] + [p.strip() for p in extra_roots.splitlines() if p.strip()]
+))
+games = []
 try:
-    games = cached_discovery(root_path, zip_bytes)
-except (ValueError, OSError, Exception) as exc:
-    st.error(f"No se pudo leer la fuente SIMLOG: {exc}")
+    for source_root in roots:
+        for g in cached_discovery(source_root, None):
+            games.append({**g, "source_root": source_root, "source_type": "carpeta"})
+    if zip_bytes is not None:
+        for g in cached_discovery(root_path, zip_bytes):
+            games.append({**g, "source_root": root_path, "source_type": "ZIP"})
+except (ValueError, OSError, KeyError) as exc:
+    st.error(f"No se pudo leer la fuente SIMLOG v2.1: {exc}")
     st.stop()
+games.sort(key=lambda g: (g["size"], g["seed"], g["id"], g["directory"]))
 if not games:
-    st.info("No se encontraron trazas con manifest de esquema SIMLOG-2.1. "
-            "Seleccioná una carpeta existente o subí un ZIP de resultados.")
-    st.code(
-        "python -m laboratorio.simular_mazos_vigentes_v2 "
-        "--semillas 20 --rondas 100 --out resultados/simlog_v21_20261108",
-        language="bash",
-    )
+    st.info("No se encontraron trazas completas SIMLOG v2.1 compatibles. "
+            "Buscá otras carpetas o agregá un ZIP de partidas. "
+            "El historial v1.3 y las simulaciones anteriores sin SIMLOG v2.1 "
+            "no permiten reconstruir estos eventos por ronda.")
     st.stop()
+
+winners_count = sum(g["won"] for g in games)
+six_count = sum(g["size"] == 6 for g in games)
+ten_count = sum(g["size"] == 10 for g in games)
+st.caption(
+    f"**{len(games)} simulaciones SIMLOG v2.1 encontradas** · "
+    f"{winners_count} con casamiento · {len(games)-winners_count} sin ganador · "
+    f"{six_count} de 6 jugadores · {ten_count} de 10 jugadores. "
+    "Se incluyen todos los archivos compatibles encontrados en las fuentes seleccionadas."
+)
 
 a, b, c = st.columns([1, 3, 1], vertical_alignment="bottom")
 with a:
-    only_won = st.checkbox("Solo partidas con ganador", value=True)
+    only_won = st.checkbox("Solo partidas con ganador", value=False)
 available = [g for g in games if g["won"]] if only_won else games
 if not available:
-    st.warning("No hay partidas con casamiento registrado en esta fuente. "
-               "Desactivá el filtro para inspeccionar los metadatos.")
+    st.warning("El filtro no devuelve partidas con casamiento. Desactivalo para ver todas.")
     st.stop()
 with b:
-    selected = st.selectbox("Seleccionar partida", available, format_func=pill_of_game)
+    selected = st.selectbox(
+        "Seleccionar partida", available,
+        format_func=lambda g: (
+            pill_of_game(g) + f" · {g['source_type']}: "
+            + (Path(g["directory"]).parent.parent.name
+               if g["source_type"] == "carpeta" else g["directory"])
+        ),
+    )
 with c:
     st.caption(f"{len(available)} partidas seleccionables")
 
 try:
-    game = cached_game(root_path, selected["directory"], zip_bytes)
+    game = cached_game(
+        selected["source_root"], selected["directory"],
+        zip_bytes if selected["source_type"] == "ZIP" else None,
+    )
 except (ValueError, OSError, KeyError) as exc:
     st.error(f"No se pudo abrir la partida: {exc}")
     st.stop()
+
 manifest = game["manifest"]
-winners = pair_from_manifest(manifest)
+pair = pair_from_manifest(manifest)
+ids = sorted({
+    int(pid) for pid in (manifest.get("roles") or {}) if str(pid).isdigit()
+} | {integer(t.get("Jugador")) for t in game["turnos.csv"] if integer(t.get("Jugador")) > 0})
+if not ids:
+    st.warning("La partida no registra jugadores para seguir.")
+    st.stop()
+if pair:
+    defaults = [pid for pid in pair if pid in ids]
+else:
+    first_clarisa = next((p for p in ids
+                          if (manifest.get("roles") or {}).get(str(p)) == "Clarisa"), None)
+    first_lucas = next((p for p in ids
+                        if (manifest.get("roles") or {}).get(str(p)) == "Lucas"), None)
+    defaults = [p for p in (first_clarisa, first_lucas) if p is not None]
+if not defaults:
+    defaults = ids[:2]
+
+winners = st.multiselect(
+    "Jugadores a recorrer en el Gantt y en Ronda a ronda",
+    options=ids, default=defaults,
+    key=f"players_{selected['source_type']}_{selected['directory']}",
+    format_func=lambda pid: role_name(manifest, pid),
+    help="Las partidas sin casamiento también pueden recorrerse. "
+         "El selector no presenta a esos jugadores como ganadores.",
+)
 if not winners:
-    st.warning("Esta partida no tiene una pareja ganadora. No se asignan "
-               "ganadores ficticios ni se construye un Gantt de ganadores.")
-    with st.expander("Metadatos de la partida"):
-        st.json(manifest)
+    st.warning("Seleccioná al menos un jugador para mostrar los eventos.")
     st.stop()
 
-items = build_events(game)
+items = build_events(game, winners)
 max_round = max(1, selected["rounds"],
                 max((integer(t.get("Ronda")) for t in game["turnos.csv"]), default=1))
-summary = manifest.get("summary") or {}
 st.caption(
-    f"**Partida:** {selected['id']}  ·  **Mesa:** {selected['size']} jugadores  ·  "
-    f"**Pareja:** {' + '.join(role_name(manifest, p) for p in winners)}  ·  "
-    f"**Casamiento:** ronda {max_round}  ·  **Semilla:** {selected['seed']}"
+    f"**Partida:** {selected['id']} · **Mesa:** {selected['size']} jugadores · "
+    f"**Resultado:** {'Casamiento' if selected['won'] else 'Sin ganador registrado'} · "
+    f"**Jugadores observados:** {' + '.join(role_name(manifest,p) for p in winners)} · "
+    f"**Rondas:** {max_round} · **Semilla:** {selected['seed']}"
 )
+if not selected["won"]:
+    st.caption("Partida sin casamiento: se presentan acciones de los jugadores seleccionados, "
+               "sin atribuirles una victoria.")
 
 with st.container(border=True):
     left, mid, right = st.columns([4.3, 2.3, 1.2], vertical_alignment="bottom")
