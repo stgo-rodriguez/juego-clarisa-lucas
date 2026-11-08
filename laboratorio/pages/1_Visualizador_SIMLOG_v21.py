@@ -26,6 +26,7 @@ from laboratorio.simlog_viewer_v21 import (
     pair_from_manifest, role_name, stage_intervals, visible_events,
 )
 from laboratorio.narrativa_simlog_v21 import NOMBRES, RECURSOS, recursos_fin_ronda, summarize_player_round
+from laboratorio.paneles_ronda_v21 import estado_hitos, eventos_hitos_ronda, eventos_sociales_ronda
 from simulador.mazos_vigentes_v2 import load_current
 
 st.set_page_config(page_title="Visualizador SIMLOG v2.1", page_icon="📊", layout="wide")
@@ -97,6 +98,90 @@ def panel_recursos(game, ronda, jugador):
                     st.caption(f"{v['libre']} libre · {v['reservado']} reservado")
         if ronda == 1:
             st.caption("Ronda inicial: todavía no hay una ronda anterior para comparar.")
+
+
+TONOS = {
+    "success": ("#166534", "#dcfce7"),
+    "danger": ("#991b1b", "#fee2e2"),
+    "warning": ("#92400e", "#fef3c7"),
+    "info": ("#1d4ed8", "#dbeafe"),
+    "neutral": ("#475569", "#f1f5f9"),
+}
+
+
+def _pill(label, tone="neutral"):
+    color, bg = TONOS.get(tone, TONOS["neutral"])
+    return (
+        f'<span style="color:{color};background:{bg};padding:3px 8px;'
+        f'border-radius:999px;font-size:0.77rem;font-weight:700;'
+        f'white-space:nowrap">{escape(str(label))}</span>'
+    )
+
+
+def mostrar_hitos_y_subhitos(game, ronda, jugador):
+    data = estado_hitos(game, ronda, jugador)
+    st.markdown("**Hitos y subhitos · estado al cierre**")
+    if not data["disponible"]:
+        st.caption("No se encontró un estado de jugador verificable para esta ronda.")
+    boxes = []
+    for item in data["hitos"]:
+        description = escape(item["detalle"]) if item["detalle"] else ""
+        boxes.append(
+            '<div style="border:1px solid #d8dee8;border-radius:9px;'
+            'padding:9px 11px;min-width:0">'
+            f'<div style="font-size:.89rem;font-weight:650;margin-bottom:6px">'
+            f'{escape(item["nombre"])}</div>'
+            + _pill(item["estado"], item["tono"])
+            + (f'<div style="font-size:.76rem;color:#64748b;margin-top:6px">'
+               f'{description}</div>' if description else "")
+            + '</div>'
+        )
+    st.markdown(
+        '<div style="display:grid;grid-template-columns:repeat(2,minmax(0,1fr));'
+        'gap:8px;margin:7px 0 8px">'
+        + "".join(boxes) + "</div>",
+        unsafe_allow_html=True,
+    )
+    comprobantes = data["comprobantes"]
+    if comprobantes:
+        labels = [
+            f'{r["proyecto"]} S{r["subhito"]}'
+            for r in comprobantes
+        ]
+        st.caption("Comprobantes propios vigentes: " + " · ".join(labels))
+
+
+def mostrar_tarjetas_eventos(title, events, no_events, *, max_visible=4):
+    st.markdown(f"**{title}**")
+    if not events:
+        st.caption(no_events)
+        return
+
+    def render(visible):
+        cards = []
+        for item in visible:
+            role = item.get("participacion")
+            title = escape(item["titulo"])
+            detail = escape(item["descripcion"])
+            role_label = (f'<span style="font-size:.76rem;color:#64748b">'
+                          f' · {escape(role)}</span>' if role and role != "propio" else "")
+            cards.append(
+                '<div style="border:1px solid #d8dee8;border-radius:8px;'
+                'padding:9px 10px;margin:6px 0">'
+                '<div style="display:flex;flex-wrap:wrap;gap:6px;'
+                'align-items:center;justify-content:space-between">'
+                f'<div style="font-weight:650;font-size:.88rem">{title}{role_label}</div>'
+                + _pill(item["estado"], item["tono"])
+                + '</div>'
+                f'<div style="font-size:.79rem;color:#64748b;margin-top:4px">'
+                f'{detail}</div></div>'
+            )
+        st.markdown("".join(cards), unsafe_allow_html=True)
+
+    render(events[:max_visible])
+    if len(events) > max_visible:
+        with st.expander(f"Ver {len(events) - max_visible} evento(s) más"):
+            render(events[max_visible:])
 
 
 def event_dataframe(items, manifest):
@@ -382,6 +467,18 @@ with tabs[1]:
         with cards[index]:
             st.subheader(f"{relato['nombre']} · {relato['etapa']}")
             panel_recursos(game, chosen_round, pid)
+            mostrar_hitos_y_subhitos(game, chosen_round, pid)
+            mostrar_tarjetas_eventos(
+                "Avances de esta ronda",
+                eventos_hitos_ronda(game, chosen_round, pid),
+                "Sin inversiones, adjudicaciones ni cambios de hitos registrados.",
+            )
+            mostrar_tarjetas_eventos(
+                "Interacciones y eventos sociales",
+                eventos_sociales_ronda(game, chosen_round, pid),
+                "Sin duelos, propuestas ni transferencias registrados en esta ronda.",
+            )
+            st.markdown("**Relato de la ronda**")
             if not relato["turno_propio"]:
                 st.caption("No tuvo turno propio registrado en esta ronda.")
             if not relato["eventos"]:
