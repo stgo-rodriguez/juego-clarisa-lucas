@@ -585,22 +585,30 @@ with tabs[1]:
         if st.button("Siguiente →", disabled=st.session_state["selected_round_v21"] >= max_round):
             st.session_state["selected_round_v21"] += 1
             st.rerun()
-    st.caption("Resumen de lo que vivió cada jugador en esta ronda, "
-               "incluidas las acciones de terceros que lo afectaron. "
-               "Los recursos mencionados son los efectivamente registrados, no los premios máximos de las cartas.")
-    mostrar_opciones = st.toggle("Mostrar las dos opciones de cada carta de Situación",
-                                value=True, key="narrativa_opciones")
+    st.caption("Información extraída de los estados, turnos y eventos SIMLOG de esta "
+               "ronda. Las opciones A/B provienen del catálogo vigente; "
+               "los efectos aplicados provienen de los asientos de SIMLOG.")
+    mostrar_opciones = st.toggle(
+        "Mostrar las dos opciones A/B y sus efectos previstos",
+        value=True, key="mostrar_opciones_estructuradas",
+    )
     try:
         catalogo = catalogo_narrativo()
     except (OSError, ValueError, AssertionError) as exc:
-        st.warning(f"No se pudo leer el catálogo narrativo de cartas: {exc}. "
-                   "Se usarán únicamente los textos guardados en SIMLOG.")
+        st.warning(f"El catálogo de cartas no está disponible: {exc}. "
+                   "Solo se mostrarán los valores registrados en SIMLOG.")
         catalogo = {}
     cards = st.columns(2, gap="large")
     for index, pid in enumerate(winners):
-        relato = summarize_player_round(game, chosen_round, pid, catalogo)
-        with cards[index]:
-            st.subheader(f"{relato['nombre']} · {relato['etapa']}")
+        own_turns = [
+            t for t in game["turnos.csv"]
+            if integer(t.get("Jugador")) == pid
+            and integer(t.get("Ronda")) == chosen_round
+        ]
+        stage = own_turns[0].get("Etapa_antes") if own_turns else "Sin turno registrado"
+        with cards[index % 2]:
+            st.subheader(f"{role_name(manifest,pid)} · {stage}")
+            mostrar_estado_pareja(game, chosen_round, pid)
             panel_recursos(game, chosen_round, pid)
             mostrar_hitos_y_subhitos(game, chosen_round, pid)
             mostrar_tarjetas_eventos(
@@ -613,47 +621,13 @@ with tabs[1]:
                 eventos_sociales_ronda(game, chosen_round, pid),
                 "Sin duelos, propuestas ni transferencias registrados en esta ronda.",
             )
-            st.markdown("**Relato de la ronda**")
-            if not relato["turno_propio"]:
-                st.caption("No tuvo turno propio registrado en esta ronda.")
-            if not relato["eventos"]:
-                st.info("No hay acciones o eventos registrados para este jugador en esta ronda.")
-            else:
-                lines = []
-                for item in relato["eventos"]:
-                    lines.append(f"- **{escape(str(item['titulo']))}.** {escape(str(item['texto']))}")
-                    if mostrar_opciones and item["opciones"]:
-                        for letter, text_option in item["opciones"]:
-                            label = f"Opción {letter}"
-                            if letter == item["elegida"]:
-                                label += " (elegida)"
-                            option_changes = item.get("opciones_efectos", {}).get(letter)
-                            extras = (
-                                f" <small style='color:#64748b'>Efecto previsto:</small> "
-                                f"{chips_recursos(option_changes)}"
-                                if option_changes is not None else ""
-                            )
-                            lines.append(
-                                f"    - **{label}:** {escape(str(text_option))}  {extras}"
-                            )
-                            applied = item.get("efecto_aplicado")
-                            if (letter == item.get("elegida")
-                                    and applied is not None
-                                    and option_changes is not None
-                                    and option_changes != applied):
-                                lines.append(
-                                    "        - **Efecto aplicado realmente:** "
-                                    + chips_recursos(applied)
-                                    + " <small>(puede ser menor si no había recursos disponibles)</small>"
-                                )
-                st.markdown("\n".join(lines), unsafe_allow_html=True)
-            own_turns = [t for t in game["turnos.csv"]
-                         if integer(t.get("Jugador")) == pid
-                         and integer(t.get("Ronda")) == chosen_round]
+            mostrar_decisiones_del_turno(
+                game, chosen_round, pid, catalogo, mostrar_opciones,
+            )
             if own_turns:
                 with st.expander("Ver registro técnico del turno"):
                     st.json(own_turns[0])
-    st.divider()
+            st.divider()
     round_events = [e for e in items if e["ronda"] == chosen_round and e["categoria"] in categories]
     st.markdown(f"**Eventos observados en la ronda {chosen_round} ({len(round_events)})**")
     st.dataframe(event_dataframe(round_events, manifest), use_container_width=True,
@@ -662,7 +636,7 @@ with tabs[1]:
         st.json(round_events)
 
 with tabs[2]:
-    st.caption("Saldos después del turno propio de cada ganador. "
+    st.caption("Saldos después del turno de cada jugador observado. "
                "Un movimiento de un tercero puede reflejarse recién en el siguiente turno del jugador.")
     ec1, ec2 = st.columns(2)
     with ec1:
