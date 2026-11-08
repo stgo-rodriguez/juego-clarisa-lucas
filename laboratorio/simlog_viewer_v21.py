@@ -235,7 +235,7 @@ def _category(event, detail):
 def _describe(detail):
     important = ("resource", "amount", "source", "project", "receipt",
                  "choice", "result", "die", "won", "card", "player",
-                 "players", "challenger", "defender", "defender_die",
+                 "players", "challenger", "defender", "defender_die", "target", "accepted",
                  "challenger_die", "from_player", "dest", "stage",
                  "before", "after", "reserve")
     return " · ".join(f"{k}: {detail[k]}" for k in important if detail.get(k) is not None)
