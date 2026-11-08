@@ -153,7 +153,8 @@ def load_game(root: str | Path, directory: str, zip_bytes: bytes | None = None):
         raise ValueError("No es una traza SIMLOG v2.1 de las reglas del 08/11/2026")
     data = {"manifest": manifest, "directory": directory}
     for name in ("turnos.csv", "eventos.csv", "hitos.csv",
-                 "estados_jugadores.csv", "recursos_por_ronda.csv"):
+                 "estados_jugadores.csv", "estados_globales.csv",
+                 "recursos_por_ronda.csv"):
         try:
             content = _read_text(root, directory, name, zip_bytes)
             data[name] = list(csv.DictReader(StringIO(content)))
