@@ -15,6 +15,7 @@ import re
 import zipfile
 
 SCHEMA = "SIMLOG-2.1"
+RULESET = "especificacion-integral-2026-11-08"
 CATEGORIES = (
     "Situación A/B", "Movimiento", "Duelos", "Canjes", "Noviazgo",
     "Subhitos", "Acuerdos", "Hitos", "Afinidad", "Perfil",
@@ -78,7 +79,7 @@ def pair_from_manifest(manifest):
 
 
 def _manifest_to_game(directory, manifest):
-    if manifest.get("schema") != SCHEMA:
+    if manifest.get("schema") != SCHEMA or manifest.get("ruleset") != RULESET:
         return None
     summary = manifest.get("summary") or {}
     pair = pair_from_manifest(manifest)
@@ -148,8 +149,8 @@ def load_game(root: str | Path, directory: str, zip_bytes: bytes | None = None):
     if directory not in valid:
         raise ValueError("Partida no incluida en la fuente SIMLOG v2.1 seleccionada")
     manifest = json.loads(_read_text(root, directory, "manifest.json", zip_bytes))
-    if manifest.get("schema") != SCHEMA:
-        raise ValueError("El archivo no es SIMLOG v2.1")
+    if manifest.get("schema") != SCHEMA or manifest.get("ruleset") != RULESET:
+        raise ValueError("No es una traza SIMLOG v2.1 de las reglas del 08/11/2026")
     data = {"manifest": manifest, "directory": directory}
     for name in ("turnos.csv", "eventos.csv", "hitos.csv",
                  "estados_jugadores.csv", "recursos_por_ronda.csv"):
