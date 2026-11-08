@@ -11,7 +11,8 @@ import unittest
 import zipfile
 
 from laboratorio.simlog_viewer_v21 import (
-    SCHEMA, audit, build_events, discover_games, load_game,
+    SCHEMA, CATEGORY_COLORS, CATEGORY_SYMBOLS, CATEGORIES,
+    audit, build_events, discover_games, load_game,
     pair_from_manifest, stage_intervals, visible_events,
 )
 
@@ -151,6 +152,23 @@ class SIMLOGViewerTests(unittest.TestCase):
             self.assertEqual(audit(game, tmp), [])
             (run / "turnos.csv").write_bytes((run / "turnos.csv").read_bytes() + b"\n")
             self.assertIn("SHA-256 diferente: turnos.csv", audit(game, tmp))
+
+    def test_plotly_marker_symbols_and_colors(self):
+        """Previene símbolos que Plotly no admite, como 'heart'."""
+        try:
+            import plotly.graph_objects as go
+        except ImportError:
+            self.skipTest("Plotly opcional fuera del entorno de interfaz")
+        self.assertEqual(set(CATEGORIES), set(CATEGORY_SYMBOLS))
+        self.assertEqual(set(CATEGORIES), set(CATEGORY_COLORS))
+        for category in CATEGORIES:
+            with self.subTest(category=category):
+                scatter = go.Scatter(
+                    mode="markers",
+                    marker={"symbol": CATEGORY_SYMBOLS[category],
+                            "color": CATEGORY_COLORS[category]},
+                )
+                self.assertEqual(scatter.marker.symbol, CATEGORY_SYMBOLS[category])
 
     def test_no_untrusted_directory(self):
         with self.assertRaises(ValueError):
