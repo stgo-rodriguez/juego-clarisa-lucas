@@ -25,7 +25,7 @@ from laboratorio.simlog_viewer_v21 import (
     STAGE_COLORS, audit, build_events, discover_games, integer, load_game,
     pair_from_manifest, role_name, stage_intervals, visible_events,
 )
-from laboratorio.narrativa_simlog_v21 import summarize_player_round
+from laboratorio.narrativa_simlog_v21 import NOMBRES, RECURSOS, recursos_fin_ronda, summarize_player_round
 from simulador.mazos_vigentes_v2 import load_current
 
 st.set_page_config(page_title="Visualizador SIMLOG v2.1", page_icon="📊", layout="wide")
@@ -46,6 +46,58 @@ def pill_of_game(g):
     ending = "casamiento" if g["won"] else "sin victoria"
     return (f"{g['size']} jugadores · Semilla {g['seed']} · "
             f"{g['rounds']} rondas · {ending} · {g['id']}")
+
+RECURSO_ICONOS = {"A": "❤️", "P": "👤", "K": "📖", "M": "💰"}
+RECURSO_ABREV = {"A": "Amor", "P": "Personal.", "K": "Conoc.", "M": "Dinero"}
+
+
+def chips_recursos(cambios):
+    """Indicadores accesibles: signo y nombre del recurso, además del color."""
+    if cambios is None:
+        return ""
+    if not cambios or not any(cambios.values()):
+        return '<span style="font-size:0.83rem;color:#64748b">Sin cambio de recursos</span>'
+    parts = []
+    for r in RECURSOS:
+        n = int(cambios.get(r) or 0)
+        if not n:
+            continue
+        color = "#166534" if n > 0 else "#991b1b"
+        bg = "#dcfce7" if n > 0 else "#fee2e2"
+        label = escape(f"{n:+d} {RECURSO_ICONOS[r]} {NOMBRES[r]}")
+        parts.append(
+            f'<span style="display:inline-block;padding:2px 7px;margin:2px 4px 2px 0;'
+            f'border-radius:8px;background:{bg};color:{color};'
+            f'font-weight:650;font-size:0.85rem;white-space:nowrap">'
+            f'{label}</span>'
+        )
+    return " ".join(parts)
+
+
+def panel_recursos(game, ronda, jugador):
+    saldos = recursos_fin_ronda(game, ronda, jugador)
+    st.caption("Recursos al finalizar la ronda · cambio respecto de la anterior")
+    if saldos is None:
+        st.info("SIMLOG no incluye los estados necesarios para calcular el saldo final.")
+        return
+    with st.container(border=True):
+        cols = st.columns(4, gap="small")
+        for col, r in zip(cols, RECURSOS):
+            v = saldos[r]
+            with col:
+                st.metric(
+                    f"{RECURSO_ICONOS[r]} {RECURSO_ABREV[r]}",
+                    v["total"],
+                    delta=f"{v['variacion']:+d}" if v["variacion"] is not None else None,
+                    help=(f"{NOMBRES[r]} al cierre de la ronda: "
+                          f"{v['libre']} libre + {v['reservado']} reservado. "
+                          "No incluye recursos ya invertidos en proyectos."),
+                )
+                if v["reservado"]:
+                    st.caption(f"{v['libre']} libre · {v['reservado']} reservado")
+        if ronda == 1:
+            st.caption("Ronda inicial: todavía no hay una ronda anterior para comparar.")
+
 
 def event_dataframe(items, manifest):
     return [
@@ -329,6 +381,7 @@ with tabs[1]:
         relato = summarize_player_round(game, chosen_round, pid, catalogo)
         with cards[index]:
             st.subheader(f"{relato['nombre']} · {relato['etapa']}")
+            panel_recursos(game, chosen_round, pid)
             if not relato["turno_propio"]:
                 st.caption("No tuvo turno propio registrado en esta ronda.")
             if not relato["eventos"]:
@@ -336,14 +389,31 @@ with tabs[1]:
             else:
                 lines = []
                 for item in relato["eventos"]:
-                    lines.append(f"- **{item['titulo']}.** {item['texto']}")
+                    lines.append(f"- **{escape(str(item['titulo']))}.** {escape(str(item['texto']))}")
                     if mostrar_opciones and item["opciones"]:
                         for letter, text_option in item["opciones"]:
                             label = f"Opción {letter}"
                             if letter == item["elegida"]:
                                 label += " (elegida)"
-                            lines.append(f"    - **{label}:** {text_option}")
-                st.markdown("\n".join(lines))
+                            option_changes = item.get("opciones_efectos", {}).get(letter)
+                            extras = (
+                                f" {chips_recursos(option_changes)}"
+                                if option_changes is not None else ""
+                            )
+                            lines.append(
+                                f"    - **{label}:** {escape(str(text_option))}  {extras}"
+                            )
+                            applied = item.get("efecto_aplicado")
+                            if (letter == item.get("elegida")
+                                    and applied is not None
+                                    and option_changes is not None
+                                    and option_changes != applied):
+                                lines.append(
+                                    "        - **Efecto aplicado realmente:** "
+                                    + chips_recursos(applied)
+                                    + " <small>(puede ser menor si no había recursos disponibles)</small>"
+                                )
+                st.markdown("\n".join(lines), unsafe_allow_html=True)
             own_turns = [t for t in game["turnos.csv"]
                          if integer(t.get("Jugador")) == pid
                          and integer(t.get("Ronda")) == chosen_round]
