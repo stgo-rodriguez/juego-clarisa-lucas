@@ -5,7 +5,8 @@ import tempfile
 import unittest
 
 from laboratorio.paneles_ronda_v21 import (
-    estado_hitos, eventos_hitos_ronda, eventos_sociales_ronda,
+    estado_hitos, estado_noviazgo, decisiones_registradas,
+    eventos_hitos_ronda, eventos_sociales_ronda,
 )
 
 
@@ -79,6 +80,51 @@ def fixture():
 
 
 class PanelesRondaTests(unittest.TestCase):
+    def test_noviazgo_al_cierre_no_anticipa_el_casamiento(self):
+        game = fixture()
+        self.assertEqual(estado_noviazgo(game, 1, 1)["estado"], "Sin pareja")
+        self.assertEqual(estado_noviazgo(game, 2, 1)["estado"], "De novios")
+        self.assertEqual(estado_noviazgo(game, 2, 1)["pareja"], 2)
+        self.assertIn("Lucas #2", estado_noviazgo(game, 2, 1)["detalle"])
+        self.assertEqual(estado_noviazgo(game, 2, 2)["estado"], "De novios")
+        self.assertEqual(estado_noviazgo(game, 3, 1)["estado"], "Casados")
+        self.assertEqual(estado_noviazgo(game, 4, 1)["estado"], "Sin datos")
+
+    def test_noviazgo_se_distingue_de_snapshot_incompleto(self):
+        game = fixture()
+        game["estados_jugadores.csv"] = [{
+            "Ronda": "2", "Turno_global": "5", "Momento": "despues",
+            "Jugador": "1", "Titulo": "False",
+        }]
+        self.assertEqual(estado_noviazgo(game, 2, 1)["estado"], "Sin datos")
+        self.assertEqual(estado_noviazgo(game, 2, 2)["estado"], "Sin datos")
+
+    def test_decisiones_estructuradas_no_generan_relato(self):
+        game = fixture()
+        game["turnos.csv"] = [{
+            "Jugador": "1", "Ronda": "2", "Turno_global": "4",
+            "Etapa_antes": "Juventud", "Carta_ID": "J-C-01",
+            "Situacion": "Una decisión", "Desenlace_elegido": "A",
+            "Carta_Movimiento": "M-1", "Desenlace_movimiento": "B",
+            "Pos_antes": "1", "Pos_despues": "4", "Distancia_movimiento": "3",
+        }]
+        game["eventos.csv"].append(
+            event(11,2,4,1,"economia","issue",player=1,resource="A",
+                  amount=1,source="situacion_vigente_premio")
+        )
+        catalog={"cards":[{"id":"J-C-01","title":"Una decisión",
+                          "context":"En el aula",
+                          "text_a":"Elegís A","text_b":"Elegís B",
+                          "effects":{"A":{"A":2},"B":{"P":-2}}}]}
+        data=decisiones_registradas(game,2,1,catalog)
+        self.assertTrue(data["turno"])
+        self.assertEqual(data["movimiento"]["opcion"],"B")
+        self.assertEqual(data["carta"]["elegida"],"A")
+        self.assertEqual(data["carta"]["opciones"]["B"]["efecto_previsto"],{"P":-2})
+        self.assertEqual(data["carta"]["aplicado"],{"A":1})
+        self.assertNotIn("relato",data)
+        self.assertFalse(decisiones_registradas(game,2,2,catalog)["turno"])
+
     def test_estados_historicos_sin_filtrar_futuro(self):
         game=fixture()
         earlier=estado_hitos(game,1,1)
