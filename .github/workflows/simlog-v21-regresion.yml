@@ -28,5 +28,12 @@ jobs:
         run: python -m unittest discover -s tests -p 'test_turnos_v2.py' -v
       - name: Probar catálogo v2.1 y afinidad
         run: python -m unittest discover -s tests -p 'test_cartas_vigentes_v21.py' -v
-      - name: Dos mesas reales con trazas
-        run: python -m laboratorio.simular_mazos_vigentes_v2 --semillas 1 --rondas 35 --out resultados/simlog_v21_consolidado_ci
+      - name: Prueba de estrés de 40 partidas con trazas por versión
+        run: python -m laboratorio.simular_mazos_vigentes_v2 --semillas 20 --rondas 75 --out resultados/simlog_v21_consolidado_ci
+      - name: Publicar resultados verificables (Python 3.11)
+        if: always() && matrix.python-version == '3.11'
+        uses: actions/upload-artifact@v4
+        with:
+          name: simlog-v21-auditoria-40-partidas
+          path: resultados/simlog_v21_consolidado_ci/
+          if-no-files-found: ignore
