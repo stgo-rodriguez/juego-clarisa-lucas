@@ -9,6 +9,7 @@ from __future__ import annotations
 from laboratorio.simlog_viewer_v21 import decode, integer, role_name
 from laboratorio.narrativa_simlog_v21 import (
     _round_events, _id, _covered_by_duel_transfer, NOMBRES,
+    _cambios_aplicados, _cambios_opcion, FUENTES_CARTA,
 )
 from simulador.economia_v2 import PASSPORT_KIND, PROJECT_COSTS
 
@@ -105,6 +106,67 @@ def estado_noviazgo(game, ronda, jugador):
     if "Pareja_compatible" in state and state["Pareja_compatible"] not in ("", None):
         result["afinidad"] = "Compatible" if _true(state["Pareja_compatible"]) else "Incompatible"
     return result
+
+
+def decisiones_registradas(game, ronda, jugador, catalogo=None):
+    """Datos literales del turno y catálogo, sin relato inferido.
+
+    Los saldos efectivamente modificados por la situación salen de los asientos
+    SIMLOG; las opciones alternativas son efectos definidos en el catálogo.
+    """
+    turno = next((t for t in game.get("turnos.csv", [])
+                  if integer(t.get("Ronda")) == integer(ronda)
+                  and integer(t.get("Jugador")) == integer(jugador)), None)
+    if turno is None:
+        return {"turno": False, "movimiento": None, "carta": None}
+    movement = None
+    if turno.get("Tipo_movimiento_infancia") == "utn_exam_or_wait":
+        movement = {
+            "tipo": "Examen / espera UTN", "dado": turno.get("Dado"),
+            "inicio": turno.get("Pos_antes"), "fin": turno.get("Pos_despues"),
+        }
+    elif turno.get("Carta_Movimiento") or turno.get("Dado") not in ("", None):
+        movement = {
+            "tipo": "Movimiento",
+            "dado": turno.get("Dado"), "carta": turno.get("Carta_Movimiento"),
+            "opcion": turno.get("Desenlace_movimiento"),
+            "pasos": turno.get("Distancia_movimiento"),
+            "inicio": turno.get("Pos_antes"), "fin": turno.get("Pos_despues"),
+            "consumidos": turno.get("Pasos_consumidos"),
+            "descartados": turno.get("Pasos_descartados"),
+        }
+    card_id = turno.get("Carta_ID")
+    card = None
+    if card_id:
+        catalog_map = {a["id"]: a for a in (catalogo or {}).get("cards", []) if "id" in a}
+        definition = catalog_map.get(card_id, {})
+        selected = turno.get("Desenlace_elegido")
+        matching = [
+            (event, detail) for event, detail in _round_events(game, ronda)
+            if integer(event.get("Turno_global")) == integer(turno.get("Turno_global"))
+            and detail.get("source") in FUENTES_CARTA
+        ]
+        # Filtro por jugador aplicado dentro de _cambios_aplicados.
+        actual = _cambios_aplicados(matching, integer(jugador))
+        options = {}
+        for letter in ("A", "B"):
+            option_text = definition.get("text_" + letter.lower())
+            if not option_text and selected == letter:
+                option_text = turno.get("Desenlace_texto")
+            options[letter] = {
+                "texto": option_text,
+                "efecto_previsto": _cambios_opcion(
+                    (definition.get("effects") or {}).get(letter)),
+            }
+        card = {
+            "id": card_id,
+            "titulo": definition.get("title") or turno.get("Situacion") or card_id,
+            "contexto": definition.get("context") or "",
+            "elegida": selected,
+            "opciones": options,
+            "aplicado": actual if selected in ("A", "B") else None,
+        }
+    return {"turno": True, "movimiento": movement, "carta": card}
 
 
 def estado_hitos(game, ronda, jugador):
