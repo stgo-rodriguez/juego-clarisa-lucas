@@ -169,7 +169,9 @@ def ejecutar() -> None:
             # La nueva vista v2.1 no debe exigir una simulación v1.3 ni una carga
             # de ZIP. El snapshot de 200 partidas ya viene dentro del repositorio.
             pagina.get_by_role("button", name="Salir", exact=True).click()
-            pagina.get_by_role("radio", name="Resultados v2.1").check()
+            # El input real del radio Streamlit queda debajo del texto visible;
+            # hacer clic en su etiqueta, como haría un usuario.
+            pagina.get_by_text("Resultados v2.1", exact=True).first.click()
             pagina.get_by_text("Última simulación registrada", exact=False).first.wait_for(
                 state="visible", timeout=20000)
             pagina.get_by_role("tab", name="Partidas y SIMLOG").click()
