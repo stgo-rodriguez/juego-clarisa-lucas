@@ -28,12 +28,11 @@ from laboratorio.simlog_viewer_v21 import (
 from laboratorio.narrativa_simlog_v21 import summarize_player_round
 from simulador.mazos_vigentes_v2 import load_current
 
+st.set_page_config(page_title="Visualizador SIMLOG v2.1", page_icon="📊", layout="wide")
+
 @st.cache_data(show_spinner=False)
 def catalogo_narrativo():
     return load_current()
-
-
-st.set_page_config(page_title="Visualizador SIMLOG v2.1", page_icon="📊", layout="wide")
 
 @st.cache_data(show_spinner=False, max_entries=4)
 def cached_discovery(path, zip_bytes):
