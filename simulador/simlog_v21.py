@@ -18,6 +18,18 @@ class SIMLogV21(SIMLogV2):
         super().__init__(*args, **kwargs)
         self.shared_rounds = []
         self.assignments_by_round = {}
+        # Observación pasiva de las propuestas que efectivamente evalúa el bot.
+        # eco.form_pair() conserva la implementación, retornos, RNG y balances.
+        original_form_pair = self.eco.form_pair
+
+        def observed_form_pair(active, candidate):
+            self._note("noviazgo_propuesta", player=active.id, target=candidate.id)
+            accepted = original_form_pair(active, candidate)
+            self._note("noviazgo_resultado", player=active.id,
+                       target=candidate.id, accepted=bool(accepted))
+            return accepted
+
+        self.eco.form_pair = observed_form_pair
 
     def end_round_start(self):
         super().end_round_start()
