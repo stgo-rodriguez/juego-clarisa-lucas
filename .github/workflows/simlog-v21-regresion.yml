@@ -1,0 +1,32 @@
+name: SIMLOG v2.1 - reglas consolidadas 08-11-2026
+
+on:
+  push:
+    branches:
+      - fix/simlog-v21-especificacion-20261108
+  pull_request:
+    branches:
+      - feature/simulaciones-v2-movimiento
+
+jobs:
+  regression-v21:
+    runs-on: ubuntu-latest
+    strategy:
+      fail-fast: false
+      matrix:
+        python-version: ['3.11', '3.13']
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: ${{ matrix.python-version }}
+      - name: Verificar sintaxis
+        run: python -m compileall -q simulador laboratorio tests
+      - name: Pruebas v2.1 actualizadas
+        run: python -m unittest discover -s tests -p 'test_reglas_simlog_v21.py' -v
+      - name: Verificar compatibilidad con motores previos
+        run: python -m unittest discover -s tests -p 'test_turnos_v2.py' -v
+      - name: Probar catálogo v2.1 y afinidad
+        run: python -m unittest discover -s tests -p 'test_cartas_vigentes_v21.py' -v
+      - name: Dos mesas reales con trazas
+        run: python -m laboratorio.simular_mazos_vigentes_v2 --semillas 1 --rondas 35 --out resultados/simlog_v21_consolidado_ci
