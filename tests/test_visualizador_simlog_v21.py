@@ -18,7 +18,7 @@ from laboratorio.simlog_viewer_v21 import (
 
 def to_csv(rows):
     text = StringIO()
-    writer = csv.DictWriter(text, fieldnames=list(rows[0]))
+    writer = csv.DictWriter(text, fieldnames=list(dict.fromkeys(k for row in rows for k in row)))
     writer.writeheader()
     writer.writerows(rows)
     return text.getvalue().encode("utf-8-sig")
