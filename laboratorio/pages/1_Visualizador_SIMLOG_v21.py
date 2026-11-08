@@ -527,11 +527,11 @@ with st.container(border=True):
                  "Recursos y Otros están ocultos inicialmente por volumen.")
     with mid:
         low, high = st.slider("Intervalo de rondas", min_value=1, max_value=max_round,
-                              value=(1, max_round), key=f"window_{selected['id']}")
+                              value=(1, max_round), key=f"window_{selected['source_type']}_{selected['directory']}")
     with right:
         st.button("Ver todo", use_container_width=True,
                   on_click=lambda: st.session_state.update(
-                      {f"window_{selected['id']}": (1, max_round)}))
+                      {f"window_{selected['source_type']}_{selected['directory']}": (1, max_round)}))
 
 filtered = visible_events(items, categories, low, high)
 distinct_events = len({
