@@ -25,8 +25,11 @@ from laboratorio.simlog_viewer_v21 import (
     STAGE_COLORS, audit, build_events, discover_games, integer, load_game,
     pair_from_manifest, role_name, stage_intervals, visible_events,
 )
-from laboratorio.narrativa_simlog_v21 import NOMBRES, RECURSOS, recursos_fin_ronda, summarize_player_round
-from laboratorio.paneles_ronda_v21 import estado_hitos, eventos_hitos_ronda, eventos_sociales_ronda
+from laboratorio.narrativa_simlog_v21 import NOMBRES, RECURSOS, recursos_fin_ronda
+from laboratorio.paneles_ronda_v21 import (
+    estado_hitos, estado_noviazgo, decisiones_registradas,
+    eventos_hitos_ronda, eventos_sociales_ronda,
+)
 from simulador.mazos_vigentes_v2 import load_current
 
 st.set_page_config(page_title="Visualizador SIMLOG v2.1", page_icon="📊", layout="wide")
@@ -187,6 +190,74 @@ def mostrar_tarjetas_eventos(title, events, no_events, *, max_visible=4):
             render(events[max_visible:])
 
 
+def mostrar_estado_pareja(game, ronda, jugador):
+    pareja = estado_noviazgo(game, ronda, jugador)
+    complemento = (
+        f' · Afinidad: {escape(pareja["afinidad"])}'
+        if pareja.get("afinidad") else ""
+    )
+    st.markdown(
+        '<div style="display:flex;align-items:center;flex-wrap:wrap;'
+        'gap:8px;margin:4px 0 14px">'
+        '<span style="font-size:.87rem;font-weight:650">Estado de pareja</span>'
+        + _pill(pareja["estado"], pareja["tono"])
+        + f'<span style="font-size:.83rem;color:#64748b">'
+        f'{escape(pareja["detalle"])}{complemento}</span>'
+        '</div>',
+        unsafe_allow_html=True,
+    )
+
+
+def mostrar_decisiones_del_turno(game, ronda, jugador, catalogo, mostrar_opciones):
+    info = decisiones_registradas(game, ronda, jugador, catalogo)
+    st.markdown("**Decisiones registradas del turno**")
+    if not info["turno"]:
+        st.caption("No hay un turno propio registrado en esta ronda.")
+        return
+    move = info["movimiento"]
+    if move:
+        pieces = []
+        if move.get("dado") not in (None, ""):
+            pieces.append(f'Dado: {escape(str(move["dado"]))}')
+        if move.get("carta"):
+            pieces.append(f'Carta de movimiento: {escape(str(move["carta"]))}')
+        if move.get("opcion") in ("A", "B"):
+            pieces.append(f'Opción {move["opcion"]}')
+        if move.get("inicio") is not None and move.get("fin") is not None:
+            pieces.append(f'{escape(str(move["inicio"]))} → {escape(str(move["fin"]))}')
+        if move.get("pasos") not in ("", None):
+            pieces.append(f'Pasos: {escape(str(move["pasos"]))}')
+        if move.get("descartados") not in ("", None, "0", 0):
+            pieces.append(f'Descartados: {escape(str(move["descartados"]))}')
+        st.markdown("**" + escape(move["tipo"]) + "** · " + " · ".join(pieces))
+    card = info["carta"]
+    if card is None:
+        st.caption("Sin carta de Situación resuelta en este turno.")
+        return
+    st.markdown(f'**Carta de Situación · {escape(card["titulo"])} ({escape(card["id"])})**')
+    if card["contexto"]:
+        st.markdown(escape(card["contexto"]))
+    selected = card.get("elegida")
+    st.markdown(f'**Decisión registrada:** {escape(str(selected or "Sin elección"))}')
+    if mostrar_opciones:
+        for letter in ("A", "B"):
+            item = card["opciones"].get(letter) or {}
+            text_option = item.get("texto")
+            effects = item.get("efecto_previsto")
+            tag = " (elegida)" if letter == selected else ""
+            st.markdown(
+                f'- **Opción {letter}{tag}:** '
+                f'{escape(str(text_option)) if text_option else "Texto no disponible en el catálogo"}',
+            )
+            if effects is not None:
+                st.markdown("Efecto previsto · " + chips_recursos(effects),
+                            unsafe_allow_html=True)
+    if selected in ("A", "B"):
+        st.markdown("**Efecto de la situación registrado en SIMLOG:** "
+                    + chips_recursos(card.get("aplicado")),
+                    unsafe_allow_html=True)
+
+
 def event_dataframe(items, manifest):
     return [
         {
@@ -314,8 +385,8 @@ def plot_affinity(game, winners):
     return fig
 
 st.title("Visualizador de partidas · SIMLOG v2.1")
-st.caption("Decisiones y eventos reales de la pareja ganadora, ordenados por ronda. "
-           "No modifica partidas ni ejecuta el simulador.")
+st.caption("Decisiones y eventos SIMLOG v2.1 por partida y jugadores seleccionados. "
+           "Solo lectura: no modifica simulaciones ni inventa resultados.")
 
 with st.expander("Origen de los datos · carpeta o ZIP SIMLOG v2.1", expanded=False):
     src1, src2 = st.columns([2.4, 1.5], vertical_alignment="bottom")
