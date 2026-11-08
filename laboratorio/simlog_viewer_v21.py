@@ -109,7 +109,7 @@ def discover_games(root: str | Path, zip_bytes: bytes | None = None) -> list[dic
                     continue
                 try:
                     manifest = json.loads(archive.read(member))
-                    game = _manifest_to_game(member.rsplit("/", 1)[0], manifest)
+                    game = _manifest_to_game(member.rsplit("/", 1)[0] if "/" in member else "", manifest)
                     if game:
                         games.append(game)
                 except (ValueError, KeyError, OSError):
