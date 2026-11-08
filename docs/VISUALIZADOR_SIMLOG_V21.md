@@ -38,6 +38,24 @@ En esta rama, `SIMLogV21` observa de forma pasiva cada llamada real del agente a
 4. La posición temporal de los eventos en el Gantt está anclada a rondas discretas; el desplazamiento horizontal diminuto de los símbolos solo evita superposiciones, nunca implica subrondas nuevas.
 5. Los resultados SIMLOG v2.1 siguen siendo un **modelo experimental**. El visualizador no certifica conformidad con todas las reglas pendientes ni balance definitivo.
 
+## Relato «Ronda a ronda» (actualización)
+
+Cada ronda presenta dos columnas independientes (Clarisa y Lucas ganadores) con una narración breve, ordenada por la **secuencia real de eventos** y sin depender del filtro visual del Gantt.
+
+- **Movimiento:** dado de Infancia, carta A/B de Juventud/Adultez, origen, destino, pasos descartados y rebotes observados. En UTN el dado del examen **no se presenta como movimiento**.
+- **Casillero:** solo ingresos realmente cobrados; en Infancia se identifica el casillero exacto de destino.
+- **Situación compartida:** título, contexto, texto de las dos opciones A/B, opción elegida y premios/pérdidas **realmente contabilizados**. Se muestra la evolución de Afinidad cuando está registrada. No se confunde efecto teórico de la carta con recurso entregado.
+- **Eventos sociales:** duelos iniciados y recibidos (rival, resultado, dados y pagos reales), propuestas y resultados registrados, formación/ruptura de pareja, transferencias, inversiones y adjudicaciones, Casa, UTN, Dublín, Perfiles y Casamiento.
+- **Canjes con la banca:** detalle de recursos efectivamente entregados y recibidos a partir de movimientos con origen `conversion_bancaria`.
+- **Transferencias:** distinción entre enviar y recibir; se evita mostrar una segunda vez la transferencia contable correspondiente al pago de un duelo.
+- **Inversiones en subhitos:** importe concreto si consta en el comprobante del estado de cierre; de lo contrario, se relata la inversión sin inventar cantidades.
+- **Terceros:** también se incorporan eventos donde un ganador fue afectado durante el turno de otro participante. En ausencia de turno propio, esa condición queda explícita.
+- **Registro completo:** sigue disponible en el desplegable de cada jugador y en la tabla de eventos de la ronda. Los filtros del Gantt no ocultan el relato.
+
+El catálogo narrativo `catalogo_102_v03_v04.json` es la fuente de las opciones A/B. Si no existe, se usa únicamente el texto almacenado por el turno SIMLOG. Las trazas anteriores a la instrumentación `noviazgo_propuesta` no permiten recuperar propuestas fallidas retroactivamente.
+
+**Pruebas:** `tests/test_narrativa_simlog_v21.py` verifica las fuentes de cada efecto, orden temporal, duelos recibidos, canjes, subhitos y una traza real escrita por el simulador de la versión v2.1.
+
 ## Ejecución local
 
 Desde la raíz del repositorio en la rama `feature/visualizador-simlog-v21`:
