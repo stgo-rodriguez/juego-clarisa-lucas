@@ -24,10 +24,12 @@ jobs:
       - name: Verificar sintaxis del lanzador único
         run: bash -n iniciar_visualizador_simlog_v21.sh
       - name: Compilar visualizador y pruebas
-        run: python -m compileall -q laboratorio/simlog_viewer_v21.py laboratorio/narrativa_simlog_v21.py laboratorio/pages tests/test_visualizador_simlog_v21.py tests/test_narrativa_simlog_v21.py
+        run: python -m compileall -q laboratorio/simlog_viewer_v21.py laboratorio/narrativa_simlog_v21.py laboratorio/paneles_ronda_v21.py laboratorio/pages tests/test_visualizador_simlog_v21.py tests/test_narrativa_simlog_v21.py tests/test_paneles_ronda_v21.py
       - name: Pruebas de esquemas, ganadores y eventos
         run: python -m unittest discover -s tests -p test_visualizador_simlog_v21.py -v
       - name: Pruebas de narración por jugador y ronda
         run: python -m unittest discover -s tests -p test_narrativa_simlog_v21.py -v
+      - name: Pruebas de hitos e interacciones por ronda
+        run: python -m unittest discover -s tests -p test_paneles_ronda_v21.py -v
       - name: Regresión de compatibilidad SIMLOG v2.1
         run: python -m unittest discover -s tests -p test_reglas_simlog_v21.py -v
