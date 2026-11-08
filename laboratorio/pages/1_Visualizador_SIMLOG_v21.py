@@ -171,7 +171,7 @@ st.title("Visualizador de partidas · SIMLOG v2.1")
 st.caption("Decisiones y eventos reales de la pareja ganadora, ordenados por ronda. "
            "No modifica partidas ni ejecuta el simulador.")
 
-with st.expander("Origen de los datos · carpeta o ZIP SIMLOG v2.1", expanded=True):
+with st.expander("Origen de los datos · carpeta o ZIP SIMLOG v2.1", expanded=False):
     src1, src2 = st.columns([2.4, 1.5], vertical_alignment="bottom")
     with src1:
         root_path = st.text_input(
@@ -330,7 +330,7 @@ with tabs[1]:
             st.caption(t.get("Desenlace_texto") or "Sin texto narrativo registrado.")
             with st.expander("Datos completos del turno"):
                 st.json(t)
-    round_events = [e for e in filtered if e["ronda"] == chosen_round]
+    round_events = [e for e in items if e["ronda"] == chosen_round and e["categoria"] in categories]
     st.markdown(f"**Eventos observados en la ronda {chosen_round} ({len(round_events)})**")
     st.dataframe(event_dataframe(round_events, manifest), use_container_width=True,
                  hide_index=True, height=270)
@@ -360,7 +360,8 @@ with tabs[3]:
     social = [e for e in items if e["categoria"] in ("Duelos", "Noviazgo", "Acuerdos",
                                                    "Subhitos", "Hitos")
               and low <= e["ronda"] <= high]
-    social_count = Counter(e["categoria"] for e in social)
+    social_count = {cat: len({(e["secuencia"], e["turno"], e["evento"]) for e in social
+                              if e["categoria"] == cat}) for cat in CATEGORIES}
     st.markdown(" · ".join(f"**{cat}:** {social_count[cat]}" for cat in
                          ("Duelos", "Noviazgo", "Acuerdos", "Subhitos", "Hitos")))
     st.dataframe(event_dataframe(social, manifest), use_container_width=True,
