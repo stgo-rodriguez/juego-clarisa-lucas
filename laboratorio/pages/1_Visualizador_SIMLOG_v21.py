@@ -397,7 +397,8 @@ with tabs[1]:
                                 label += " (elegida)"
                             option_changes = item.get("opciones_efectos", {}).get(letter)
                             extras = (
-                                f" {chips_recursos(option_changes)}"
+                                f" <small style='color:#64748b'>Efecto previsto:</small> "
+                                f"{chips_recursos(option_changes)}"
                                 if option_changes is not None else ""
                             )
                             lines.append(
