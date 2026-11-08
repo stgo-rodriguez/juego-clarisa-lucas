@@ -127,6 +127,7 @@ class PlayerState:
     hand: AdultHand = field(default_factory=lambda: AdultHand(()))
     youth_movement: MovementCard | None = None
     utn_passed: bool = False  # Aprobación permanente; pasa a Juventud en siguiente ronda.
+    utn_return_pending: bool = False  # v2.1: regresa al circuito en el siguiente turno si faltan requisitos.
 
     def __post_init__(self):
         if type(self.id) is not int or self.id < 1 or self.role not in ROLES:

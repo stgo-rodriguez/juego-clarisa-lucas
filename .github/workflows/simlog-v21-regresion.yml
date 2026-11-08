@@ -1,0 +1,45 @@
+name: SIMLOG v2.1 - reglas consolidadas 08-11-2026
+
+on:
+  push:
+    branches:
+      - fix/simlog-v21-especificacion-20261108
+  pull_request:
+    branches:
+      - feature/simulaciones-v2-movimiento
+
+jobs:
+  regression-v21:
+    runs-on: ubuntu-latest
+    strategy:
+      fail-fast: false
+      matrix:
+        python-version: ['3.11', '3.13']
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: ${{ matrix.python-version }}
+      - name: Verificar sintaxis
+        run: python -m compileall -q simulador laboratorio tests
+      - name: Pruebas v2.1 actualizadas
+        run: python -m unittest discover -s tests -p 'test_reglas_simlog_v21.py' -v
+      - name: Verificar compatibilidad con motores previos
+        run: python -m unittest discover -s tests -p 'test_turnos_v2.py' -v
+      - name: Probar catálogo v2.1 y afinidad
+        run: python -m unittest discover -s tests -p 'test_cartas_vigentes_v21.py' -v
+      - name: Prueba de estrés 200 partidas con trazas (Python 3.11)
+        if: matrix.python-version == '3.11'
+        run: python -m laboratorio.simular_mazos_vigentes_v2 --semillas 100 --inicio 101 --rondas 100 --out resultados/simlog_v21_consolidado_ci
+      - name: Prueba cruzada de 40 partidas (Python 3.13)
+        if: matrix.python-version == '3.13'
+        run: python -m laboratorio.simular_mazos_vigentes_v2 --semillas 20 --inicio 101 --rondas 75 --out resultados/simlog_v21_consolidado_ci
+      - name: Analizar proporciones y decisiones A/B
+        run: python -m laboratorio.analizar_simlog_v21_revision --out resultados/simlog_v21_consolidado_ci
+      - name: Publicar resultados verificables (Python 3.11)
+        if: always() && matrix.python-version == '3.11'
+        uses: actions/upload-artifact@v4
+        with:
+          name: simlog-v21-nuevas-semilllas-101-200
+          path: resultados/simlog_v21_consolidado_ci/
+          if-no-files-found: ignore

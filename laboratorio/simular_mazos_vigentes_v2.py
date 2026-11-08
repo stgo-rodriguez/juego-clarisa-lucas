@@ -16,7 +16,8 @@ from simulador.interacciones_v2 import InteractionV2,SocialAuctionsV2
 from simulador.movimiento_v2 import youth_cards
 from simulador.mazos_vigentes_v2 import CurrentResolver,new_decks,load_current
 from simulador.afinidad_v2 import zone
-from simulador.simlog_v2 import SIMLogV2
+from simulador.simlog_v21 import SIMLogV21
+from simulador.reglas_v21 import EconomyV21, RoundEngineV21, transition_hooks_v21, CurrentResolverV21
 from simulador.transiciones_v2 import ProfileDecksV2,transition_hooks
 from simulador.turnos_v2 import CardPool,PlayerState,RoundEngine,SituationCard,Stage
 from laboratorio.experimento_agentes_v2 import adult_cards
@@ -34,16 +35,16 @@ def write_rows(file,rows):
 def run_game(size,seed,round_limit=100,competition=True,trace_dir=None,catalog=None,policy='planificador',affinity_weight=8.0):
     if size not in (6,10):raise ValueError(size)
     catalog=catalog or load_current()
-    players=[PlayerState(i+1,'Clarisa' if i<=size//2 else 'Lucas') for i in range(size)]
-    eco=EconomyV2(players,scenario=EconomyScenario(adult_square_amounts=dict.fromkeys('APKM',2),neutral_situations=False),rng=random.Random(seed*97+14))
+    players=[PlayerState(i+1,'Clarisa' if i<size//2 else 'Lucas') for i in range(size)]
+    eco=EconomyV21(players,scenario=EconomyScenario(adult_square_amounts=dict.fromkeys('APKM',2),neutral_situations=False),rng=random.Random(seed*97+14))
     eco.dynamic_affinity={p.id:0 for p in players}
     profiles=ProfileDecksV2(seed*23+14)
-    hooks=transition_hooks(eco,profiles)
+    hooks=transition_hooks_v21(eco,profiles)
     decks=new_decks(catalog,seed*37)
     shuffled={f'{stage.value}_{role}':[c.id for c in d._deck[::-1]] for (stage,role),d in decks.items()}
-    engine=RoundEngine(players,decks,CardPool(youth_cards(),random.Random(seed*97+44),recycle=True),
+    engine=RoundEngineV21(players,decks,CardPool(youth_cards(),random.Random(seed*97+44),recycle=True),
          CardPool(adult_cards(),random.Random(seed*97+45),recycle=True),
-         hand_size=3,rng_dice=random.Random(seed*97+32),hooks=hooks,dublin_policy='next_turn')
+         hand_size=3,rng_dice=random.Random(seed*97+32),hooks=hooks,dublin_policy='next_round')
     for p in players:
         eco.new_project(f'Titulo-{p.id}','Titulo')
         eco.new_project(f'{PASSPORT_KIND[p.role]}-{p.id}',PASSPORT_KIND[p.role])
@@ -52,7 +53,7 @@ def run_game(size,seed,round_limit=100,competition=True,trace_dir=None,catalog=N
     auctions=SocialAuctionsV2(eco,engine)
     controller=CompetitiveController(engine,eco,agent,interactions,auctions,
          CompetitionConfig(enabled=competition,youth_return_pos=None),seed*97+66)
-    resolver=CurrentResolver(eco,policy,seed*97+99,affinity_weight)
+    resolver=CurrentResolverV21(eco,interactions,policy,seed*97+99,affinity_weight)
     hooks.apply_situation=resolver.resolve
     prev=hooks.after_turn
     def after(e,p,out):
@@ -65,8 +66,8 @@ def run_game(size,seed,round_limit=100,competition=True,trace_dir=None,catalog=N
         return agent.choose_youth(p,proxy,movement)
     logger=None
     if trace_dir is not None:
-        logger=SIMLogV2(engine,eco,profiles,resolver,interactions,auctions,controller,
-            run_id=f'cartas_v03v04_{size}p_seed{seed}_{policy}_compet{int(competition)}',
+        logger=SIMLogV21(engine,eco,profiles,resolver,interactions,auctions,controller,
+            run_id=f'simlog_v21_20261108_{size}p_seed{seed}_{policy}_compet{int(competition)}',
             seed=seed,policy=policy,competition=competition,round_limit=round_limit,
             catalog=catalog,balance=BalanceVariant())
         logger.new_sources=catalog['sources'];logger.attach_hooks(hooks)
@@ -129,6 +130,9 @@ def execute(out:Path,seeds:int=20,sizes=(6,10),round_limit=100,competition=True,
     # Preferencias agregadas SEPARADAS por carta y rol, derivadas del SIMLOG persistido.
     preference=defaultdict(lambda:Counter())
     affine=defaultdict(Counter)
+    group_choices=defaultdict(Counter)
+    group_contexts=defaultdict(set)
+    assigned_cards={}
     for x in rows:
         root=out/'trazas'/f'n{x["size"]}_s{x["seed"]}'
         with (root/'turnos.csv').open(newline='',encoding='utf-8-sig') as f:
@@ -137,6 +141,14 @@ def execute(out:Path,seeds:int=20,sizes=(6,10),round_limit=100,competition=True,
                 if card and choice in ('A','B'):
                     preference[(stage,role,card)][choice]+=1
                     affine[(stage,role)][choice]+=1
+                    group_key=(x['size'],x['seed'],int(t['Ronda']),
+                               t['Situacion_grupo_etapa'],t['Situacion_grupo_rol'])
+                    previous=assigned_cards.setdefault(group_key,card)
+                    if previous!=card:
+                        raise AssertionError('Grupo etapa/rol/ronda con dos Situaciones')
+                    group_choices[group_key][choice]+=1
+                    if t['Recursos_antes_AB_JSON']:
+                        group_contexts[group_key].add(t['Recursos_antes_AB_JSON'])
     prefs=[]
     for (stage,role,card),c in sorted(preference.items()):
         total=c['A']+c['B']
@@ -144,6 +156,17 @@ def execute(out:Path,seeds:int=20,sizes=(6,10),round_limit=100,competition=True,
                       'porcentaje_A':round(c['A']/total*100,2),
                       'dominancia_porcentaje':round(max(c['A'],c['B'])/total*100,2)})
     write_rows(out/'preferencias_por_carta.csv',prefs)
+    groups=[]
+    for (size,seed,round_no,stage,role),choices in sorted(group_choices.items()):
+        a,b=choices['A'],choices['B']
+        groups.append({'size':size,'seed':seed,'ronda':round_no,
+                       'etapa':stage,'rol':role,
+                       'carta':assigned_cards[(size,seed,round_no,stage,role)],
+                       'participantes':a+b,'A':a,'B':b,
+                       'ambas_opciones':int(a>0 and b>0),
+                       'contextos_economicos_distintos':len(group_contexts[(size,seed,round_no,stage,role)]),
+                       'recursos_diversos':int(len(group_contexts[(size,seed,round_no,stage,role)])>1)})
+    write_rows(out/'diversidad_decisiones_por_grupo.csv',groups)
     bygroup=[]
     for key,cs in sorted(affine.items()):
         bygroup.append({'etapa':key[0],'rol':key[1],'A':cs['A'],'B':cs['B'],
@@ -158,16 +181,28 @@ def execute(out:Path,seeds:int=20,sizes=(6,10),round_limit=100,competition=True,
             'avg_rounds_censored':round(statistics.mean(x['rounds'] for x in subset),2),
             'median_rounds_censored':statistics.median(x['rounds'] for x in subset),
             'avg_turns_censored':round(statistics.mean(x['turns'] for x in subset),2)})
-    result={'schema':'simlog-v2-dynamic-affinity','status':'experimental',
+    first=[g for g in groups if g['etapa']=='Infancia' and g['ronda']==1
+           and g['participantes']>=2]
+    first_diversity={'grupos_evaluados':len(first),
+                     'grupos_contextos_distintos':sum(g['recursos_diversos'] for g in first),
+                     'grupos_con_ambas_elecciones':sum(g['ambas_opciones'] for g in first),
+                     'porcentaje_grupos_con_A_y_B':round(
+                         100*sum(g['ambas_opciones'] for g in first)/len(first),2)
+                         if first else None}
+    result={'schema':'simlog-v21-20261108-dynamic-affinity','status':'experimental',
             'sources':catalog['sources'],'cards_total':len(catalog['cards']),
             'counts_by_stage_role':{'Infancia':12,'Juventud':24,'Adultez':15},
             'config':{'seeds_per_table':seeds,'sizes':list(sizes),'round_limit':round_limit,
                       'competition':competition,'policy':policy,'affinity_neutral':[-2,2],
                       'affinity_weight':affinity_weight,'adult_situation_auctions':False,
-                      'deck_shuffles':'independent random seed per stage and role'},
+                      'deck_shuffles':'independent random seed per stage and role',
+                      'ruleset':'especificacion-integral-2026-11-08',
+                      'situation_assignment':'one shared card per stage and role per round',
+                      'childhood_income':'destination_only'},
             'summary':aggregated,'winners_by_zone':dict(zones),
             'total_decisions':sum(x['choices_A']+x['choices_B'] for x in rows),
-            'total_games':len(rows),'total_marriages':sum(x['won'] for x in rows)}
+            'total_games':len(rows),'total_marriages':sum(x['won'] for x in rows),
+            'diversidad_infancia_primera_ronda':first_diversity}
     (out/'resumen.json').write_text(json.dumps(result,ensure_ascii=False,indent=2)+'\n',encoding='utf-8')
     return result
 

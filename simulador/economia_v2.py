@@ -331,12 +331,12 @@ class EconomyV2:
         owners=tuple(sorted((a.id,b.id)))
         if owners==self.house_owner:return False
         if not self._pool_to_quota(a.id,b.id,{'A':8,'P':5}):return False
-        if self.house_owner is not None and max_attempts!=1:
+        if self.house_owner is not None and max_attempts!=1 and not getattr(self, 'progressive_house_against_owner', False):
             raise ValueError('Reintentos escalados solo contra banca')
         if type(max_attempts) is not int or max_attempts<1:
             raise ValueError('Cantidad de intentos inválida')
         for attempt in range(max_attempts):
-            price=15+(5*attempt if self.house_owner is None else 0)
+            price=15+(5*attempt if self.house_owner is None or getattr(self, 'progressive_house_against_owner', False) else 0)
             if not self._pool_to_quota(a.id,b.id,{'M':price}):return False
             if dice is not None:
                 if attempt>=len(dice):raise ValueError('Faltan dados para la prueba')

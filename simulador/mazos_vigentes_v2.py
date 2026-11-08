@@ -85,6 +85,12 @@ class CurrentResolver:
         else:
             if self.policy=='aleatorio':choice=self.rng.choice(('A','B'))
             else:choice=max(('A','B'),key=lambda v:(self._score(p,card.payload['effects'][v],v),v=='A'))
+        # Contexto económico inmediatamente anterior a elegir A/B.
+        engine._event('situation_context', player=p.id, card=card.id,
+                      stage=card.stage.value, role=card.role,
+                      resources=dict(self.eco.accounts[p.id].free),
+                      position=str(p.position),
+                      affinity_position=self.eco.dynamic_affinity[p.id])
         position_before=self.eco.dynamic_affinity[p.id]
         pzone_before=zone(self.eco.dynamic_affinity[p.partner_id]) if p.partner_id is not None else None
         compatible_before=(zone(position_before)==pzone_before if pzone_before is not None else None)
