@@ -66,7 +66,7 @@ def fixture():
                   player=1,target=2,accepted=True),
             event(4,2,4,1,"economia","pair",players=[1,2]),
             event(5,2,5,2,"economia","transfer",source=1,dest=2,resource="K",amount=2),
-            event(6,2,5,2,"economia","transfer",source=2,dest=3,resource="M",amount=1),
+            event(6,2,5,2,"economia","transfer",source=3,dest=2,resource="M",amount=1),
             event(7,2,5,2,"duelo","duel",challenger=2,defender=3,
                   kind="ordinario",result="victoria",paid_resource="M",
                   paid=1),
