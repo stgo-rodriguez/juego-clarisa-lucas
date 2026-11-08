@@ -144,11 +144,14 @@ def mostrar_hitos_y_subhitos(game, ronda, jugador):
     )
     comprobantes = data["comprobantes"]
     if comprobantes:
-        labels = [
-            f'{r["proyecto"]} S{r["subhito"]}'
-            for r in comprobantes
-        ]
-        st.caption("Comprobantes propios vigentes: " + " · ".join(labels))
+        st.caption("Subhitos con comprobante propio")
+        st.markdown(
+            '<div style="display:flex;flex-wrap:wrap;gap:5px;margin-bottom:10px">'
+            + "".join(_pill(f'{r["proyecto"]} · S{r["subhito"]}', "info")
+                      for r in comprobantes)
+            + '</div>',
+            unsafe_allow_html=True,
+        )
 
 
 def mostrar_tarjetas_eventos(title, events, no_events, *, max_visible=4):
