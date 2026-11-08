@@ -25,6 +25,11 @@ Nueva página multipágina de Streamlit: `laboratorio/pages/1_Visualizador_SIMLO
 
 **No integradas en esta página:** comparación Monte Carlo Base/Experimento, sensibilidad de parámetros, p80 entre partidas, historial de experimentos y calibración de mazos. Esas son métricas de lote (no eventos de una partida), y siguen en el laboratorio original. Se podrían conectar en una segunda etapa con un índice de corridas compartido.
 
+
+### Registro de propuestas de noviazgo (instrumentación nueva)
+
+En esta rama, `SIMLogV21` observa de forma pasiva cada llamada real del agente a `eco.form_pair` y escribe `noviazgo_propuesta` y `noviazgo_resultado` (aceptada/rechazada), sin cambiar la elección del bot, balances, dados ni RNG. La pareja efectivamente constituida sigue registrada por `pair`. Las trazas v2.1 **generadas antes** de esta mejora no incluyen propuestas fallidas y deben generarse nuevamente para inspeccionarlas. No se inventan las oportunidades que el agente nunca intentó.
+
 ## Límites de los datos
 
 1. Se presenta una **propuesta de noviazgo** solo si existe un evento explícito de propuesta. En el motor actual suele quedar registrado el **acuerdo/pareja constituida** (`pair`), pero no todos los intentos rechazados o no realizados. No inferirlos.
