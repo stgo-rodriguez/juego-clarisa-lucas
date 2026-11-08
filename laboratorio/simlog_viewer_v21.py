@@ -98,11 +98,23 @@ def _manifest_to_game(directory, manifest):
     }
 
 
+def _is_zip_source(root, zip_bytes=None):
+    return zip_bytes is not None or (
+        Path(root).expanduser().is_file() and
+        Path(root).suffix.lower() == ".zip"
+    )
+
+
+def _open_zip(root, zip_bytes=None):
+    return zipfile.ZipFile(BytesIO(zip_bytes) if zip_bytes is not None
+                           else Path(root).expanduser())
+
+
 def discover_games(root: str | Path, zip_bytes: bytes | None = None) -> list[dict]:
-    """Solo muestra manifests v2.1; no inventa ganadores en partidas censuradas."""
+    """Encuentra todas las trazas de reglas v2.1 en carpetas o un ZIP local."""
     games = []
-    if zip_bytes is not None:
-        with zipfile.ZipFile(BytesIO(zip_bytes)) as archive:
+    if _is_zip_source(root, zip_bytes):
+        with _open_zip(root, zip_bytes) as archive:
             for member in archive.namelist():
                 if member.split("/")[-1] != "manifest.json" or member.endswith("/"):
                     continue
@@ -110,7 +122,8 @@ def discover_games(root: str | Path, zip_bytes: bytes | None = None) -> list[dic
                     continue
                 try:
                     manifest = json.loads(archive.read(member))
-                    game = _manifest_to_game(member.rsplit("/", 1)[0] if "/" in member else "", manifest)
+                    directory = member.rsplit("/", 1)[0] if "/" in member else ""
+                    game = _manifest_to_game(directory, manifest)
                     if game:
                         games.append(game)
                 except (ValueError, KeyError, OSError):
@@ -134,13 +147,17 @@ def discover_games(root: str | Path, zip_bytes: bytes | None = None) -> list[dic
     return sorted(games, key=lambda v: (v["size"], v["seed"], v["id"]))
 
 
-def _read_text(root, directory, name, zip_bytes):
-    if zip_bytes is not None:
+def _read_raw(root, directory, name, zip_bytes):
+    if _is_zip_source(root, zip_bytes):
         key = f"{directory}/{name}" if directory else name
-        with zipfile.ZipFile(BytesIO(zip_bytes)) as z:
-            return z.read(key).decode("utf-8-sig")
+        with _open_zip(root, zip_bytes) as archive:
+            return archive.read(key)
     folder = Path(directory).expanduser().resolve()
-    return (folder / name).read_text(encoding="utf-8-sig")
+    return (folder / name).read_bytes()
+
+
+def _read_text(root, directory, name, zip_bytes):
+    return _read_raw(root, directory, name, zip_bytes).decode("utf-8-sig")
 
 
 def load_game(root: str | Path, directory: str, zip_bytes: bytes | None = None):
@@ -350,16 +367,8 @@ def audit(game, root, zip_bytes=None):
     errors = []
     for filename, expected in (manifest.get("file_sha256") or {}).items():
         try:
-            content = _read_text(root, game["directory"], filename, zip_bytes)
-            actual = hashlib.sha256(content.encode("utf-8-sig")).hexdigest()
-            # La normalización de saltos de línea o BOM cambia bytes;
-            # para verificar hash se leen los bytes originales.
-            if zip_bytes is not None:
-                key = f"{game['directory']}/{filename}" if game["directory"] else filename
-                with zipfile.ZipFile(BytesIO(zip_bytes)) as z:
-                    raw = z.read(key)
-            else:
-                raw = (Path(game["directory"]) / filename).read_bytes()
+            # Hash del archivo original: no normalizar BOM ni saltos de línea.
+            raw = _read_raw(root, game["directory"], filename, zip_bytes)
             if hashlib.sha256(raw).hexdigest() != expected:
                 errors.append(f"SHA-256 diferente: {filename}")
         except (OSError, KeyError, ValueError):
