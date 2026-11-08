@@ -8,6 +8,7 @@ from collections import Counter
 from dataclasses import dataclass
 
 from simulador.economia_v2 import EconomyV2
+from simulador.mazos_vigentes_v2 import CurrentResolver
 from simulador.movimiento_v2 import walk_circuit, Coord
 from simulador.transiciones_v2 import transition_hooks
 from simulador.turnos_v2 import (
@@ -25,6 +26,80 @@ class EconomyV21(EconomyV2):
     """Infancia cobra exclusivamente al terminar en un casillero."""
 
     progressive_house_against_owner = True  # mismo escalado para banca y propietarios
+
+    def ordinary_loss(self, player, resource, amount, interactions):
+        """Pérdidas de Situación: libres → reservas A/P, sin deuda ni inversiones.
+
+        La ruptura adulta sin posición legal de retorno no se inventa: se
+        detiene ANTES de modificar saldos, mediante PendingRuleError.
+        """
+        if resource not in ('A', 'P', 'K', 'M') or type(amount) is not int or amount < 0:
+            raise ValueError('Pérdida ordinaria inválida')
+        if amount == 0:
+            return
+        ac = self.accounts[player.id]
+        free_loss = min(amount, ac.free[resource])
+        missing = amount - free_loss
+        pair_loss = min(missing, ac.pair_a) if resource == 'A' else 0
+        house_loss = min(missing - pair_loss, ac.house_a) if resource == 'A' else (
+            min(missing, ac.house_p) if resource == 'P' else 0
+        )
+        if pair_loss and player.partner_id is not None:
+            partner_free = self.accounts[player.partner_id].free['A']
+            if player.stage == Stage.ADULTEZ and partner_free < pair_loss:
+                raise PendingRuleError(
+                    'Ruptura por pérdida ordinaria en Adultez: posición juvenil '
+                    'de retorno pendiente de especificación'
+                )
+        if free_loss:
+            self.spend(player.id, resource, free_loss, 'situacion_vigente_perdida')
+        if pair_loss:
+            ac.pair_a -= pair_loss
+            self.burned['A'] += pair_loss
+            self.events.append({
+                'action': 'reserve_loss', 'player': player.id,
+                'resource': 'A', 'amount': pair_loss,
+                'reserve': 'Pareja', 'source': 'situacion_vigente_perdida',
+            })
+        if house_loss:
+            if resource == 'A':
+                ac.house_a -= house_loss
+            else:
+                ac.house_p -= house_loss
+            self.burned[resource] += house_loss
+            self.events.append({
+                'action': 'reserve_loss', 'player': player.id,
+                'resource': resource, 'amount': house_loss,
+                'reserve': 'Casa', 'source': 'situacion_vigente_perdida',
+            })
+        self.audit()
+
+        if pair_loss and player.partner_id is not None:
+            missing_pair = 5 - ac.pair_a
+            partner = self.accounts[player.partner_id]
+            if missing_pair > 0 and partner.free['A'] >= missing_pair:
+                self.transfer(player.partner_id, player.id, 'A', missing_pair)
+                ac.free['A'] -= missing_pair
+                ac.pair_a += missing_pair
+                self.events.append({
+                    'action': 'pair_reserve_repaired', 'player': player.id,
+                    'from_player': player.partner_id,
+                    'amount': missing_pair, 'source': 'situacion_vigente_perdida',
+                })
+                self.audit()
+            elif missing_pair > 0:
+                if interactions is None:
+                    raise PendingRuleError('Ruptura de pareja requiere interacciones')
+                interactions.break_pair(player.id)
+        # La Casa se pierde al quedar incompletas sus reservas (sin
+        # inventar ventanas especiales de reconstitución de Casa).
+        if (self.house_owner is not None and player.id in self.house_owner
+                and (ac.house_a < 8 or ac.house_p < 5)):
+            if interactions is None:
+                raise PendingRuleError('Pérdida de Casa requiere interacciones')
+            interactions._vacate_house({player.id})
+            self.audit()
+
 
     def on_step(self, engine, player, position, last):
         if player.stage == Stage.INFANCIA:
@@ -289,3 +364,38 @@ class RoundEngineV21(RoundEngine):
                 choose_utn=choose_utn, choose_dublin=choose_dublin,
             )
         raise PendingRuleError(f'Etapa no implementada: {player.stage}')
+
+
+class CurrentResolverV21(CurrentResolver):
+    """Resolver de cartas con pérdidas contables sobre reservas vigentes."""
+
+    def __init__(self, eco, interactions, policy='planificador',
+                 seed=0, affinity_weight=8.0):
+        super().__init__(eco, policy, seed, affinity_weight)
+        self.interactions = interactions
+
+    def _score(self, player, effects, choice):
+        score = super()._score(player, effects, choice)
+        account = self.eco.accounts[player.id]
+        for resource, weight in (('A', 1.8), ('P', 1.8)):
+            amount = max(0, -effects.get(resource, 0))
+            over_free = max(0, amount - account.free[resource])
+            reserved = (account.pair_a + account.house_a
+                        if resource == 'A' else account.house_p)
+            score -= weight * min(over_free, reserved)
+            if resource == 'A' and account.pair_a:
+                if over_free > 0:
+                    score -= 8
+            if (account.house_a or account.house_p) and over_free > 0:
+                score -= 5
+        return score
+
+    def _apply(self, player, effects):
+        for resource, amount in effects.items():
+            if amount < 0:
+                self.eco.ordinary_loss(player, resource, -amount,
+                                       self.interactions)
+        for resource, amount in effects.items():
+            if amount > 0:
+                self.eco.issue(player.id, resource, amount,
+                               'situacion_vigente_premio')
