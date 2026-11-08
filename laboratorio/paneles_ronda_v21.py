@@ -78,6 +78,35 @@ def _global_snapshot(game, ronda):
     }
 
 
+def estado_noviazgo(game, ronda, jugador):
+    """Estado real de pareja al finalizar la ronda; nunca inferido del casamiento final.
+
+    No confunde ausencia de pareja (campo null) con falta de snapshot.
+    Si la pareja se casó, prioriza «Casados» sobre «De novios».
+    """
+    ronda, jugador = integer(ronda), integer(jugador)
+    state = _last(game.get("estados_jugadores.csv", []), ronda, jugador)
+    if state is None or "Pareja" not in state:
+        return {"estado": "Sin datos", "pareja": None, "tono": "neutral",
+                "detalle": "No hay estado de pareja registrado al cierre."}
+    other = _id(state.get("Pareja"))
+    if other is None:
+        return {"estado": "Sin pareja", "pareja": None, "tono": "neutral",
+                "detalle": "No estaba de novio/a al finalizar esta ronda."}
+    name = role_name(game.get("manifest", {}), other)
+    world = _global_snapshot(game, ronda)
+    married = world is not None and jugador in world["casamiento"] and other in world["casamiento"]
+    result = {
+        "estado": "Casados" if married else "De novios",
+        "pareja": other,
+        "tono": "success" if married else "info",
+        "detalle": f"{'Casados' if married else 'De novios'} con {name}.",
+    }
+    if "Pareja_compatible" in state and state["Pareja_compatible"] not in ("", None):
+        result["afinidad"] = "Compatible" if _true(state["Pareja_compatible"]) else "Incompatible"
+    return result
+
+
 def estado_hitos(game, ronda, jugador):
     """Estado acumulado del jugador, comprobantes que aún posee y logros de pareja."""
     ronda, jugador = integer(ronda), integer(jugador)
