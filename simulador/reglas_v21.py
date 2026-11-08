@@ -24,6 +24,8 @@ INFANCIA_DESTINOS = {
 class EconomyV21(EconomyV2):
     """Infancia cobra exclusivamente al terminar en un casillero."""
 
+    progressive_house_against_owner = True  # mismo escalado para banca y propietarios
+
     def on_step(self, engine, player, position, last):
         if player.stage == Stage.INFANCIA:
             return
