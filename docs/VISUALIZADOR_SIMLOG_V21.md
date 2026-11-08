@@ -92,6 +92,14 @@ Las pruebas de `tests/test_paneles_ronda_v21.py` incluyen estados históricos, s
 - **Actualizar listado** limpia la caché de descubrimiento si se incorporan archivos mientras la aplicación ya está abierta. No ejecuta nuevos juegos ni modifica partidas previas.
 - **Historial incompatible:** los registros de v1.3, v2.0 o salidas agregadas sin trazas SIMLOG v2.1 no pueden mostrar decisiones turno a turno. No se transforman en datos ficticios. Para importarlos es necesario disponer de las trazas reales compatibles.
 
+## Cargar el lote auditado de 200 partidas (semillas 101–200)
+
+Existe una ejecución real con **200 partidas SIMLOG v2.1**, 100 de 6 jugadores y 100 de 10 (semillas 101–200), asociada al GitHub Actions `42454003910` y al artefacto `13606568364` (`simlog-v21-nuevas-semilllas-101-200`). Su ZIP contiene **200 manifiestos** `SIMLOG-2.1` con `ruleset=especificacion-integral-2026-11-08` y trazas CSV por jugador/turno.
+
+El archivo descargado `SIMLOG_v21_200_partidas_semillas_101_200.zip` puede dejarse **sin descomprimir** en `~/Downloads/`. El visualizador detecta automáticamente archivos `SIMLOG*.zip` en Descargas y dentro de `resultados/`, además de las carpetas de trazas y del ZIP elegido con el cargador de archivos. Todos los lotes compatibles se suman al mismo selector y los Run_ID idénticos se muestran una sola vez.
+
+La pantalla ofrece **Actualizar listado de partidas** para incorporar ZIP nuevos sin reiniciar. El lanzador solo genera 10 partidas de demostración si no existe ninguna; no afirma haber ejecutado ni descargado automáticamente las 200 anteriores. Los otros históricos v1.x/v2.0 siguen excluidos del detalle porque no cumplen el esquema y ruleset vigentes.
+
 ## Ejecución local
 
 Desde la raíz del repositorio en la rama `feature/visualizador-simlog-v21`:
