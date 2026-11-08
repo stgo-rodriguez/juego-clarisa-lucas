@@ -252,10 +252,14 @@ def _item(round_no, turn, player, category, label, description="", sequence=None
     }
 
 
-def build_events(game):
-    """Solo acciones observadas: no inferir propuestas, acuerdos o duelos ausentes."""
+def build_events(game, players=None):
+    """Eventos realmente registrados para los jugadores indicados.
+
+    Si players no se especifica, se usa la pareja ganadora (compatibilidad
+    histórica). En partidas sin casamiento se debe indicar a quién seguir.
+    """
     manifest = game["manifest"]
-    winners = pair_from_manifest(manifest)
+    winners = tuple(players) if players is not None else pair_from_manifest(manifest)
     if not winners:
         return []
     items = []
