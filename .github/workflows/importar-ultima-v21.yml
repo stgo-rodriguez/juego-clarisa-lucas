@@ -1,0 +1,44 @@
+name: Importar última corrida SIMLOG v2.1 al laboratorio
+
+on:
+  push:
+    branches: [feature/laboratorio-balance]
+    paths: [.github/workflows/importar-ultima-v21.yml]
+  workflow_dispatch:
+
+permissions:
+  contents: write
+  actions: read
+
+jobs:
+  importar-snapshot-v21:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Consultar versión del laboratorio
+        uses: actions/checkout@v4
+        with:
+          ref: feature/laboratorio-balance
+          persist-credentials: true
+      - name: Preparar Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+      - name: Descargar artefacto fuente auditado (200 partidas)
+        uses: actions/download-artifact@v4
+        with:
+          repository: stgo-rodriguez/juego-clarisa-lucas
+          run-id: 42454007039
+          name: simlog-v21-nuevas-semilllas-101-200
+          github-token: ${{ secrets.GITHUB_TOKEN }}
+          path: .tmp_v21
+      - name: Verificar manifiestos y generar snapshot de solo lectura
+        run: python -m laboratorio.preparar_snapshot_v21 --source .tmp_v21
+      - name: Guardar datos históricos en la rama del laboratorio
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add docs/datos_v21_ultima/
+          if ! git diff --cached --quiet; then
+            git commit -m "data(v2.1): importar 200 partidas SIMLOG verificadas (semillas 101-200)"
+            git push origin HEAD:feature/laboratorio-balance
+          fi
