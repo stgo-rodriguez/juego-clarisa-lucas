@@ -525,6 +525,17 @@ def mostrar_detalle(baseline: dict, experiment: dict, *, modo_enfoque: bool = Fa
 
 
 
+# Selección explícita de reglas: v2.1 es una corrida importada, no el motor v1.3.
+if not st.session_state.get("modo_enfoque"):
+    vista = st.radio("Versión del laboratorio",
+                    ["Laboratorio v1.3", "Resultados v2.1"],
+                    horizontal=True, key="laboratorio_vista")
+    if vista == "Resultados v2.1":
+        from laboratorio.v21_ultima import mostrar_v21
+        mostrar_v21()
+        st.stop()
+
+
 if st.session_state.get("modo_enfoque"):
     comparacion_actual = st.session_state.get("ultima_comparacion")
     if comparacion_actual is None:
