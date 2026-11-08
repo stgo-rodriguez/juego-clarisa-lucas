@@ -155,6 +155,19 @@ class SIMLOGViewerTests(unittest.TestCase):
         self.assertTrue(only_clarisa)
         self.assertEqual({e["jugador"] for e in only_clarisa}, {1})
 
+    def test_zip_guardado_en_disco_sin_extraer(self):
+        """La descarga ZIP se descubre como 200 partidas sin abrirla manualmente."""
+        with tempfile.TemporaryDirectory() as tmp:
+            archive = Path(tmp) / "SIMLOG_v21_200_partidas.zip"
+            archive.write_bytes(zipped(fixture()))
+            found = discover_games(archive)
+            self.assertEqual(len(found), 1)
+            self.assertTrue(found[0]["won"])
+            self.assertEqual(found[0]["directory"], "trazas/n6_s17")
+            data = load_game(archive, found[0]["directory"])
+            self.assertEqual(len(data["turnos.csv"]), 3)
+            self.assertEqual(audit(data, archive), [])
+
     def test_folder_access_and_hash_detection(self):
         with tempfile.TemporaryDirectory() as tmp:
             run = Path(tmp) / "trazas" / "n6_s17"
