@@ -39,7 +39,7 @@ CATEGORY_COLORS = {
 }
 CATEGORY_SYMBOLS = {
     "Situación A/B": "circle", "Movimiento": "circle-open",
-    "Duelos": "x", "Canjes": "diamond", "Noviazgo": "heart",
+    "Duelos": "x", "Canjes": "diamond", "Noviazgo": "star-diamond",
     "Subhitos": "square", "Acuerdos": "triangle-up",
     "Hitos": "star", "Afinidad": "hexagon",
     "Perfil": "pentagon", "Recursos": "circle-open",
