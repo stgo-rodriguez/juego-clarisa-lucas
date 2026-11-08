@@ -15,6 +15,83 @@ INFANCIA_CASILLEROS = {1: "Amor", 2: "Personalidad", 3: "Amor",
 FUENTES_CARTA = {"situacion_vigente_premio", "situacion_vigente_perdida"}
 FUENTES_DESTINO = {"adultez_casillero", "juventud_universidad",
                    "juventud_tramite", "juventud_destino"}
+RECURSOS = ("A", "P", "K", "M")
+
+
+def _resumen_saldo(fila):
+    """Stock personal: libre + reservado; inversiones en proyectos quedan fuera."""
+    if fila is None or any(fila.get(f"{r}_libre") in (None, "") for r in RECURSOS):
+        return None
+    reservas = {
+        "A": integer(fila.get("Res_pareja_A")) + integer(fila.get("Res_casa_A")),
+        "P": integer(fila.get("Res_casa_P")),
+        "K": 0,
+        "M": 0,
+    }
+    return {r: {
+        "libre": integer(fila.get(f"{r}_libre")),
+        "reservado": reservas[r],
+        "total": integer(fila.get(f"{r}_libre")) + reservas[r],
+    } for r in RECURSOS}
+
+
+def recursos_fin_ronda(game, ronda, jugador):
+    """Estados del ÚLTIMO turno global de cada ronda, incluso si actuó un tercero.
+
+    Devuelve None cuando faltan snapshots completos, en vez de inventar saldos.
+    La variación corresponde exclusivamente al fin de la ronda inmediatamente
+    anterior, no al propio turno del jugador ni al comienzo de la partida.
+    """
+    ronda, jugador = integer(ronda), integer(jugador)
+    if ronda < 1:
+        return None
+    estados = game.get("estados_jugadores.csv", [])
+    def final_de_round(n):
+        candidatos = [
+            s for s in estados if integer(s.get("Ronda")) == n
+            and integer(s.get("Jugador")) == jugador
+            and s.get("Momento") == "despues"
+        ]
+        if not candidatos:
+            return None
+        return max(candidatos, key=lambda s: integer(s.get("Turno_global")))
+
+    actual = _resumen_saldo(final_de_round(ronda))
+    if actual is None:
+        return None
+    anterior = _resumen_saldo(final_de_round(ronda-1)) if ronda > 1 else None
+    for r in RECURSOS:
+        actual[r]["variacion"] = (
+            actual[r]["total"] - anterior[r]["total"] if anterior is not None else None
+        )
+    return actual
+
+
+def _cambios_aplicados(eventos, jugador):
+    """Solo débitos/créditos atribuibles a la Situación de ese jugador."""
+    cambios = {r: 0 for r in RECURSOS}
+    for ev, d in eventos:
+        if _id(d.get("player")) != jugador:
+            continue
+        r = d.get("resource")
+        if r not in cambios or d.get("source") not in FUENTES_CARTA:
+            continue
+        n = integer(d.get("amount"))
+        accion = ev.get("Accion")
+        if accion == "issue":
+            cambios[r] += n
+        elif accion in ("spend", "reserve_loss"):
+            cambios[r] -= n
+    return {r: cambios[r] for r in RECURSOS if cambios[r]}
+
+
+def _cambios_opcion(effects):
+    """Efectos de la carta (potenciales), no un saldo o una promesa de pago."""
+    if not isinstance(effects, dict):
+        return None
+    return {r: integer(effects[r]) for r in RECURSOS
+            if r in effects and integer(effects[r])}
+
 
 
 def _id(value):
@@ -65,9 +142,12 @@ def _joined(values):
     return ", ".join(values[:-1]) + " y " + values[-1]
 
 
-def _bullet(seq, title, text, category, *, options=None, chosen=None, turn=0):
+def _bullet(seq, title, text, category, *, options=None, chosen=None, turn=0,
+            opciones_efectos=None, efecto_aplicado=None):
     return {"secuencia": integer(seq), "tipo": category, "titulo": title,
             "texto": text, "opciones": options or [], "elegida": chosen,
+            "opciones_efectos": opciones_efectos or {},
+            "efecto_aplicado": efecto_aplicado,
             "turno": integer(turn)}
 
 
@@ -187,9 +267,15 @@ def _situation(t, events, cards):
         anchor = next((e for e, d in events
                        if e.get("Accion") == "situation_resolved"
                        and _id(d.get("player")) == integer(t.get("Jugador"))), None)
+    opciones_efectos = {
+        letter: _cambios_opcion((card.get("effects") or {}).get(letter))
+        for letter in ("A", "B")
+    }
+    aplicado = _cambios_aplicados(events, integer(t.get("Jugador"))) if choice in ("A", "B") else None
     return _bullet(anchor.get("Secuencia") if anchor else 0,
                    f"Carta de Situación · {title} ({card_id})", body,
                    "Situación", options=options, chosen=choice,
+                   opciones_efectos=opciones_efectos, efecto_aplicado=aplicado,
                    turn=t.get("Turno_global"))
 
 
