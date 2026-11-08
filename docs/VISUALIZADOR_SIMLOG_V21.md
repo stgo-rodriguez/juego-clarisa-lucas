@@ -69,6 +69,20 @@ Debajo de cada opción de **Carta de Situación**, el texto completo se acompañ
 
 Las comprobaciones de regresión (`tests/test_narrativa_simlog_v21.py`) cubren cierre con reservas, efecto de un tercero posterior al turno propio, variación anterior, primera ronda, datos faltantes y diferencias entre efecto potencial y aplicado.
 
+## Hitos, subhitos e interacciones visuales en «Ronda a ronda»
+
+Debajo del resumen de recursos de **cada ganador**, se incorporan tres bloques:
+
+1. **Hitos y subhitos · estado al cierre**: Título, Pasaporte/Ciudadanía, Casa y Casamiento, en tarjetas compactas de dos columnas. Estados observados: Logrado/Lograda, En progreso, Pendiente o Sin datos. Se muestran como chips los comprobantes/subhitos propios **vigentes al final de la ronda**, sin adjudicar automáticamente el hito por tener comprobantes.
+2. **Avances de esta ronda**: inversiones en subhitos, adjudicaciones (acierto/fallo), compra de Casa (tirada ganada/fallida), Casa lograda/perdida, Casamiento y cesiones de comprobante. Se presentan una vez por evento con secuencia real y resultado.
+3. **Interacciones y eventos sociales**: propuestas **realizadas y recibidas** con desenlace unido a la propuesta, pareja formada, duelos iniciados/recibidos (victoria, derrota, empate o retirada), transferencias, cesiones y ayuda con reservas. El pago de un duelo no duplica una segunda tarjeta de transferencia. Las transferencias se identifican como transferencias, **no como acuerdos voluntarios** si no hay constancia de negociación.
+
+Los hitos se reconstruyen del **último snapshot «despues» de `estados_jugadores.csv` y `estados_globales.csv` en la ronda elegida**; nunca de resultados del manifiesto final ni de rondas futuras. Si faltan los snapshots globales se usa el último `turnos.csv` de la ronda como respaldo únicamente para Casa/Casamiento; cuando no hay evidencia se presenta «Sin datos».
+
+El catálogo de costos de los subhitos es la definición vigente del motor v2.1, y el texto de inversión siempre conserva el comprobante registrado. El panel no genera nuevas simulaciones. Cuatro avances y cuatro interacciones por jugador son visibles inicialmente y el resto aparece bajo «Ver más».
+
+Las pruebas de `tests/test_paneles_ronda_v21.py` incluyen estados históricos, sin fuga de resultados futuros, inversión/subhito, compraventa de Casa en pareja, propuestas agrupadas, duelo recibido, duplicación contable, trazas incompletas e integración con un SIMLOG generado realmente.
+
 ## Ejecución local
 
 Desde la raíz del repositorio en la rama `feature/visualizador-simlog-v21`:
