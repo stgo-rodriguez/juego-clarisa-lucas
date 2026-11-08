@@ -1,4 +1,33 @@
-# Laboratorio de Balance de Clarisa & Lucas (fases 0–7)
+# Laboratorio de Balance
+
+## Última simulación SIMLOG v2.1 (8 de noviembre de 2026)
+
+El selector **Versión del laboratorio** permite abrir **Resultados v2.1**
+sin ejecutar de nuevo las reglas. Es una *vista de solo lectura* independiente
+de la comparación y auditorías interactivas del motor v1.3.
+
+**Origen verificado:** [GitHub Actions, corrida 42454007039](https://github.com/stgo-rodriguez/juego-clarisa-lucas/actions/runs/42454007039);
+artefacto **13606319833**, rama \`fix/simlog-v21-especificacion-20261108\`,
+200 partidas nuevas (100 de 6 jugadores y 100 de 10), semillas 101–200,
+28.708 decisiones A/B y 200 casamientos. Se verificaron los manifiestos,
+SHA-256 de cada traza y coherencia de rondas y desenlaces.
+
+La pantalla incluye distribuciones de rondas, economía por etapas y mecanismo,
+preferencias A/B por rol y carta y un selector de cualquiera de las 200 partidas
+con Gantt de hitos observados, recursos por ronda, afinidad por turno y eventos
+relevantes. Los datos compactos están en \`docs/datos_v21_ultima/\`;
+el SIMLOG íntegro permanece en el artefacto de GitHub Actions.
+
+**No son resultados v1.3:** evitar comparar sus medias o medianas como un
+experimento apareado. Los mazos del ejercicio v2.1 son experimentales.
+La etiqueta *última* refiere a esta corrida fechada y reproducible,
+no a un monitor automático de nuevas corridas.
+
+Para volver a importar el mismo artefacto, existe el flujo
+\`.github/workflows/importar-ultima-v21.yml\` (ejecución manual).
+El motor v1.3 congelado, sus referencias y la rama \`main\` no cambian.
+
+ de Clarisa & Lucas (fases 0–7)
 
 Branch independiente; no modificar `index.html`, `README.md` ni `.github/workflows/pages.yml`.
 
