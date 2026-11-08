@@ -150,6 +150,33 @@ class NarrativaTests(unittest.TestCase):
         self.assertIn("Recibió un desafío", data["eventos"][0]["texto"])
         self.assertIn("ganó el duelo", data["eventos"][0]["texto"])
 
+    def test_integracion_con_simlog_v21_real(self):
+        """Recorre una traza escrita por el motor real, no una fila sintética."""
+        import tempfile
+        from pathlib import Path
+        from laboratorio.simular_mazos_vigentes_v2 import run_game
+        from laboratorio.simlog_viewer_v21 import load_game
+        from simulador.mazos_vigentes_v2 import load_current
+
+        with tempfile.TemporaryDirectory() as temp:
+            folder = Path(temp) / "traza"
+            run_game(6, 1, round_limit=4, trace_dir=folder)
+            data = load_game(folder, str(folder.resolve()))
+            catalog = load_current()
+            for player in (1, 4):
+                for rnd in range(1, 5):
+                    with self.subTest(player=player, rnd=rnd):
+                        story = summarize_player_round(data, rnd, player, catalog)
+                        self.assertEqual(story["jugador"], player)
+                        self.assertEqual(story["ronda"], rnd)
+                        self.assertTrue(story["turno_propio"])
+                        self.assertTrue(any(e["tipo"] == "Movimiento" for e in story["eventos"]
+                                            if e["titulo"] == "Movimiento"))
+                        situations = [e for e in story["eventos"] if e["tipo"] == "Situación"]
+                        if situations:
+                            self.assertEqual(len(situations[0]["opciones"]), 2)
+                            self.assertIn(situations[0]["elegida"], ("A", "B"))
+
     def test_utn_examen_no_se_confunde_con_movimiento(self):
         game = fake_game()
         game["turnos.csv"] = [{
