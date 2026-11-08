@@ -16,7 +16,8 @@ from simulador.interacciones_v2 import InteractionV2,SocialAuctionsV2
 from simulador.movimiento_v2 import youth_cards
 from simulador.mazos_vigentes_v2 import CurrentResolver,new_decks,load_current
 from simulador.afinidad_v2 import zone
-from simulador.simlog_v2 import SIMLogV2
+from simulador.simlog_v21 import SIMLogV21
+from simulador.reglas_v21 import EconomyV21, RoundEngineV21, transition_hooks_v21
 from simulador.transiciones_v2 import ProfileDecksV2,transition_hooks
 from simulador.turnos_v2 import CardPool,PlayerState,RoundEngine,SituationCard,Stage
 from laboratorio.experimento_agentes_v2 import adult_cards
@@ -34,14 +35,14 @@ def write_rows(file,rows):
 def run_game(size,seed,round_limit=100,competition=True,trace_dir=None,catalog=None,policy='planificador',affinity_weight=8.0):
     if size not in (6,10):raise ValueError(size)
     catalog=catalog or load_current()
-    players=[PlayerState(i+1,'Clarisa' if i<=size//2 else 'Lucas') for i in range(size)]
-    eco=EconomyV2(players,scenario=EconomyScenario(adult_square_amounts=dict.fromkeys('APKM',2),neutral_situations=False),rng=random.Random(seed*97+14))
+    players=[PlayerState(i+1,'Clarisa' if i<size//2 else 'Lucas') for i in range(size)]
+    eco=EconomyV21(players,scenario=EconomyScenario(adult_square_amounts=dict.fromkeys('APKM',2),neutral_situations=False),rng=random.Random(seed*97+14))
     eco.dynamic_affinity={p.id:0 for p in players}
     profiles=ProfileDecksV2(seed*23+14)
-    hooks=transition_hooks(eco,profiles)
+    hooks=transition_hooks_v21(eco,profiles)
     decks=new_decks(catalog,seed*37)
     shuffled={f'{stage.value}_{role}':[c.id for c in d._deck[::-1]] for (stage,role),d in decks.items()}
-    engine=RoundEngine(players,decks,CardPool(youth_cards(),random.Random(seed*97+44),recycle=True),
+    engine=RoundEngineV21(players,decks,CardPool(youth_cards(),random.Random(seed*97+44),recycle=True),
          CardPool(adult_cards(),random.Random(seed*97+45),recycle=True),
          hand_size=3,rng_dice=random.Random(seed*97+32),hooks=hooks,dublin_policy='next_turn')
     for p in players:
@@ -65,7 +66,7 @@ def run_game(size,seed,round_limit=100,competition=True,trace_dir=None,catalog=N
         return agent.choose_youth(p,proxy,movement)
     logger=None
     if trace_dir is not None:
-        logger=SIMLogV2(engine,eco,profiles,resolver,interactions,auctions,controller,
+        logger=SIMLogV21(engine,eco,profiles,resolver,interactions,auctions,controller,
             run_id=f'cartas_v03v04_{size}p_seed{seed}_{policy}_compet{int(competition)}',
             seed=seed,policy=policy,competition=competition,round_limit=round_limit,
             catalog=catalog,balance=BalanceVariant())
@@ -164,7 +165,10 @@ def execute(out:Path,seeds:int=20,sizes=(6,10),round_limit=100,competition=True,
             'config':{'seeds_per_table':seeds,'sizes':list(sizes),'round_limit':round_limit,
                       'competition':competition,'policy':policy,'affinity_neutral':[-2,2],
                       'affinity_weight':affinity_weight,'adult_situation_auctions':False,
-                      'deck_shuffles':'independent random seed per stage and role'},
+                      'deck_shuffles':'independent random seed per stage and role',
+                      'ruleset':'especificacion-integral-2026-11-08',
+                      'situation_assignment':'one shared card per stage and role per round',
+                      'childhood_income':'destination_only'},
             'summary':aggregated,'winners_by_zone':dict(zones),
             'total_decisions':sum(x['choices_A']+x['choices_B'] for x in rows),
             'total_games':len(rows),'total_marriages':sum(x['won'] for x in rows)}
