@@ -1,5 +1,8 @@
 # Clarisa & Lucas · Simulación de nuevos mazos · SIMLOG v2.1
 
+> **Archivo histórico — corrida del 04/11/2026.** Esta documentación describe las 200 partidas con las reglas **anteriores** (incluida Infancia con situación extraída por turno y repartos 4+2 / 6+4). Para la implementación consolidada del 08/11/2026, consultar [`SIMLOG_V21_REGLAS_2026_11_08.md`](SIMLOG_V21_REGLAS_2026_11_08.md). Los resultados históricos no son directamente comparables con los de las nuevas reglas.
+
+
 **Fecha:** 4 nov 2026. **Estado:** experimental, no reglamento aprobado. **Corrida:** 200 partidas, 100 mesas de seis y 100 de diez participantes, **solo agentes planificadores**; 100 rondas máximas, competencia activada, mano de tres movimientos en Adultez.
 
 ## Fuentes de las cartas
