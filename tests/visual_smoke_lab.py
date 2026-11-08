@@ -166,6 +166,16 @@ def ejecutar() -> None:
             validar_vista(pagina, 1600, 900)
             validar_vista(pagina, 1280, 720)
             validar_cuatro_solapas(pagina)
+            # La nueva vista v2.1 no debe exigir una simulación v1.3 ni una carga
+            # de ZIP. El snapshot de 200 partidas ya viene dentro del repositorio.
+            pagina.get_by_role("button", name="Salir", exact=True).click()
+            pagina.get_by_role("radio", name="Resultados v2.1").check()
+            pagina.get_by_text("Última simulación registrada", exact=False).first.wait_for(
+                state="visible", timeout=20000)
+            pagina.get_by_role("tab", name="Partidas y SIMLOG").click()
+            pagina.get_by_text("Explorar las 200 partidas registradas").wait_for(
+                state="visible", timeout=20000)
+            pagina.screenshot(path=str(CAPTURES / "resultados_v21.png"), full_page=False)
             navegador.close()
         print("OK: navegador real · encabezado fijo · scroll al pie · tablas a ancho completo.")
     finally:
