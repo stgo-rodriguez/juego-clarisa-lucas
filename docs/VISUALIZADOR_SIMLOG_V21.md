@@ -56,6 +56,19 @@ El catálogo narrativo `catalogo_102_v03_v04.json` es la fuente de las opciones 
 
 **Pruebas:** `tests/test_narrativa_simlog_v21.py` verifica las fuentes de cada efecto, orden temporal, duelos recibidos, canjes, subhitos y una traza real escrita por el simulador de la versión v2.1.
 
+## Recursos por ronda y efectos visuales de las opciones A/B
+
+La pestaña **Ronda a ronda** incorpora un panel por ganador con cuatro indicadores (Amor, Personalidad, Conocimiento y Dinero):
+
+- **Valor grande:** recursos al **cierre efectivo de la ronda** (`estados_jugadores.csv`, último `Turno_global` con `Momento=despues` en esa ronda, para el jugador seleccionado). Esto incluye efectos de acciones que ocurren en turnos de terceros.
+- **Variación con signo:** diferencia con el cierre de la ronda inmediatamente anterior; en ronda 1 no se calcula una referencia inexistente.
+- **Stock representado:** `libre + reservas de Pareja/Casa`, sin incluir recursos ya invertidos en proyectos compartidos. Si existen reservas, se indica cuánto está libre y cuánto reservado.
+- **Cobertura:** si falta la evidencia de estados completa, se indica que no hay información, sin interpolar saldos.
+
+Debajo de cada opción de **Carta de Situación**, el texto completo se acompaña con indicadores visuales con signo, icono, nombre y color: positivo/verde para recursos que suma, negativo/rojo para recursos que resta. Para ambas opciones se indican los efectos **previstos** del catálogo original. Cuando el desenlace seleccionado tuvo pérdidas truncadas por disponibilidad, se muestra adicionalmente el **efecto aplicado realmente**, reconstruido desde el ledger de eventos de Situación (`issue`, `spend`, `reserve_loss`). No se suman ingresos de casilleros, canjes, duelos ni efectos ajenos a la carta.
+
+Las comprobaciones de regresión (`tests/test_narrativa_simlog_v21.py`) cubren cierre con reservas, efecto de un tercero posterior al turno propio, variación anterior, primera ronda, datos faltantes y diferencias entre efecto potencial y aplicado.
+
 ## Ejecución local
 
 Desde la raíz del repositorio en la rama `feature/visualizador-simlog-v21`:
