@@ -83,6 +83,15 @@ El catálogo de costos de los subhitos es la definición vigente del motor v2.1,
 
 Las pruebas de `tests/test_paneles_ronda_v21.py` incluyen estados históricos, sin fuga de resultados futuros, inversión/subhito, compraventa de Casa en pareja, propuestas agrupadas, duelo recibido, duplicación contable, trazas incompletas e integración con un SIMLOG generado realmente.
 
+## Actualización: noviazgo, registro verificable y todas las partidas
+
+- **Noviazgo al cierre de la ronda:** estado explícito `Sin pareja`, `De novios con [jugador]`, `Casados con [jugador]` o `Sin datos`. El dato se toma del **último** `estados_jugadores.csv` con `Momento=despues` de esa ronda; se utiliza `estados_globales.csv` para diferenciar noviazgo de casamiento. Nunca se usa la pareja ganadora del manifiesto final para atribuir una relación a rondas anteriores.
+- **Relato de la ronda retirado de la interfaz:** aunque la función anterior producía un texto reproducible para un SIMLOG dado, sus frases contenían interpretaciones y no eran una transcripción literal. Se conservan las pestañas estructuradas de movimientos, decisiones A/B, efectos previstos del catálogo, efectos realmente contabilizados, duelos, hitos e interacciones con su evidencia. Ya no aparece el bloque «Relato de la ronda».
+- **Todas las partidas compatibles:** se indexan recursivamente los manifiestos `SIMLOG-2.1` del ruleset vigente en la carpeta principal, carpetas adicionales (una por línea) y el ZIP adjunto. En lugar de reemplazar la fuente cuando se carga un ZIP, sus partidas se **suman** al índice. Se informa cantidad total, por tamaño de mesa, con casamiento y sin casamiento; el filtro `Solo partidas con ganador` empieza **desactivado**.
+- **Partidas sin ganador:** no se asignan vencedores ficticios. Se permite seleccionar jugadores para comparar su Gantt y sus acciones ronda a ronda. La selección queda diferenciada por origen y directorio de simulación, incluso cuando coincidan semillas en corridas distintas.
+- **Actualizar listado** limpia la caché de descubrimiento si se incorporan archivos mientras la aplicación ya está abierta. No ejecuta nuevos juegos ni modifica partidas previas.
+- **Historial incompatible:** los registros de v1.3, v2.0 o salidas agregadas sin trazas SIMLOG v2.1 no pueden mostrar decisiones turno a turno. No se transforman en datos ficticios. Para importarlos es necesario disponer de las trazas reales compatibles.
+
 ## Ejecución local
 
 Desde la raíz del repositorio en la rama `feature/visualizador-simlog-v21`:
