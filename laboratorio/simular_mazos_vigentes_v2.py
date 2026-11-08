@@ -17,7 +17,7 @@ from simulador.movimiento_v2 import youth_cards
 from simulador.mazos_vigentes_v2 import CurrentResolver,new_decks,load_current
 from simulador.afinidad_v2 import zone
 from simulador.simlog_v21 import SIMLogV21
-from simulador.reglas_v21 import EconomyV21, RoundEngineV21, transition_hooks_v21
+from simulador.reglas_v21 import EconomyV21, RoundEngineV21, transition_hooks_v21, CurrentResolverV21
 from simulador.transiciones_v2 import ProfileDecksV2,transition_hooks
 from simulador.turnos_v2 import CardPool,PlayerState,RoundEngine,SituationCard,Stage
 from laboratorio.experimento_agentes_v2 import adult_cards
@@ -53,7 +53,7 @@ def run_game(size,seed,round_limit=100,competition=True,trace_dir=None,catalog=N
     auctions=SocialAuctionsV2(eco,engine)
     controller=CompetitiveController(engine,eco,agent,interactions,auctions,
          CompetitionConfig(enabled=competition,youth_return_pos=None),seed*97+66)
-    resolver=CurrentResolver(eco,policy,seed*97+99,affinity_weight)
+    resolver=CurrentResolverV21(eco,interactions,policy,seed*97+99,affinity_weight)
     hooks.apply_situation=resolver.resolve
     prev=hooks.after_turn
     def after(e,p,out):
