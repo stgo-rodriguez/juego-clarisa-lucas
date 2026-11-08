@@ -26,7 +26,8 @@ def to_csv(rows):
 
 def fixture(status="marriage", pair=(1,4), schema=SCHEMA):
     manifest = {
-        "schema": schema, "run_id": "test_v21_6p", "seed": 17,
+        "schema": schema, "ruleset": "especificacion-integral-2026-11-08",
+        "run_id": "test_v21_6p", "seed": 17,
         "player_count": 6, "roles": {"1": "Clarisa", "4": "Lucas"},
         "status": status,
         "summary": {"winning_pair": json.dumps(pair) if pair else "null",
