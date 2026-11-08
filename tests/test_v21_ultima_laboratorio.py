@@ -44,7 +44,10 @@ class TestResultadosV21(unittest.TestCase):
         vista.set_value('Resultados v2.1').run(timeout=120)
         self.assertFalse(a.exception, str(a.exception))
         self.assertTrue(any('Última simulación registrada' in x.value for x in a.title))
-        self.assertEqual(len(a.tabs), 4)
+        self.assertEqual(len(a.tabs), 8)  # Cuatro principales y cuatro del detalle de partida
+        self.assertEqual([t.label for t in a.tabs[:4]],
+                         ['Resultados generales', 'Economía',
+                          'Decisiones A/B', 'Partidas y SIMLOG'])
         self.assertTrue(any(s.label == 'Semilla' for s in a.selectbox))
         self.assertNotIn('ultima_comparacion', a.session_state)
 
