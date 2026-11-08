@@ -44,7 +44,7 @@ def run_game(size,seed,round_limit=100,competition=True,trace_dir=None,catalog=N
     shuffled={f'{stage.value}_{role}':[c.id for c in d._deck[::-1]] for (stage,role),d in decks.items()}
     engine=RoundEngineV21(players,decks,CardPool(youth_cards(),random.Random(seed*97+44),recycle=True),
          CardPool(adult_cards(),random.Random(seed*97+45),recycle=True),
-         hand_size=3,rng_dice=random.Random(seed*97+32),hooks=hooks,dublin_policy='next_turn')
+         hand_size=3,rng_dice=random.Random(seed*97+32),hooks=hooks,dublin_policy='next_round')
     for p in players:
         eco.new_project(f'Titulo-{p.id}','Titulo')
         eco.new_project(f'{PASSPORT_KIND[p.role]}-{p.id}',PASSPORT_KIND[p.role])
