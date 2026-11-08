@@ -67,7 +67,7 @@ def run_game(size,seed,round_limit=100,competition=True,trace_dir=None,catalog=N
     logger=None
     if trace_dir is not None:
         logger=SIMLogV21(engine,eco,profiles,resolver,interactions,auctions,controller,
-            run_id=f'cartas_v03v04_{size}p_seed{seed}_{policy}_compet{int(competition)}',
+            run_id=f'simlog_v21_20261108_{size}p_seed{seed}_{policy}_compet{int(competition)}',
             seed=seed,policy=policy,competition=competition,round_limit=round_limit,
             catalog=catalog,balance=BalanceVariant())
         logger.new_sources=catalog['sources'];logger.attach_hooks(hooks)
@@ -189,7 +189,7 @@ def execute(out:Path,seeds:int=20,sizes=(6,10),round_limit=100,competition=True,
                      'porcentaje_grupos_con_A_y_B':round(
                          100*sum(g['ambas_opciones'] for g in first)/len(first),2)
                          if first else None}
-    result={'schema':'simlog-v2-dynamic-affinity','status':'experimental',
+    result={'schema':'simlog-v21-20261108-dynamic-affinity','status':'experimental',
             'sources':catalog['sources'],'cards_total':len(catalog['cards']),
             'counts_by_stage_role':{'Infancia':12,'Juventud':24,'Adultez':15},
             'config':{'seeds_per_table':seeds,'sizes':list(sizes),'round_limit':round_limit,
