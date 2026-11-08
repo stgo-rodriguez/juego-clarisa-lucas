@@ -7,11 +7,11 @@ import unittest
 from pathlib import Path
 
 from simulador.economia_v2 import EconomyScenario
-from simulador.movimiento_v2 import youth_cards
+from simulador.movimiento_v2 import youth_cards, Coord
 from simulador.mazos_vigentes_v2 import CurrentResolver, load_current, new_decks
 from simulador.reglas_v21 import EconomyV21, RoundEngineV21, transition_hooks_v21
 from simulador.transiciones_v2 import ProfileDecksV2
-from simulador.turnos_v2 import CardPool, PlayerState, RuleHooks, Stage
+from simulador.turnos_v2 import AdultChoice, CardPool, PlayerState, RuleHooks, Stage
 
 
 def game(players, *, hooks=None):
@@ -49,6 +49,30 @@ class MotorV21Tests(unittest.TestCase):
         self.assertNotEqual(resolved[1][1], resolved[2][1])
         g.start_round()
         self.assertEqual(sum(ev['action'] == 'situation_revealed' for ev in g.events), 4)
+
+    def test_same_role_different_stages_distinct_shared_cards(self):
+        players = [PlayerState(1, 'Clarisa', Stage.ADULTEZ, Coord(5, 3)),
+                   PlayerState(2, 'Clarisa', Stage.ADULTEZ, Coord(5, 3)),
+                   PlayerState(3, 'Clarisa', Stage.JUVENTUD, 1),
+                   PlayerState(4, 'Lucas', Stage.INFANCIA, 1)]
+        observed = []
+        g, _, _ = game(players, hooks=RuleHooks(
+            apply_situation=lambda e, p, c, choice:
+            observed.append((p.id, c.stage.value, c.id))))
+        g.start_round()
+        revealed = [e for e in g.events if e['action'] == 'situation_revealed']
+        self.assertEqual(len(revealed), 3)
+        for i in (1, 2):
+            g.play_turn(i, adult_choice=lambda p, s, h:
+                        AdultChoice(h.cards[0].id, 'A', 'N'))
+        g.play_turn(3, youth_choice=lambda p, c, m: 'B')
+        g.play_turn(4, childhood_die=1)
+        self.assertEqual(observed[0][2], observed[1][2])
+        self.assertNotEqual(observed[1][2], observed[2][2])
+        self.assertNotEqual(observed[2][2], observed[3][2])
+        self.assertEqual(sum(e['action'] == 'situation_resolved'
+                             for e in g.events), 4)
+        self.assertEqual(len(g._revealed), 3)
 
     def test_destination_only_and_order_before_situation(self):
         p = PlayerState(1, 'Clarisa')
