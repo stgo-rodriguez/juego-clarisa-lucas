@@ -221,7 +221,7 @@ def _cash_events(events, player, turn):
                 "derrota_disputa_hito": "Disputa de un hito",
             }.get(source, source.replace("_", " ").capitalize())
         result.append(_bullet(selection[0][0].get("Secuencia"), label,
-                              " y ".join(phrases).capitalize() + ".",
+                              (" y ".join(phrases)[0].upper() + " y ".join(phrases)[1:]) + ".",
                               category, turn=turn))
     return result
 
@@ -248,7 +248,7 @@ def _conversion(events, player, turn):
     if received:
         text.append(f"recibió {_joined(received)}")
     return [_bullet(group[0][0].get("Secuencia"), "Canje con la banca",
-                    " y ".join(text).capitalize() + ".", "Canje", turn=turn)]
+                    (" y ".join(text)[0].upper() + " y ".join(text)[1:]) + ".", "Canje", turn=turn)]
 
 
 def _duel(e, d, player, manifest):
