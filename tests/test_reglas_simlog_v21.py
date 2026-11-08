@@ -141,6 +141,26 @@ class MotorV21Tests(unittest.TestCase):
         self.assertEqual((p.stage, p.position), (Stage.INFANCIA, 5))
         self.assertFalse(p.utn_return_pending)
 
+    def test_dublin_lands_before_first_adult_turn_with_movement(self):
+        a = PlayerState(1, 'Clarisa', Stage.DUBLIN, Stage.DUBLIN.value, partner_id=2)
+        b = PlayerState(2, 'Lucas', Stage.DUBLIN, Stage.DUBLIN.value, partner_id=1)
+        g, eco, profiles = game([a, b])
+        profiles.award_utn(eco, a)
+        profiles.award_utn(eco, b)
+        g.start_round()
+        self.assertEqual((a.stage, b.stage), (Stage.ADULTEZ, Stage.ADULTEZ))
+        self.assertEqual((a.position, b.position), (Coord(5, 3), Coord(5, 3)))
+        self.assertEqual(len([e for e in g.events if e['action'] == 'situation_revealed']), 2)
+        before = dict(eco.accounts[1].free)
+        self.assertTrue(sum(before.values()) > 0)
+        out = g.play_turn(1, adult_choice=lambda p, s, h:
+                          AdultChoice(h.cards[0].id, 'A', 'N'))
+        self.assertEqual(out.source, Coord(5, 3))
+        self.assertIsNotNone(out.movement_card_id)
+        self.assertIsNotNone(out.situation_id)
+        self.assertEqual(len(a.hand.cards), 2)
+        self.assertEqual(a.position, b.position)
+
     def test_youth_dublin_branch_spends_extra_step(self):
         a = PlayerState(1, 'Clarisa', Stage.JUVENTUD, 1, partner_id=2)
         b = PlayerState(2, 'Lucas', Stage.JUVENTUD, 1, partner_id=1)
