@@ -170,8 +170,15 @@ class NarrativaTests(unittest.TestCase):
                         self.assertEqual(story["jugador"], player)
                         self.assertEqual(story["ronda"], rnd)
                         self.assertTrue(story["turno_propio"])
-                        self.assertTrue(any(e["tipo"] == "Movimiento" for e in story["eventos"]
-                                            if e["titulo"] == "Movimiento"))
+                        own = next(t for t in data["turnos.csv"]
+                                   if int(t["Jugador"]) == player and int(t["Ronda"]) == rnd)
+                        if own.get("Tipo_movimiento_infancia") != "utn_exam_or_wait":
+                            self.assertTrue(any(e["tipo"] == "Movimiento"
+                                                for e in story["eventos"]),
+                                            "Se espera un movimiento salvo en un turno de examen UTN")
+                        else:
+                            self.assertFalse(any(e["tipo"] == "Movimiento"
+                                                 for e in story["eventos"]))
                         situations = [e for e in story["eventos"] if e["tipo"] == "Situación"]
                         if situations:
                             self.assertEqual(len(situations[0]["opciones"]), 2)
