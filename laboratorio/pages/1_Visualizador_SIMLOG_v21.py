@@ -25,6 +25,13 @@ from laboratorio.simlog_viewer_v21 import (
     STAGE_COLORS, audit, build_events, discover_games, integer, load_game,
     pair_from_manifest, role_name, stage_intervals, visible_events,
 )
+from laboratorio.narrativa_simlog_v21 import summarize_player_round
+from simulador.mazos_vigentes_v2 import load_current
+
+@st.cache_data(show_spinner=False)
+def catalogo_narrativo():
+    return load_current()
+
 
 st.set_page_config(page_title="Visualizador SIMLOG v2.1", page_icon="📊", layout="wide")
 
@@ -307,29 +314,44 @@ with tabs[1]:
         if st.button("Siguiente →", disabled=st.session_state["selected_round_v21"] >= max_round):
             st.session_state["selected_round_v21"] += 1
             st.rerun()
-    cards = st.columns(2)
+    st.caption("Resumen de lo que vivió cada jugador en esta ronda, "
+               "incluidas las acciones de terceros que lo afectaron. "
+               "Los recursos mencionados son los efectivamente registrados, no los premios máximos de las cartas.")
+    mostrar_opciones = st.toggle("Mostrar las dos opciones de cada carta de Situación",
+                                value=True, key="narrativa_opciones")
+    try:
+        catalogo = catalogo_narrativo()
+    except (OSError, ValueError, AssertionError) as exc:
+        st.warning(f"No se pudo leer el catálogo narrativo de cartas: {exc}. "
+                   "Se usarán únicamente los textos guardados en SIMLOG.")
+        catalogo = {}
+    cards = st.columns(2, gap="large")
     for index, pid in enumerate(winners):
-        rows = [t for t in game["turnos.csv"]
-                if integer(t.get("Jugador")) == pid and integer(t.get("Ronda")) == chosen_round]
+        relato = summarize_player_round(game, chosen_round, pid, catalogo)
         with cards[index]:
-            st.markdown(f"**{role_name(manifest, pid)}**")
-            if not rows:
-                st.info("Sin turno registrado en esta ronda.")
-                continue
-            t = rows[0]
-            st.markdown(
-                f"**Etapa:** {t.get('Etapa_antes')} → {t.get('Etapa_despues')}  "
-                f"\n**Casillero:** {t.get('Pos_antes')} → {t.get('Pos_despues')}  "
-                f"\n**Situación:** {t.get('Carta_ID') or '—'} "
-                f"· opción **{t.get('Desenlace_elegido') or '—'}**  "
-                f"\n**Movimiento:** {t.get('Carta_Movimiento') or 'D6'} "
-                f"· opción **{t.get('Desenlace_movimiento') or '—'}**  "
-                f"\n**Afinidad:** {t.get('Afinidad_zona_antes') or '—'} → "
-                f"{t.get('Afinidad_zona_despues') or '—'}"
-            )
-            st.caption(t.get("Desenlace_texto") or "Sin texto narrativo registrado.")
-            with st.expander("Datos completos del turno"):
-                st.json(t)
+            st.subheader(f"{relato['nombre']} · {relato['etapa']}")
+            if not relato["turno_propio"]:
+                st.caption("No tuvo turno propio registrado en esta ronda.")
+            if not relato["eventos"]:
+                st.info("No hay acciones o eventos registrados para este jugador en esta ronda.")
+            else:
+                lines = []
+                for item in relato["eventos"]:
+                    lines.append(f"- **{item['titulo']}.** {item['texto']}")
+                    if mostrar_opciones and item["opciones"]:
+                        for letter, text_option in item["opciones"]:
+                            label = f"Opción {letter}"
+                            if letter == item["elegida"]:
+                                label += " (elegida)"
+                            lines.append(f"    - **{label}:** {text_option}")
+                st.markdown("\n".join(lines))
+            own_turns = [t for t in game["turnos.csv"]
+                         if integer(t.get("Jugador")) == pid
+                         and integer(t.get("Ronda")) == chosen_round]
+            if own_turns:
+                with st.expander("Ver registro técnico del turno"):
+                    st.json(own_turns[0])
+    st.divider()
     round_events = [e for e in items if e["ronda"] == chosen_round and e["categoria"] in categories]
     st.markdown(f"**Eventos observados en la ronda {chosen_round} ({len(round_events)})**")
     st.dataframe(event_dataframe(round_events, manifest), use_container_width=True,
