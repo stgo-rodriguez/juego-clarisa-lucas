@@ -176,7 +176,7 @@ with st.expander("Origen de los datos · carpeta o ZIP SIMLOG v2.1", expanded=Tr
     with src1:
         root_path = st.text_input(
             "Carpeta local de resultados",
-            value=str(ROOT / "resultados" / "simlog_v21_20261108"),
+            value=str(ROOT / "resultados"),
             help="Debe contener trazas/n6_s1/manifest.json, etc. "
                  "También puede apuntar directamente a una carpeta de partida.")
     with src2:
