@@ -203,7 +203,8 @@ def _category(event, detail):
     if cause == "conversion_bancaria":
         return None  # Los dos movimientos contables se sintetizan desde Canje.
     if action in ("pair", "pair_broken", "pair_proposed", "pair_proposal",
-                  "proposal_accepted", "proposal_rejected", "noviazgo"):
+                  "proposal_accepted", "proposal_rejected", "noviazgo",
+                  "noviazgo_propuesta", "noviazgo_resultado"):
         return "Noviazgo"
     if action in ("invest", "adjudicate", "receipt_transfer"):
         return "Subhitos"
