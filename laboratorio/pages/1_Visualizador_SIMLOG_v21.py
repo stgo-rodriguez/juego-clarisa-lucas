@@ -7,6 +7,7 @@ o streamlit run laboratorio/pages/1_Visualizador_SIMLOG_v21.py
 from __future__ import annotations
 
 import csv
+import zipfile
 from html import escape
 from io import StringIO
 import json
@@ -404,6 +405,9 @@ with st.expander("Origen de los datos · carpetas y ZIP SIMLOG v2.1", expanded=F
         "Otras carpetas de simulaciones (opcional, una ruta por línea)",
         value="", height=78, placeholder="/ruta/a/otra/corrida",
         help="Se suman al índice, incluso cuando están fuera de resultados/.")
+    st.caption("También se detectan automáticamente los ZIP SIMLOG guardados "
+               "en Descargas (Downloads) y en la carpeta de resultados, "
+               "sin necesidad de extraerlos.")
     st.button(
         "Actualizar listado de partidas",
         on_click=lambda: (cached_discovery.clear(), cached_game.clear()),
@@ -421,12 +425,43 @@ try:
     for source_root in roots:
         for g in cached_discovery(source_root, None):
             games.append({**g, "source_root": source_root, "source_type": "carpeta"})
+    # Buscar archivos ZIP de corridas ya ejecutadas; no generar partidas nuevas.
+    auto_zips = set()
+    downloads = Path.home() / "Downloads"
+    if downloads.is_dir():
+        auto_zips.update(downloads.glob("SIMLOG*.zip"))
+    result_dir = Path(root_path).expanduser()
+    if result_dir.is_dir():
+        auto_zips.update(result_dir.rglob("SIMLOG*.zip"))
+    for extra in roots[1:]:
+        folder = Path(extra).expanduser()
+        if folder.is_dir():
+            auto_zips.update(folder.rglob("SIMLOG*.zip"))
+    for local_zip in sorted(auto_zips):
+        if not local_zip.is_file() or local_zip.stat().st_size > 150_000_000:
+            continue
+        try:
+            for g in cached_discovery(str(local_zip), None):
+                games.append({**g, "source_root": str(local_zip),
+                              "source_type": "ZIP local"})
+        except (OSError, ValueError, zipfile.BadZipFile):
+            continue
     if zip_bytes is not None:
         for g in cached_discovery(root_path, zip_bytes):
             games.append({**g, "source_root": root_path, "source_type": "ZIP"})
 except (ValueError, OSError, KeyError) as exc:
     st.error(f"No se pudo leer la fuente SIMLOG v2.1: {exc}")
     st.stop()
+# La misma traza puede estar copiada en Descargas y también en resultados.
+# Se muestran una sola vez los Run_ID idénticos, preservando corridas distintas.
+seen_runs = set()
+unique_games = []
+for g in games:
+    identity = (g["id"], g["size"], g["seed"], g["rounds"])
+    if identity not in seen_runs:
+        seen_runs.add(identity)
+        unique_games.append(g)
+games = unique_games
 games.sort(key=lambda g: (g["size"], g["seed"], g["id"], g["directory"]))
 if not games:
     st.info("No se encontraron trazas completas SIMLOG v2.1 compatibles. "
@@ -458,7 +493,9 @@ with b:
         format_func=lambda g: (
             pill_of_game(g) + f" · {g['source_type']}: "
             + (Path(g["directory"]).parent.parent.name
-               if g["source_type"] == "carpeta" else g["directory"])
+               if g["source_type"] == "carpeta" else
+               Path(g["source_root"]).name if g["source_type"] == "ZIP local"
+               else g["directory"])
         ),
     )
 with c:
