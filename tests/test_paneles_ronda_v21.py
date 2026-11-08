@@ -27,10 +27,10 @@ def world(rnd, turn, *, house=None, married=None, projects=None):
     }
 
 
-def event(seq, rnd, turn, active, source, action, **detail):
+def event(seq, rnd, turn, active, stream, action, **detail):
     return {
         "Secuencia":str(seq),"Ronda":str(rnd),"Turno_global":str(turn),
-        "Jugador_activo":str(active),"Fuente":source,"Accion":action,
+        "Jugador_activo":str(active),"Fuente":stream,"Accion":action,
         "Detalle_JSON":json.dumps(detail),
     }
 
