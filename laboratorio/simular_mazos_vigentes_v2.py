@@ -130,6 +130,9 @@ def execute(out:Path,seeds:int=20,sizes=(6,10),round_limit=100,competition=True,
     # Preferencias agregadas SEPARADAS por carta y rol, derivadas del SIMLOG persistido.
     preference=defaultdict(lambda:Counter())
     affine=defaultdict(Counter)
+    group_choices=defaultdict(Counter)
+    group_contexts=defaultdict(set)
+    assigned_cards={}
     for x in rows:
         root=out/'trazas'/f'n{x["size"]}_s{x["seed"]}'
         with (root/'turnos.csv').open(newline='',encoding='utf-8-sig') as f:
@@ -138,6 +141,14 @@ def execute(out:Path,seeds:int=20,sizes=(6,10),round_limit=100,competition=True,
                 if card and choice in ('A','B'):
                     preference[(stage,role,card)][choice]+=1
                     affine[(stage,role)][choice]+=1
+                    group_key=(x['size'],x['seed'],int(t['Ronda']),
+                               t['Situacion_grupo_etapa'],t['Situacion_grupo_rol'])
+                    previous=assigned_cards.setdefault(group_key,card)
+                    if previous!=card:
+                        raise AssertionError('Grupo etapa/rol/ronda con dos Situaciones')
+                    group_choices[group_key][choice]+=1
+                    if t['Recursos_antes_AB_JSON']:
+                        group_contexts[group_key].add(t['Recursos_antes_AB_JSON'])
     prefs=[]
     for (stage,role,card),c in sorted(preference.items()):
         total=c['A']+c['B']
@@ -145,6 +156,17 @@ def execute(out:Path,seeds:int=20,sizes=(6,10),round_limit=100,competition=True,
                       'porcentaje_A':round(c['A']/total*100,2),
                       'dominancia_porcentaje':round(max(c['A'],c['B'])/total*100,2)})
     write_rows(out/'preferencias_por_carta.csv',prefs)
+    groups=[]
+    for (size,seed,round_no,stage,role),choices in sorted(group_choices.items()):
+        a,b=choices['A'],choices['B']
+        groups.append({'size':size,'seed':seed,'ronda':round_no,
+                       'etapa':stage,'rol':role,
+                       'carta':assigned_cards[(size,seed,round_no,stage,role)],
+                       'participantes':a+b,'A':a,'B':b,
+                       'ambas_opciones':int(a>0 and b>0),
+                       'contextos_economicos_distintos':len(group_contexts[(size,seed,round_no,stage,role)]),
+                       'recursos_diversos':int(len(group_contexts[(size,seed,round_no,stage,role)])>1)})
+    write_rows(out/'diversidad_decisiones_por_grupo.csv',groups)
     bygroup=[]
     for key,cs in sorted(affine.items()):
         bygroup.append({'etapa':key[0],'rol':key[1],'A':cs['A'],'B':cs['B'],
@@ -159,6 +181,14 @@ def execute(out:Path,seeds:int=20,sizes=(6,10),round_limit=100,competition=True,
             'avg_rounds_censored':round(statistics.mean(x['rounds'] for x in subset),2),
             'median_rounds_censored':statistics.median(x['rounds'] for x in subset),
             'avg_turns_censored':round(statistics.mean(x['turns'] for x in subset),2)})
+    first=[g for g in groups if g['etapa']=='Infancia' and g['ronda']==1
+           and g['participantes']>=2]
+    first_diversity={'grupos_evaluados':len(first),
+                     'grupos_contextos_distintos':sum(g['recursos_diversos'] for g in first),
+                     'grupos_con_ambas_elecciones':sum(g['ambas_opciones'] for g in first),
+                     'porcentaje_grupos_con_A_y_B':round(
+                         100*sum(g['ambas_opciones'] for g in first)/len(first),2)
+                         if first else None}
     result={'schema':'simlog-v2-dynamic-affinity','status':'experimental',
             'sources':catalog['sources'],'cards_total':len(catalog['cards']),
             'counts_by_stage_role':{'Infancia':12,'Juventud':24,'Adultez':15},
@@ -171,7 +201,8 @@ def execute(out:Path,seeds:int=20,sizes=(6,10),round_limit=100,competition=True,
                       'childhood_income':'destination_only'},
             'summary':aggregated,'winners_by_zone':dict(zones),
             'total_decisions':sum(x['choices_A']+x['choices_B'] for x in rows),
-            'total_games':len(rows),'total_marriages':sum(x['won'] for x in rows)}
+            'total_games':len(rows),'total_marriages':sum(x['won'] for x in rows),
+            'diversidad_infancia_primera_ronda':first_diversity}
     (out/'resumen.json').write_text(json.dumps(result,ensure_ascii=False,indent=2)+'\n',encoding='utf-8')
     return result
 
