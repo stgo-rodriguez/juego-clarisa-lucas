@@ -140,6 +140,21 @@ class SIMLOGViewerTests(unittest.TestCase):
         old = zipped(fixture(schema="SIMLOG-2.0"))
         self.assertEqual(discover_games(".", old), [])
 
+    def test_partida_sin_ganador_admite_seleccionar_jugadores(self):
+        blob = zipped(fixture(status="round_limit", pair=None))
+        matches = discover_games(".", blob)
+        self.assertEqual(len(matches), 1)
+        self.assertFalse(matches[0]["won"])
+        data = load_game(".", matches[0]["directory"], blob)
+        self.assertEqual(build_events(data), [])
+        selected = build_events(data, players=(1, 4))
+        self.assertTrue(selected)
+        self.assertEqual({e["jugador"] for e in selected}, {1, 4})
+        self.assertFalse(any(e["jugador"] == 2 for e in selected))
+        only_clarisa = build_events(data, players=(1,))
+        self.assertTrue(only_clarisa)
+        self.assertEqual({e["jugador"] for e in only_clarisa}, {1})
+
     def test_folder_access_and_hash_detection(self):
         with tempfile.TemporaryDirectory() as tmp:
             run = Path(tmp) / "trazas" / "n6_s17"
