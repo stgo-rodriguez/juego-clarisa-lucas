@@ -27,6 +27,10 @@ from laboratorio.trazabilidad import trazar_partida
 from laboratorio.gantt import grafico_gantt, grafico_vigencia
 
 st.set_page_config(page_title="Laboratorio de Balance · Clarisa & Lucas", page_icon="⚖️", layout="wide")
+st.page_link("pages/1_Visualizador_SIMLOG_v21.py",
+             label="Abrir visualizador SIMLOG v2.1 · Gantt por partida",
+             icon="📊")
+
 
 
 @st.cache_data(show_spinner=False, max_entries=12)
