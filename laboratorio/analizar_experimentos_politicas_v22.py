@@ -41,9 +41,12 @@ def main(folder):
             raise AssertionError('No se asignaron políticas a todos los jugadores')
         if int(row['choices_A'])+int(row['choices_B']) != int(row['situations_resolved']):
             raise AssertionError('Recuento de decisiones incompleto')
-    durations=[int(g['rounds']) for g in games]
-    turns=[int(g['turns']) for g in games]
     won=[g for g in games if g['won'].lower() in ('true','1')]
+    blocked=[g for g in games if g['stop']=='rule_pending']
+    limit=[g for g in games if g['stop']=='round_limit']
+    durations=[int(g['rounds']) for g in won]
+    observed=[int(g['rounds']) for g in games]
+    turns=[int(g['turns']) for g in games]
     diversity=read_csv(folder/'diversidad_decisiones_por_grupo.csv')
     first=[g for g in diversity if g['etapa']=='Infancia'
            and int(g['ronda'])==1 and int(g['participantes'])>=2]
@@ -63,10 +66,14 @@ def main(folder):
         'games':len(games),
         'marriages':len(won),
         'marriages_pct':round(100*len(won)/len(games),2),
+        'blocked_pending_rule':len(blocked),
+        'blocked_pending_rule_pct':round(100*len(blocked)/len(games),2),
+        'round_limit_cases':len(limit),
         'median_rounds':median(durations),
         'p80_rounds':percentile(durations,.8),
-        'mean_rounds':round(statistics.mean(durations),2),
-        'max_rounds':max(durations),
+        'mean_rounds':round(statistics.mean(durations),2) if durations else None,
+        'max_rounds':max(durations) if durations else None,
+        'median_observed_rounds_including_censored':median(observed),
         'turns_total':sum(turns),
         'choices_a':a,
         'choices_b':b,
