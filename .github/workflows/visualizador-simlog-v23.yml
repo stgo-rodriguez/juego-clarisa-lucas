@@ -31,3 +31,5 @@ jobs:
         run: python -m unittest discover -s tests -p 'test_narrativa_simlog_v21.py' -v
       - name: Regresión paneles de ronda
         run: python -m unittest discover -s tests -p 'test_paneles_ronda_v21.py' -v
+      - name: Tablero de posiciones y cobertura
+        run: python -m unittest discover -s tests -p 'test_tablero_simlog_v23.py' -v
