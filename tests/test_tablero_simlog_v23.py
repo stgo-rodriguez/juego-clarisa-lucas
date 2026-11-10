@@ -5,7 +5,7 @@ import unittest
 
 from laboratorio.tablero_simlog_v23 import (
     _adult_coord, _coordinates, snapshot_de_ronda, dibujar_tablero,
-    resumen_ubicaciones,
+    resumen_ubicaciones, coincidencias_de_casilleros,
 )
 
 
@@ -101,7 +101,50 @@ class TableroSIMLOGV23Tests(unittest.TestCase):
         snap = snapshot_de_ronda(self.game,1)
         self.assertEqual(len(snap["jugadores"]),10)
         fig = dibujar_tablero(self.game,1)
-        self.assertEqual(len([x for x in fig.data if x.mode=="markers+text"]), 10)
+        visual = [x for x in fig.data if x.mode == "markers+text"]
+        self.assertEqual(len(visual), 1)
+        self.assertEqual(visual[0].text[0], "10")
+        self.assertIn("10 fichas", visual[0].hovertemplate)
+        coincidence = coincidencias_de_casilleros(snap)
+        self.assertEqual(coincidence[0]["jugadores"], 10)
+        self.assertEqual(len(coincidence[0]["grupos"]), 10)
+
+
+    def test_dos_parejas_en_mismo_casillero_de_juventud(self):
+        links = {1:"4", 4:"1", 2:"5", 5:"2"}
+        self.game["estados_jugadores.csv"] = [
+            _row(19, 114, i,
+                 "Juventud" if i in links else "Infancia",
+                 "2" if i in links else "1",
+                 "Clarisa" if i <= 3 else "Lucas",
+                 partner=links.get(i, ""))
+            for i in range(1, 7)
+        ]
+        snap = snapshot_de_ronda(self.game, 19)
+        coincidence = coincidencias_de_casilleros(snap)
+        youth = next(x for x in coincidence if x["etapa"] == "Juventud")
+        self.assertEqual((youth["posicion"], youth["ronda"], youth["jugadores"]),
+                         ("2", 19, 4))
+        self.assertEqual([[p["jugador"] for p in g["miembros"]]
+                          for g in youth["grupos"]], [[1, 4], [2, 5]])
+        self.assertEqual([g["tipo"] for g in youth["grupos"]],
+                         ["pareja", "pareja"])
+        fig = dibujar_tablero(self.game, 19)
+        labels = {x.text[0] for x in fig.data if x.mode == "markers+text"}
+        self.assertEqual(labels, {"C1", "L4", "C2", "L5", "C3", "L6"})
+        self.assertGreaterEqual(
+            sum(getattr(shape.line, "color", None) == "#16a34a"
+                for shape in fig.layout.shapes), 2)
+
+    def test_sin_reciprocidad_no_inventa_parejas(self):
+        self.game["estados_jugadores.csv"] = [
+            _row(19, 114, 1, "Juventud", "2", "Clarisa", partner="4"),
+            _row(19, 114, 4, "Juventud", "2", "Lucas", partner=""),
+        ]
+        coincidence = coincidencias_de_casilleros(snapshot_de_ronda(self.game, 19))
+        self.assertEqual([g["tipo"] for g in coincidence[0]["grupos"]],
+                         ["ficha", "ficha"])
+
 
 
 if __name__ == "__main__":
