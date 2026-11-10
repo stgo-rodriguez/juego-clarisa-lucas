@@ -1,0 +1,33 @@
+name: v2.2 · Banco, políticas por jugador y SIMLOG auditado
+
+on:
+  push:
+    branches: [feature/v22-auditoria-politicas-banco]
+    paths:
+      - '.github/workflows/v22-banco-politicas-smoke.yml'
+  workflow_dispatch:
+
+jobs:
+  banco-politicas:
+    runs-on: ubuntu-latest
+    strategy:
+      fail-fast: false
+      matrix:
+        python-version: ['3.11', '3.13']
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: ${{ matrix.python-version }}
+      - name: Validar sintaxis
+        run: python -m compileall -q simulador laboratorio tests
+      - name: Pruebas de banco, políticas, trazas y manos
+        run: python -m unittest discover -s tests -p 'test_experimento_politicas_v22.py' -v
+      - name: Pruebas v2.1 (compatibilidad)
+        run: python -m unittest discover -s tests -p 'test_reglas_simlog_v21.py' -v
+      - name: Probar rutas y tablero v2.2
+        run: python -m unittest discover -s tests -p 'test_reglas_simlog_v22.py' -v
+      - name: Simulación pequeña de política mixta, 6 y 10 jugadores
+        run: python -m laboratorio.simular_versionado --version 2.2 --politica mixto --mano 3 --semillas 2 --inicio 3101 --rondas 100 --out resultados/smoke_banco_mixto
+      - name: Simulación pequeña mano 4
+        run: python -m laboratorio.simular_versionado --version 2.2 --politica planificador --mano 4 --semillas 1 --inicio 3101 --rondas 100 --out resultados/smoke_banco_h4
