@@ -80,6 +80,13 @@ class VisualizadorV22Tests(unittest.TestCase):
         self.assertEqual(len(data["turnos.csv"]), 1)
         self.assertEqual(audit(data, ".", blob), [])
 
+    def test_no_admite_simlog_20_sin_ruleset(self):
+        # Un esquema desconocido sin ruleset no puede pasar por None == None.
+        from laboratorio.simlog_viewer_v21 import _supported
+        self.assertFalse(_supported({"schema": "SIMLOG-2.0"}))
+        self.assertFalse(_supported({"schema": "SIMLOG-2.0", "ruleset": None}))
+        self.assertFalse(_supported({"schema": None, "ruleset": None}))
+
     def test_accepts_historical_v21(self):
         old = sample("SIMLOG-2.1", "especificacion-integral-2026-11-08")
         self.assertEqual(len(discover_games(".", old)), 1)
