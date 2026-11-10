@@ -105,7 +105,8 @@ def main(root):
             })
     write(root / 'balance_por_etapa.csv', economy)
     write(root / 'balance_por_mecanismo.csv', breakdown)
-    groups = list(read(root / 'diversidad_decisiones_por_grupo.csv'))
+    groups = (list(read(root / 'diversidad_decisiones_por_grupo.csv'))
+              if (root / 'diversidad_decisiones_por_grupo.csv').is_file() else [])
     first = []
     for size in sorted({int(g['size']) for g in games}):
         selected = [g for g in groups if int(g['size']) == size and
