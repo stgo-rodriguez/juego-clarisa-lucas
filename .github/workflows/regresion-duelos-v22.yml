@@ -1,0 +1,30 @@
+name: SIMLOG v2.2 - duelos ordinarios mismo rol
+
+on:
+  push:
+    branches: [fix/v22-duelos-ordinarios-mismo-rol]
+  workflow_dispatch:
+
+jobs:
+  test:
+    name: "Duelos v2.2 Python ${{ matrix.py }}"
+    runs-on: ubuntu-latest
+    strategy:
+      fail-fast: false
+      matrix:
+        py: ['3.11','3.13']
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: ${{ matrix.py }}
+      - run: python -m compileall -q simulador laboratorio tests
+      - run: python -m unittest discover -s tests -p 'test_interacciones_v2.py' -v
+      - run: python -m unittest discover -s tests -p 'test_competencia_v2.py' -v
+      - run: python -m unittest discover -s tests -p 'test_experimento_politicas_v22.py' -v
+      - run: python -m unittest discover -s tests -p 'test_reglas_simlog_v22.py' -v
+      - name: Verificar motor v2.2 con semillas conocidas
+        run: |
+          python -m laboratorio.simular_versionado --version 2.2 --jugadores ambos \
+            --semillas 2 --inicio 2001 --politica planificador --mano 3 \
+            --sin-banco --rondas 100 --out resultados/smoke_v22_corregido
