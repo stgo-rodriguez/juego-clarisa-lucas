@@ -31,7 +31,7 @@ def after_turn_adults(e, players):
 
 class TestDuel(unittest.TestCase):
     def make(self, kind='ordinary'):
-        p=[PlayerState(1,'Clarisa',Stage.JUVENTUD,1),PlayerState(2,'Lucas' if kind=='ordinary' else 'Clarisa',Stage.JUVENTUD,1)]
+        p=[PlayerState(1,'Clarisa',Stage.JUVENTUD,1),PlayerState(2,'Clarisa',Stage.JUVENTUD,1)]
         eco,e=game(p)
         profiles=ProfileDecksV2(123)
         inter=InteractionV2(e,eco,profiles,rng=random.Random(23))
@@ -52,6 +52,19 @@ class TestDuel(unittest.TestCase):
         self.assertEqual((eco.accounts[1].free['P'],eco.accounts[2].free['P']),
                          (before[0]-1,before[1]+1))
         self.assertEqual(eco.accounts[1].free['M'],20)
+        eco.audit()
+
+    def test_ordinario_entre_roles_distintos_se_rechaza_sin_efectos(self):
+        p,eco,e,inter=self.make()
+        p[1].role='Lucas'
+        money={pid:dict(eco.accounts[pid].free) for pid in (1,2)}
+        events_before=len(inter.events)
+        with self.assertRaisesRegex(ValueError, 'mismo rol'):
+            inter.duel(1,2,'ordinario',stake_resource='M',stake=5,
+                       defender_die=2,challenger_die=6)
+        self.assertEqual(money,{pid:dict(eco.accounts[pid].free) for pid in (1,2)})
+        self.assertEqual(len(inter.events),events_before)
+        self.assertFalse(inter.used)
         eco.audit()
 
     def test_ordinario_gana_y_transfiere_recurso(self):
@@ -121,6 +134,17 @@ class TestDuel(unittest.TestCase):
             eco.invested[rec.resource]-=rec.amount;eco.burned[rec.resource]+=rec.amount
         eco.audit()
         return p,eco,e,inter
+
+    def test_titulo_entre_roles_distintos_sigue_permitido(self):
+        p,eco,e,inter=self.make_hito('Titulo')
+        p[1].role='Lucas'
+        result=inter.duel(1,2,'hito',project_id='t1',
+                          defender_die=1,challenger_die=6)
+        self.assertEqual(result.result,'victoria')
+        self.assertTrue(eco.accounts[1].title)
+        self.assertFalse(eco.accounts[2].title)
+        self.assertEqual(eco.projects['t1'].winner,1)
+        eco.audit()
 
     def test_disputa_titulo_victoria_transfiere_hito(self):
         p,eco,e,inter=self.make_hito()
