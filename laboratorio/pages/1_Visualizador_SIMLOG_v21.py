@@ -33,7 +33,7 @@ from laboratorio.paneles_ronda_v21 import (
 )
 from simulador.mazos_vigentes_v2 import load_current
 
-st.set_page_config(page_title="Visualizador SIMLOG v2.1", page_icon="📊", layout="wide")
+st.set_page_config(page_title="Visualizador SIMLOG v2.1 / v2.2", page_icon="📊", layout="wide")
 
 @st.cache_data(show_spinner=False)
 def catalogo_narrativo():
@@ -49,7 +49,7 @@ def cached_game(path, directory, zip_bytes):
 
 def pill_of_game(g):
     ending = "casamiento" if g["won"] else "sin victoria"
-    return (f"{g['size']} jugadores · Semilla {g['seed']} · "
+    return (f"{g.get('schema', 'SIMLOG-2.1')} · {g['size']} jugadores · Semilla {g['seed']} · "
             f"{g['rounds']} rondas · {ending} · {g['id']}")
 
 RECURSO_ICONOS = {"A": "❤️", "P": "👤", "K": "📖", "M": "💰"}
@@ -385,17 +385,17 @@ def plot_affinity(game, winners):
                       hovermode="x unified")
     return fig
 
-st.title("Visualizador de partidas · SIMLOG v2.1")
-st.caption("Decisiones y eventos SIMLOG v2.1 por partida y jugadores seleccionados. "
+st.title("Visualizador de partidas · SIMLOG v2.1 / v2.2")
+st.caption("Decisiones y eventos SIMLOG v2.1/v2.2 por partida y jugadores seleccionados. "
            "Solo lectura: no modifica simulaciones ni inventa resultados.")
 
-with st.expander("Origen de los datos · carpetas y ZIP SIMLOG v2.1", expanded=False):
+with st.expander("Origen de los datos · carpetas y ZIP SIMLOG v2.1/v2.2", expanded=False):
     src1, src2 = st.columns([2.4, 1.5], vertical_alignment="bottom")
     with src1:
         root_path = st.text_input(
             "Carpeta principal de resultados",
             value=str(ROOT / "resultados"),
-            help="Se buscan de forma recursiva TODAS las partidas SIMLOG v2.1 "
+            help="Se buscan de forma recursiva TODAS las partidas SIMLOG v2.1/v2.2 "
                  "de esta carpeta, sin limitar semillas ni tamaño de mesa.")
     with src2:
         uploaded = st.file_uploader(
@@ -450,7 +450,7 @@ try:
         for g in cached_discovery(root_path, zip_bytes):
             games.append({**g, "source_root": root_path, "source_type": "ZIP"})
 except (ValueError, OSError, KeyError) as exc:
-    st.error(f"No se pudo leer la fuente SIMLOG v2.1: {exc}")
+    st.error(f"No se pudo leer la fuente SIMLOG: {exc}")
     st.stop()
 # La misma traza puede estar copiada en Descargas y también en resultados.
 # Se muestran una sola vez los Run_ID idénticos, preservando corridas distintas.
@@ -464,7 +464,7 @@ for g in games:
 games = unique_games
 games.sort(key=lambda g: (g["size"], g["seed"], g["id"], g["directory"]))
 if not games:
-    st.info("No se encontraron trazas completas SIMLOG v2.1 compatibles. "
+    st.info("No se encontraron trazas completas SIMLOG v2.1/v2.2 compatibles. "
             "Buscá otras carpetas o agregá un ZIP de partidas. "
             "El historial v1.3 y las simulaciones anteriores sin SIMLOG v2.1 "
             "no permiten reconstruir estos eventos por ronda.")
@@ -474,7 +474,7 @@ winners_count = sum(g["won"] for g in games)
 six_count = sum(g["size"] == 6 for g in games)
 ten_count = sum(g["size"] == 10 for g in games)
 st.caption(
-    f"**{len(games)} simulaciones SIMLOG v2.1 encontradas** · "
+    f"**{len(games)} simulaciones SIMLOG v2.1/v2.2 encontradas** · "
     f"{winners_count} con casamiento · {len(games)-winners_count} sin ganador · "
     f"{six_count} de 6 jugadores · {ten_count} de 10 jugadores. "
     "Se incluyen todos los archivos compatibles encontrados en las fuentes seleccionadas."
