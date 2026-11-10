@@ -26,9 +26,9 @@ VERSIONS = {
     ),
     "2.2": VersionInfo(
         version="2.2",
-        status="awaiting_authoritative_specification",
-        specification=None,
-        engine_module=None,
+        status="implemented_experimental",
+        specification="Clarisa_y_Lucas_Especificacion_Integral_v2_2_Consolidada_2026-11-09.docx",
+        engine_module="simulador.reglas_v22",
     ),
 }
 
