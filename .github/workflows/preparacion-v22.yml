@@ -1,4 +1,4 @@
-name: Preparación de simulador v2.2 (motor v2.1 aislado)
+name: Simulador y SIMLOG v2.2 — regresión de reglas 09-11-2026
 
 on:
   push:
@@ -9,7 +9,7 @@ on:
       - fix/simlog-v21-especificacion-20261108
 
 jobs:
-  version-isolation:
+  regression-v22:
     runs-on: ubuntu-latest
     strategy:
       fail-fast: false
@@ -22,9 +22,24 @@ jobs:
           python-version: ${{ matrix.python-version }}
       - name: Revisar sintaxis
         run: python -m compileall -q simulador laboratorio tests
-      - name: Probar aislamiento y bloqueo v2.2
+      - name: Probar selección de versiones
         run: python -m unittest discover -s tests -p 'test_versiones_v22.py' -v
       - name: Motor v2.1 sigue pasando sus pruebas
         run: python -m unittest discover -s tests -p 'test_reglas_simlog_v21.py' -v
-      - name: Smoke de dos partidas identificadas v2.1
+      - name: Probar economía, movimiento y SIMLOG v2.2
+        run: python -m unittest discover -s tests -p 'test_reglas_simlog_v22.py' -v
+      - name: Probar catálogo y afinidad
+        run: python -m unittest discover -s tests -p 'test_cartas_vigentes_v21.py' -v
+      - name: Smoke versionado v2.1
         run: python -m laboratorio.simular_versionado --version 2.1 --semillas 1 --rondas 35 --out resultados/simlog_v21_preparacion
+      - name: Simular 10 partidas v2.2 (6 y 10 jugadores)
+        run: python -m laboratorio.simular_versionado --version 2.2 --semillas 5 --rondas 100 --out resultados/simlog_v22_pruebas
+      - name: Auditoría de recursos nuevos v2.2
+        run: python -m laboratorio.analizar_simlog_v21_revision --out resultados/simlog_v22_pruebas
+      - name: Publicar trazas v2.2
+        if: always() && matrix.python-version == '3.11'
+        uses: actions/upload-artifact@v4
+        with:
+          name: simlog-v22-prueba-10-partidas
+          path: resultados/simlog_v22_pruebas/
+          if-no-files-found: ignore
