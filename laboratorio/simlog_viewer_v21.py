@@ -1,4 +1,4 @@
-"""Lectura y preparación de partidas SIMLOG v2.1 para un visualizador de solo lectura.
+"""Lectura y preparación de partidas SIMLOG v2.1/v2.2 de solo lectura.
 
 No reejecuta partidas ni altera el motor, los mazos o los logs.
 Acepta una carpeta de resultados o un ZIP que incluya las carpetas de traza.
@@ -14,8 +14,17 @@ import json
 import re
 import zipfile
 
-SCHEMA = "SIMLOG-2.1"
+SCHEMA = "SIMLOG-2.1"  # Conservado por compatibilidad con pruebas y archivos históricos.
 RULESET = "especificacion-integral-2026-11-08"
+SUPPORTED_RULESETS = {
+    "SIMLOG-2.1": "especificacion-integral-2026-11-08",
+    "SIMLOG-2.2": "especificacion-integral-2026-11-09",
+}
+
+
+def _supported(manifest: dict) -> bool:
+    """Validar el par esquema + reglas, sin confundir trazas entre versiones."""
+    return SUPPORTED_RULESETS.get(manifest.get("schema")) == manifest.get("ruleset")
 CATEGORIES = (
     "Situación A/B", "Movimiento", "Duelos", "Canjes", "Noviazgo",
     "Subhitos", "Acuerdos", "Hitos", "Afinidad", "Perfil",
@@ -79,7 +88,7 @@ def pair_from_manifest(manifest):
 
 
 def _manifest_to_game(directory, manifest):
-    if manifest.get("schema") != SCHEMA or manifest.get("ruleset") != RULESET:
+    if not _supported(manifest):
         return None
     summary = manifest.get("summary") or {}
     pair = pair_from_manifest(manifest)
@@ -89,6 +98,8 @@ def _manifest_to_game(directory, manifest):
     return {
         "directory": directory,
         "id": str(manifest.get("run_id") or directory or "partida"),
+        "schema": manifest.get("schema"),
+        "ruleset": manifest.get("ruleset"),
         "size": size,
         "seed": integer(manifest.get("seed"), integer(summary.get("seed"), 0)),
         "rounds": rounds,
@@ -111,7 +122,7 @@ def _open_zip(root, zip_bytes=None):
 
 
 def discover_games(root: str | Path, zip_bytes: bytes | None = None) -> list[dict]:
-    """Encuentra todas las trazas de reglas v2.1 en carpetas o un ZIP local."""
+    """Encuentra trazas v2.1 o v2.2 en carpetas o ZIP locales."""
     games = []
     if _is_zip_source(root, zip_bytes):
         with _open_zip(root, zip_bytes) as archive:
@@ -164,10 +175,10 @@ def load_game(root: str | Path, directory: str, zip_bytes: bytes | None = None):
     """Devuelve los datos de una sola partida (validando esquema y pertenencia)."""
     valid = {g["directory"] for g in discover_games(root, zip_bytes)}
     if directory not in valid:
-        raise ValueError("Partida no incluida en la fuente SIMLOG v2.1 seleccionada")
+        raise ValueError("Partida no incluida en la fuente SIMLOG compatible seleccionada")
     manifest = json.loads(_read_text(root, directory, "manifest.json", zip_bytes))
-    if manifest.get("schema") != SCHEMA or manifest.get("ruleset") != RULESET:
-        raise ValueError("No es una traza SIMLOG v2.1 de las reglas del 08/11/2026")
+    if not _supported(manifest):
+        raise ValueError("Esquema SIMLOG/ruleset no compatible (admite v2.1 y v2.2)")
     data = {"manifest": manifest, "directory": directory}
     for name in ("turnos.csv", "eventos.csv", "hitos.csv",
                  "estados_jugadores.csv", "estados_globales.csv",
