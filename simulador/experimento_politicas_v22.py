@@ -197,6 +197,17 @@ class SIMLogAuditV22(SIMLogV22):
 
     def validate(self):
         super().validate()
+        for event in self.events:
+            if event["Fuente"] == "duelo" and event["Accion"] == "duel":
+                import json
+                detail = json.loads(event["Detalle_JSON"])
+                if detail.get("kind") == "ordinario" and (
+                    detail.get("challenger_role") != detail.get("defender_role")
+                    or not detail.get("same_role")
+                ):
+                    raise AssertionError(
+                        "SIMLOG contiene duelo ordinario entre roles diferentes"
+                    )
         for row in self.turns:
             if row['Politica'] != self.policy_by_player[row['Jugador']]:
                 raise AssertionError('Política individual no coincide con la traza')
