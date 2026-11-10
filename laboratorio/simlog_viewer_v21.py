@@ -1,4 +1,4 @@
-"""Lectura y preparación de partidas SIMLOG v2.1/v2.2 de solo lectura.
+"""Lectura y preparación de partidas SIMLOG v2.1/v2.2/v2.3 de solo lectura.
 
 No reejecuta partidas ni altera el motor, los mazos o los logs.
 Acepta una carpeta de resultados o un ZIP que incluya las carpetas de traza.
@@ -19,6 +19,7 @@ RULESET = "especificacion-integral-2026-11-08"
 SUPPORTED_RULESETS = {
     "SIMLOG-2.1": "especificacion-integral-2026-11-08",
     "SIMLOG-2.2": "especificacion-integral-2026-11-09",
+    "SIMLOG-2.3": "especificacion-integral-2026-11-10",
 }
 
 
@@ -122,7 +123,7 @@ def _open_zip(root, zip_bytes=None):
 
 
 def discover_games(root: str | Path, zip_bytes: bytes | None = None) -> list[dict]:
-    """Encuentra trazas v2.1 o v2.2 en carpetas o ZIP locales."""
+    """Encuentra trazas v2.1, v2.2 o v2.3 en carpetas o ZIP locales."""
     games = []
     if _is_zip_source(root, zip_bytes):
         with _open_zip(root, zip_bytes) as archive:
