@@ -19,6 +19,8 @@ def main(argv=None):
     parser.add_argument("--semillas", type=int, default=20)
     parser.add_argument("--inicio", type=int, default=1)
     parser.add_argument("--rondas", type=int, default=100)
+    parser.add_argument("--jugadores", choices=("6", "10", "ambos"), default="ambos",
+                        help="Mesa de 6, de 10 o ambas; por defecto ambas.")
     parser.add_argument("--sin-competencia", action="store_true")
     args = parser.parse_args(argv)
 
@@ -35,6 +37,7 @@ def main(argv=None):
         raise AssertionError("Selección de reglas inesperada.")
     result = execute(
         args.out, seeds=args.semillas, start_seed=args.inicio,
+        sizes=(6, 10) if args.jugadores == 'ambos' else (int(args.jugadores),),
         round_limit=args.rondas, competition=not args.sin_competencia
     )
     print(json.dumps(result, ensure_ascii=False, indent=2))
