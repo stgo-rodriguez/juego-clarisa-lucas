@@ -105,7 +105,7 @@ class TestCompetencia(unittest.TestCase):
     def test_bot_inicia_duelo_ordinario_en_turno_real(self):
         from simulador.turnos_v2 import AdultChoice
         players,eco,engine,bot=fixtures(enable=True)
-        actor,target=players[0],players[3]
+        actor,target=players[0],players[1]  # Ambos son Clarisa
         for p in players:
             eco.issue(p.id,'P',3,'fixture')
             eco.issue(p.id,'M',10 if p is actor else 15,'fixture')
@@ -118,6 +118,37 @@ class TestCompetencia(unittest.TestCase):
         self.assertEqual(len(bot.interactions.used),1)
         bot.after_turn(engine,actor,None)
         self.assertEqual(bot.duel_attempts,1)
+        eco.audit()
+
+    def test_bot_no_selecciona_duelo_ordinario_de_distinto_rol(self):
+        players,eco,engine,bot=fixtures(enable=True)
+        actor,target=players[0],players[4]  # Clarisa → Lucas
+        for p in players:
+            eco.issue(p.id,'P',5,'fixture')
+            eco.issue(p.id,'M',10 if p is actor else 15,'fixture')
+        # Sin comprobante, no hay hito legítimo que disputar.
+        self.assertIsNone(bot._choose_duel(actor,target))
+        # Los duelos de mismo rol siguen siendo posibles si la apuesta es legal.
+        self.assertEqual(bot._choose_duel(actor,players[1])[0], 'ordinario')
+
+    def test_bot_rechaza_encuentro_de_otro_rol_aun_tras_mover(self):
+        from simulador.turnos_v2 import AdultChoice
+        players,eco,engine,bot=fixtures(enable=True)
+        actor,target=players[0],players[4]
+        for p in players:
+            eco.issue(p.id,'P',5,'fixture')
+            eco.issue(p.id,'M',10 if p is actor else 15,'fixture')
+        engine.start_round()
+        engine.play_turn(actor.id,adult_choice=lambda p,s,h:
+                         AdultChoice(h.cards[0].id,'A','N'))
+        target.position=actor.position
+        for p in players:
+            if p.role==actor.role and p.id!=actor.id:
+                p.position=Coord(5,3)
+        bot.after_turn(engine,actor,None)
+        self.assertEqual(bot.duel_attempts,0)
+        self.assertFalse(bot.interactions.used)
+        self.assertFalse(bot.interactions.events)
         eco.audit()
 
     def test_hito_adulto_no_se_disputa_sin_punto_regreso_definido(self):

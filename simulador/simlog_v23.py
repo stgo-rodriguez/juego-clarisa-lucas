@@ -11,6 +11,17 @@ class SIMLogV23(SIMLogAuditV22):
     def validate(self):
         super().validate()
         for event in self.events:
+            if event["Fuente"] != "duelo" or event["Accion"] != "duel":
+                continue
+            detail = json.loads(event["Detalle_JSON"])
+            if detail.get("kind") == "ordinario" and (
+                detail.get("challenger_role") != detail.get("defender_role")
+                or not detail.get("same_role")
+            ):
+                raise AssertionError(
+                    "SIMLOG v2.3 contiene duelo ordinario entre roles distintos"
+                )
+        for event in self.events:
             if event["Fuente"] != "economia" or event["Accion"] not in (
                 "house_attempt", "house_encounter", "house_bought",
             ):

@@ -1,0 +1,52 @@
+name: Corregir duelos ordinarios por rol - regresion v2.2 y v2.3
+
+on:
+  push:
+    branches: [fix/v23-duelos-ordinarios-mismo-rol]
+  workflow_dispatch:
+
+jobs:
+  test:
+    name: "Duelo mismo rol - Python ${{ matrix.py }}"
+    runs-on: ubuntu-latest
+    timeout-minutes: 35
+    strategy:
+      fail-fast: false
+      matrix:
+        py: ['3.11','3.13']
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: ${{ matrix.py }}
+      - name: Validar sintaxis
+        run: python -m compileall -q simulador laboratorio tests
+      - name: Pruebas del motor de duelos ordinarios y disputas de Titulo
+        run: python -m unittest discover -s tests -p 'test_interacciones_v2.py' -v
+      - name: Pruebas del selector de rivales del bot
+        run: python -m unittest discover -s tests -p 'test_competencia_v2.py' -v
+      - name: Pruebas del simulador 2.2 auditado
+        run: python -m unittest discover -s tests -p 'test_experimento_politicas_v22.py' -v
+      - name: Pruebas del simulador 2.3
+        run: python -m unittest discover -s tests -p 'test_casa_v23.py' -v
+      - name: Simulaciones de humo versionadas y auditoria de duelos
+        run: |
+          python -m laboratorio.simular_versionado --version 2.2 --jugadores ambos --semillas 2 --inicio 2001 --politica planificador --mano 3 --sin-banco --rondas 100 --out resultados/smoke_22
+          python -m laboratorio.simular_versionado --version 2.3 --jugadores ambos --semillas 2 --inicio 2001 --politica planificador --mano 3 --sin-banco --rondas 100 --out resultados/smoke_23
+          python - <<'PY'
+          import csv,json
+          from pathlib import Path
+          for version in ('22','23'):
+              base=Path(f'resultados/smoke_{version}')
+              for filename in sorted(base.glob('trazas/*/eventos.csv')):
+                  with filename.open(encoding='utf-8-sig') as f:
+                      for event in csv.DictReader(f):
+                          if event['Accion']!='duel':continue
+                          detail=json.loads(event['Detalle_JSON'])
+                          if detail['kind']=='ordinario':
+                              assert detail['challenger_role']==detail['defender_role'],(filename,detail)
+                              assert detail['same_role']
+                          if detail['kind']=='hito':
+                              assert detail.get('project') is not None
+              print(f'VERIFICADO v2.{version[-1]}: sin duelos ordinarios de roles distintos')
+          PY

@@ -85,6 +85,8 @@ class InteractionV2:
         loss = 0
         project = None
         if kind == 'ordinario':
+            if p.role != d.role:
+                raise ValueError('Duelo ordinario requiere jugadores del mismo rol')
             if stake_resource not in RESOURCES or type(stake) is not int or stake < 1:
                 raise ValueError('Recurso y apuesta libre obligatorios')
             resource, loss = stake_resource, stake
@@ -161,7 +163,9 @@ class InteractionV2:
                     paid = loss
         self.eco.audit()
         result = DuelResult(kind, p.id, d.id, defense, attack, outcome, paid, paid_resource)
-        self.events.append({'action':'duel', **result.__dict__, 'project':project_id})
+        self.events.append({'action':'duel', **result.__dict__, 'project':project_id,
+                            'challenger_role':p.role, 'defender_role':d.role,
+                            'same_role':p.role == d.role})
         return result
 
     def _vacate_house(self, owners: set[int]) -> bool:
