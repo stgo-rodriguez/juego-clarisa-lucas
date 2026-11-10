@@ -31,7 +31,7 @@ def after_turn_adults(e, players):
 
 class TestDuel(unittest.TestCase):
     def make(self, kind='ordinary'):
-        p=[PlayerState(1,'Clarisa',Stage.JUVENTUD,1),PlayerState(2,'Clarisa',Stage.JUVENTUD,1)]
+        p=[PlayerState(1,'Clarisa',Stage.JUVENTUD,1),PlayerState(2,'Lucas' if kind=='ordinary' else 'Clarisa',Stage.JUVENTUD,1)]
         eco,e=game(p)
         profiles=ProfileDecksV2(123)
         inter=InteractionV2(e,eco,profiles,rng=random.Random(23))
@@ -44,7 +44,7 @@ class TestDuel(unittest.TestCase):
         return p,eco,e,inter
 
     def test_retirada_paga_personalidad_al_defensor(self):
-        p,eco,e,inter=self.make()
+        p,eco,e,inter=self.make('same_role')
         before=(eco.accounts[1].free['P'],eco.accounts[2].free['P'])
         result=inter.duel(1,2,'ordinario',stake_resource='M',stake=7,
                          defender_die=6,decide=lambda d:'retirada')
@@ -68,7 +68,7 @@ class TestDuel(unittest.TestCase):
         eco.audit()
 
     def test_ordinario_gana_y_transfiere_recurso(self):
-        p,eco,e,inter=self.make()
+        p,eco,e,inter=self.make('same_role')
         r=inter.duel(1,2,'ordinario',stake_resource='M',stake=5,defender_die=2,challenger_die=6)
         self.assertEqual(r.result,'victoria')
         self.assertEqual((eco.accounts[1].free['M'],eco.accounts[2].free['M']),(25,15))
@@ -76,7 +76,7 @@ class TestDuel(unittest.TestCase):
 
     def test_ordinario_pierde_y_empate_no_transfiere(self):
         for challenger_die,expected in [(1,(16,24)),(3,(20,20))]:
-            p,eco,e,inter=self.make()
+            p,eco,e,inter=self.make('same_role')
             before=(eco.accounts[1].free['K'],eco.accounts[2].free['K'])
             r=inter.duel(1,2,'ordinario',stake_resource='K',stake=4,
                          defender_die=3,challenger_die=challenger_die)
@@ -85,14 +85,14 @@ class TestDuel(unittest.TestCase):
             self.assertEqual(r.result,'derrota' if challenger_die==1 else 'empate')
 
     def test_solvente_y_una_disputa_por_turno(self):
-        p,eco,e,inter=self.make()
+        p,eco,e,inter=self.make('same_role')
         with self.assertRaises(ValueError):inter.duel(1,2,'ordinario',stake_resource='M',stake=21)
         self.assertFalse(inter.used)
         inter.duel(1,2,'ordinario',stake_resource='M',stake=2,defender_die=3,challenger_die=3)
         with self.assertRaises(ValueError):inter.duel(1,2,'ordinario',stake_resource='M',stake=2)
 
     def test_no_duelo_fuera_turno_o_sin_coincidencia(self):
-        p,eco,e,inter=self.make()
+        p,eco,e,inter=self.make('same_role')
         p[1].position=1 if p[0].position!=1 else 2
         with self.assertRaises(ValueError):inter.duel(1,2,'ordinario',stake_resource='M',stake=1)
         p[1].position=p[0].position
