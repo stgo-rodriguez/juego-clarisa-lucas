@@ -71,6 +71,15 @@ class VisualizadorV22Tests(unittest.TestCase):
         self.assertEqual(count, 1)
         self.assertEqual(digest, hashlib.sha256(blob).hexdigest())
 
+    def test_accepts_v23_house_disputes_in_standard_view(self):
+        blob = sample("SIMLOG-2.3", "especificacion-integral-2026-11-10")
+        games = discover_games(".", blob)
+        self.assertEqual(len(games), 1)
+        self.assertEqual(games[0]["schema"], "SIMLOG-2.3")
+        data = load_game(".", games[0]["directory"], blob)
+        self.assertEqual(len(data["turnos.csv"]), 1)
+        self.assertEqual(audit(data, ".", blob), [])
+
     def test_accepts_historical_v21(self):
         old = sample("SIMLOG-2.1", "especificacion-integral-2026-11-08")
         self.assertEqual(len(discover_games(".", old)), 1)
@@ -81,6 +90,8 @@ class VisualizadorV22Tests(unittest.TestCase):
         self.assertEqual(discover_games(".", invalid), [])
         with self.assertRaisesRegex(ValueError, "incompatibles"):
             validate_simlog(invalid)
+        invalid = sample("SIMLOG-2.3", "especificacion-integral-2026-11-09")
+        self.assertEqual(discover_games(".", invalid), [])
         invalid = sample("SIMLOG-2.0", "especificacion-integral-2026-11-09")
         self.assertEqual(discover_games(".", invalid), [])
 
