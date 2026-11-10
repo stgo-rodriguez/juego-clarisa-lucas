@@ -122,7 +122,7 @@ class TestCompetencia(unittest.TestCase):
 
     def test_bot_no_selecciona_duelo_ordinario_de_distinto_rol(self):
         players,eco,engine,bot=fixtures(enable=True)
-        actor,target=players[0],players[3]  # Clarisa → Lucas
+        actor,target=players[0],players[4]  # Clarisa → Lucas
         for p in players:
             eco.issue(p.id,'P',5,'fixture')
             eco.issue(p.id,'M',10 if p is actor else 15,'fixture')
@@ -134,7 +134,7 @@ class TestCompetencia(unittest.TestCase):
     def test_bot_rechaza_encuentro_de_otro_rol_aun_tras_mover(self):
         from simulador.turnos_v2 import AdultChoice
         players,eco,engine,bot=fixtures(enable=True)
-        actor,target=players[0],players[3]
+        actor,target=players[0],players[4]
         for p in players:
             eco.issue(p.id,'P',5,'fixture')
             eco.issue(p.id,'M',10 if p is actor else 15,'fixture')
