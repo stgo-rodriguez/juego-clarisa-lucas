@@ -143,6 +143,10 @@ def run_game(size,seed,round_limit=100,competition=True,trace_dir=None,catalog=N
         Path(trace_dir).mkdir(parents=True,exist_ok=True)
         (Path(trace_dir)/'bloqueo_reglamentario.json').write_text(
             json.dumps(result,ensure_ascii=False,indent=2)+'\n',encoding='utf-8')
+        # Únicamente turnos previamente cerrados: sin manifiesto ni eventos
+        # del turno que fue interrumpido. No se exponen como partida completa.
+        if logger and logger.turns:
+            write_rows(Path(trace_dir)/'turnos_completados.csv',logger.turns)
     return result
 
 
@@ -166,11 +170,14 @@ def execute(out:Path,seeds:int=20,sizes=(6,10),round_limit=100,competition=True,
     assigned_cards={}
     for x in rows:
         root=out/'trazas'/f'n{x["size"]}_s{x["seed"]}'
-        if not (root/'turnos.csv').is_file():
+        turn_file=root/'turnos.csv'
+        if not turn_file.is_file():
             if x['stop']!='rule_pending':
                 raise AssertionError('Falta traza de una partida no bloqueada')
-            continue
-        with (root/'turnos.csv').open(newline='',encoding='utf-8-sig') as f:
+            turn_file=root/'turnos_completados.csv'
+            if not turn_file.is_file():
+                continue
+        with turn_file.open(newline='',encoding='utf-8-sig') as f:
             for t in csv.DictReader(f):
                 stage=t['Etapa_situacion'];role=t['Rol'];card=t['Carta_ID'];choice=t['Desenlace_elegido']
                 if card and choice in ('A','B'):
