@@ -1,0 +1,93 @@
+name: SIMLOG v2.2 · 700 partidas · 350 mesas 6 + 350 mesas 10
+
+on:
+  push:
+    branches:
+      - feature/simulador-v22
+    paths:
+      - '.github/workflows/simlog-v22-700-partidas.yml'
+  workflow_dispatch:
+
+jobs:
+  simular:
+    name: "SIMLOG v2.2 - 350 partidas de ${{ matrix.jugadores }} jugadores"
+    runs-on: ubuntu-latest
+    timeout-minutes: 55
+    strategy:
+      fail-fast: false
+      matrix:
+        jugadores: [6, 10]
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+      - name: Ejecutar 350 partidas reales v2.2 por mesa (semillas 2001-2350)
+        env:
+          N: ${{ matrix.jugadores }}
+        run: |
+          python -m laboratorio.simular_versionado \
+            --version 2.2 --jugadores "$N" --semillas 350 --inicio 2001 \
+            --rondas 100 --out "resultados/SIMLOG_v22_350_jug${N}"
+      - name: Auditar integridad de las 350 partidas y crear ZIP de trazas
+        env:
+          N: ${{ matrix.jugadores }}
+        run: |
+          python - <<'PY'
+          import csv, hashlib, json, os, statistics, zipfile
+          from pathlib import Path
+          n = int(os.environ['N'])
+          source = Path(f'resultados/SIMLOG_v22_350_jug{n}')
+          with (source/'partidas.csv').open(encoding='utf-8-sig', newline='') as f:
+              games = list(csv.DictReader(f))
+          assert len(games)==350, len(games)
+          assert {int(g['size']) for g in games} == {n}
+          assert {int(g['seed']) for g in games} == set(range(2001, 2351))
+          assert all(1<=int(g['rounds'])<=100 for g in games)
+          traces = sorted((source/'trazas').glob(f'n{n}_s*/manifest.json'))
+          assert len(traces)==350, len(traces)
+          from simulador.simlog_v22 import FORBIDDEN_SOURCES
+          from laboratorio.simlog_viewer_v21 import discover_games
+          for manifest_file in traces:
+              manifest = json.loads(manifest_file.read_text(encoding='utf-8'))
+              assert manifest['schema']=='SIMLOG-2.2'
+              assert manifest['ruleset']=='especificacion-integral-2026-11-09'
+              assert int(manifest['player_count'])==n
+              assert int(manifest['seed']) in range(2001,2351)
+              directory=manifest_file.parent
+              assert (directory/'turnos.csv').is_file()
+              assert (directory/'eventos.csv').is_file()
+              for name,digest in manifest.get('file_sha256',{}).items():
+                  target=directory/name
+                  assert target.is_file(),target
+                  assert hashlib.sha256(target.read_bytes()).hexdigest()==digest, target
+              with (directory/'eventos.csv').open(encoding='utf-8-sig',newline='') as f:
+                  for e in csv.DictReader(f):
+                      if e['Accion']=='issue':
+                          detail=json.loads(e['Detalle_JSON'])
+                          assert detail.get('source') not in FORBIDDEN_SOURCES
+          output=source.parent/f'SIMLOG_v22_350_partidas_{n}jug_semillas_2001_2350.zip'
+          with zipfile.ZipFile(output,'w',compression=zipfile.ZIP_DEFLATED,compresslevel=6) as z:
+              for file in sorted(source.rglob('*')):
+                  if file.is_file():
+                      z.write(file, file.relative_to(source))
+          with zipfile.ZipFile(output) as z:
+              manifest_count=sum(x.endswith('/manifest.json') for x in z.namelist())
+              assert manifest_count == 350,manifest_count
+          print('VALIDACION_OK', json.dumps({
+             'jugadores':n,
+             'partidas':len(games),
+             'casamientos':sum(g['won']=='True' for g in games),
+             'rondas_mediana':statistics.median(int(g['rounds']) for g in games),
+             'rondas_min':min(int(g['rounds']) for g in games),
+             'rondas_max':max(int(g['rounds']) for g in games),
+             'zip':str(output), 'zip_bytes':output.stat().st_size
+          },ensure_ascii=False))
+          PY
+      - name: Publicar paquete completo para visualizador
+        uses: actions/upload-artifact@v4
+        with:
+          name: "SIMLOG_v22_350_partidas_${{ matrix.jugadores }}jug_semillas_2001_2350"
+          path: "resultados/SIMLOG_v22_350_partidas_${{ matrix.jugadores }}jug_semillas_2001_2350.zip"
+          retention-days: 30
+          if-no-files-found: error
