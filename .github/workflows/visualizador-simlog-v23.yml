@@ -38,7 +38,7 @@ jobs:
         run: |
           python -m pip install playwright
           google-chrome --version
-      - name: Inspeccionar pantalla real: ronda y tablero
+      - name: "Inspeccionar pantalla real: ronda y tablero"
         if: matrix.python-version == '3.11'
         run: python tests/smoke_visualizador_inspector.py
       - name: Capturas del visualizador
