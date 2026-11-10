@@ -43,9 +43,9 @@ class BankTests(unittest.TestCase):
         self.eco.issue(1, 'K', 1, 'fixture')
         self.eco.convert(1, 'K', 'P', 1, round_no=3)
         self.assertTrue(self.eco.audit())
-        with self.assertRaisesRegex(ValueError, 'adyacentes'):
+        with self.assertRaisesRegex(ValueError, 'A-P, P-K o K-M'):
             self.eco.convert(1, 'A', 'M', 1, round_no=4)
-        with self.assertRaisesRegex(ValueError, 'adyacentes'):
+        with self.assertRaisesRegex(ValueError, 'A-P, P-K o K-M'):
             self.eco.convert(1, 'A', 'A', 1, round_no=4)
 
     def test_insufficient_funds_and_reserved_not_spendable(self):
