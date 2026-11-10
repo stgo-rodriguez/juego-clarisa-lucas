@@ -85,6 +85,8 @@ class InteractionV2:
         loss = 0
         project = None
         if kind == 'ordinario':
+            if p.role != d.role:
+                raise ValueError('Duelo ordinario requiere jugadores del mismo rol')
             if stake_resource not in RESOURCES or type(stake) is not int or stake < 1:
                 raise ValueError('Recurso y apuesta libre obligatorios')
             resource, loss = stake_resource, stake
