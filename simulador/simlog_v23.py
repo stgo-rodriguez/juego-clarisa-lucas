@@ -20,8 +20,15 @@ class SIMLogV23(SIMLogAuditV22):
             if not isinstance(loc, list) or len(loc) != 2:
                 raise AssertionError("Evento Casa v2.3 sin coordenadas del encuentro")
             if detail.get("mode") == "banca":
-                if loc != [3, 3] or detail.get("owners") not in (None, []):
+                if loc != [3, 3]:
                     raise AssertionError("Compra a la banca fuera de CASA (3,3)")
+                # house_bought.owners identifica a los NUEVOS compradores;
+                # house_attempt.owners identifica al propietario anterior.
+                if event["Accion"] == "house_bought":
+                    if detail.get("prior") is not None:
+                        raise AssertionError("Venta de propietarios etiquetada como banca")
+                elif detail.get("owners") not in (None, []):
+                    raise AssertionError("Compra bancaria con dueño anterior")
             elif detail.get("mode") == "propietarios":
                 if event["Accion"] == "house_bought":
                     if not detail.get("prior"):
