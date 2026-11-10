@@ -1,7 +1,6 @@
-"""Ruteo explícito de versiones para no atribuir a v2.2 reglas v2.1.
+"""Seleccionar explícitamente el motor de reglas 2.1, 2.2 o 2.3.
 
-La versión 2.2 no se activa hasta registrar una especificación aprobada
-y un motor con pruebas independientes. No introduce mecánicas nuevas.
+Cada versión conserva manifiestos, semillas y trazas independientes.
 """
 from __future__ import annotations
 
@@ -30,6 +29,12 @@ VERSIONS = {
         specification="Clarisa_y_Lucas_Especificacion_Integral_v2_2_Consolidada_2026-11-09.docx",
         engine_module="simulador.reglas_v22",
     ),
+    "2.3": VersionInfo(
+        version="2.3",
+        status="implemented_experimental",
+        specification="Clarisa_y_Lucas_Especificacion_Integral_v2_3_Consolidada_2026-11-10.docx",
+        engine_module="simulador.reglas_v23",
+    ),
 }
 
 
@@ -48,9 +53,8 @@ def require_implemented(version: str) -> VersionInfo:
     info = get_version(version)
     if info.status != "implemented_experimental" or not info.engine_module:
         raise RulesetNotReady(
-            "SIMLOG v2.2 no está implementado: falta una especificación v2.2 "
-            "identificada y una matriz de diferencias confirmada. No se ejecuta "
-            "el motor v2.1 con etiqueta v2.2."
+            f"SIMLOG v{version} no tiene implementación verificada; "
+            "no se puede ejecutar otra versión con esa etiqueta."
         )
     return info
 
