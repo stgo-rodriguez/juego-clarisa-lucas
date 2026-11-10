@@ -33,7 +33,7 @@ from laboratorio.paneles_ronda_v21 import (
 )
 from simulador.mazos_vigentes_v2 import load_current
 
-st.set_page_config(page_title="Visualizador SIMLOG v2.1 / v2.2", page_icon="📊", layout="wide")
+st.set_page_config(page_title="Visualizador SIMLOG v2.1 / v2.2 / v2.3", page_icon="📊", layout="wide")
 
 @st.cache_data(show_spinner=False)
 def catalogo_narrativo():
@@ -385,17 +385,17 @@ def plot_affinity(game, winners):
                       hovermode="x unified")
     return fig
 
-st.title("Visualizador de partidas · SIMLOG v2.1 / v2.2")
-st.caption("Decisiones y eventos SIMLOG v2.1/v2.2 por partida y jugadores seleccionados. "
+st.title("Visualizador de partidas · SIMLOG v2.1 / v2.2 / v2.3")
+st.caption("Decisiones y eventos SIMLOG v2.1/v2.2/v2.3 por partida y jugadores seleccionados. "
            "Solo lectura: no modifica simulaciones ni inventa resultados.")
 
-with st.expander("Origen de los datos · carpetas y ZIP SIMLOG v2.1/v2.2", expanded=False):
+with st.expander("Origen de los datos · carpetas y ZIP SIMLOG v2.1/v2.2/v2.3", expanded=False):
     src1, src2 = st.columns([2.4, 1.5], vertical_alignment="bottom")
     with src1:
         root_path = st.text_input(
             "Carpeta principal de resultados",
             value=str(ROOT / "resultados"),
-            help="Se buscan de forma recursiva TODAS las partidas SIMLOG v2.1/v2.2 "
+            help="Se buscan de forma recursiva TODAS las partidas SIMLOG v2.1/v2.2/v2.3 "
                  "de esta carpeta, sin limitar semillas ni tamaño de mesa.")
     with src2:
         uploaded = st.file_uploader(
@@ -464,7 +464,7 @@ for g in games:
 games = unique_games
 games.sort(key=lambda g: (g["size"], g["seed"], g["id"], g["directory"]))
 if not games:
-    st.info("No se encontraron trazas completas SIMLOG v2.1/v2.2 compatibles. "
+    st.info("No se encontraron trazas completas SIMLOG v2.1/v2.2/v2.3 compatibles. "
             "Buscá otras carpetas o agregá un ZIP de partidas. "
             "El historial v1.3 y las simulaciones anteriores sin SIMLOG v2.1 "
             "no permiten reconstruir estos eventos por ronda.")
@@ -474,7 +474,7 @@ winners_count = sum(g["won"] for g in games)
 six_count = sum(g["size"] == 6 for g in games)
 ten_count = sum(g["size"] == 10 for g in games)
 st.caption(
-    f"**{len(games)} simulaciones SIMLOG v2.1/v2.2 encontradas** · "
+    f"**{len(games)} simulaciones SIMLOG v2.1/v2.2/v2.3 encontradas** · "
     f"{winners_count} con casamiento · {len(games)-winners_count} sin ganador · "
     f"{six_count} de 6 jugadores · {ten_count} de 10 jugadores. "
     "Se incluyen todos los archivos compatibles encontrados en las fuentes seleccionadas."
@@ -752,5 +752,5 @@ with tabs[5]:
         file_name=f"simlog_v21_analisis_{selected['seed']}.json",
         mime="application/json",
     )
-st.caption("SIMLOG v2.1 · Vista de solo lectura · Resultados del simulador experimental; "
+st.caption("SIMLOG v2.1/v2.2/v2.3 · Vista de solo lectura · Resultados del simulador experimental; "
            "no constituyen una certificación del balance ni de reglas pendientes.")
