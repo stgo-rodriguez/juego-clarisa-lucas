@@ -163,7 +163,9 @@ class InteractionV2:
                     paid = loss
         self.eco.audit()
         result = DuelResult(kind, p.id, d.id, defense, attack, outcome, paid, paid_resource)
-        self.events.append({'action':'duel', **result.__dict__, 'project':project_id})
+        self.events.append({'action':'duel', **result.__dict__, 'project':project_id,
+                            'challenger_role':p.role, 'defender_role':d.role,
+                            'same_role':p.role == d.role})
         return result
 
     def _vacate_house(self, owners: set[int]) -> bool:
