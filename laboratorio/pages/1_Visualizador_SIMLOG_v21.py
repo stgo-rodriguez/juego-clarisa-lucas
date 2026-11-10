@@ -35,6 +35,7 @@ from laboratorio.paneles_ronda_v21 import (
 from simulador.mazos_vigentes_v2 import load_current
 from laboratorio.tablero_simlog_v23 import (
     snapshot_de_ronda, dibujar_tablero, resumen_ubicaciones,
+    coincidencias_de_casilleros, etiqueta_jugador,
 )
 
 st.set_page_config(page_title="Visualizador SIMLOG v2.1 / v2.2 / v2.3", page_icon="📊", layout="wide")
@@ -392,6 +393,65 @@ def plot_affinity(game, winners):
 
 # -------- Inspección de una sola ronda: controles fijos y vistas compactas -------
 
+
+def mostrar_coincidencias_tablero(snapshot):
+    """Desglosa las ocupaciones múltiples; no reconstruye posiciones ni parejas."""
+    coincidencias = coincidencias_de_casilleros(snapshot)
+    if not coincidencias:
+        st.caption("Sin casilleros compartidos por varias fichas en esta ronda.")
+        return
+    st.markdown(f"**Casilleros compartidos ({len(coincidencias)})**")
+    cards = []
+    for item in coincidencias:
+        title = (f"{item['etapa'].upper()} · CASILLERO "
+                 f"{item['posicion'] or '?'} · RONDA {item['ronda']}")
+        groups = []
+        pair_number = 0
+        for group in item["grupos"]:
+            is_pair = group["tipo"] == "pareja"
+            if is_pair:
+                pair_number += 1
+            people = []
+            for person in group["miembros"]:
+                color = "#1d4ed8" if person["rol"] == "Clarisa" else (
+                    "#c2410c" if person["rol"] == "Lucas" else "#475569"
+                )
+                people.append(
+                    '<span style="font-weight:750;color:' + color +
+                    ';font-size:.84rem;white-space:nowrap">' +
+                    escape(etiqueta_jugador(person)) + '</span>'
+                )
+            label = f"Pareja {pair_number}" if is_pair else "Otra ficha"
+            groups.append(
+                '<div style="display:flex;align-items:center;gap:7px;'
+                'padding:5px 8px;border-radius:7px;background:' +
+                ('#ecfdf5' if is_pair else '#f1f5f9') +
+                ';border:1px solid ' +
+                ('#86efac' if is_pair else '#cbd5e1') + '">'
+                + '<span style="font-size:.76rem;min-width:56px;color:#475569">'
+                + escape(label) + '</span>'
+                + '<span style="display:flex;flex-wrap:wrap;gap:8px">'
+                + ''.join(people) + '</span></div>'
+            )
+        cards.append(
+            '<div style="border:1px solid #cbd5e1;border-radius:10px;'
+            'padding:9px 10px;min-width:0">'
+            '<div style="font-size:.78rem;font-weight:750;'
+            'margin-bottom:7px;color:#334155">' + escape(title) + '</div>'
+            '<div style="display:grid;gap:5px">'
+            + ''.join(groups) + '</div></div>'
+        )
+    st.markdown(
+        '<div style="display:grid;grid-template-columns:'
+        'repeat(auto-fit,minmax(235px,1fr));gap:8px;margin-bottom:8px">'
+        + ''.join(cards) + '</div>',
+        unsafe_allow_html=True,
+    )
+    st.caption("P1, P2, etc. identifican grupos solo en este casillero; "
+               "las parejas se determinan exclusivamente a partir del vínculo "
+               "recíproco registrado en SIMLOG.")
+
+
 def _navegar_ronda(delta, max_round):
     actual = integer(st.session_state.get("selected_round_v21"), 1)
     st.session_state["selected_round_v21"] = min(max_round, max(1, actual + delta))
@@ -586,6 +646,7 @@ def pantalla_inspeccion(game, selected, ids, winners, max_round):
                 st.plotly_chart(dibujar_tablero(game,ronda,height=590),
                                 use_container_width=True,
                                 config={"displaylogo":False,"responsive":True})
+                mostrar_coincidencias_tablero(snapshot)
                 missing = snapshot["faltantes"]
                 unplaced = [p for p in resumen_ubicaciones(snapshot)
                             if p["Ubicación dibujada"] == "No"]
@@ -1027,6 +1088,7 @@ with tabs[6]:
     else:
         st.plotly_chart(dibujar_tablero(game,numero_tablero),
                         use_container_width=True)
+        mostrar_coincidencias_tablero(snap_tablero)
         st.dataframe(resumen_ubicaciones(snap_tablero),
                      use_container_width=True,hide_index=True)
         if snap_tablero["faltantes"]:
