@@ -1,0 +1,56 @@
+name: Revalidar diversidad v2.2 incluyendo turnos de partidas bloqueadas
+
+on:
+  push:
+    branches: [feature/v22-auditoria-politicas-banco]
+    paths: ['.github/workflows/v22-diversidad-primera-ronda.yml']
+  workflow_dispatch:
+
+jobs:
+  primera-ronda:
+    name: "${{ matrix.nombre }} · ${{ matrix.jugadores }} jugadores"
+    runs-on: ubuntu-latest
+    timeout-minutes: 45
+    strategy:
+      fail-fast: false
+      matrix:
+        include:
+          - {nombre: B_mixto_mano3, politica: mixto, mano: 3, jugadores: 6}
+          - {nombre: D_mixto_mano4, politica: mixto, mano: 4, jugadores: 6}
+          - {nombre: C_aleatorio_mano3, politica: aleatorio, mano: 3, jugadores: 6}
+          - {nombre: C_aleatorio_mano3, politica: aleatorio, mano: 3, jugadores: 10}
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+      - name: Reejecutar muestra incluyendo turnos completos de partidas bloqueadas
+        env:
+          N: ${{ matrix.jugadores }}
+          POLICY: ${{ matrix.politica }}
+          HAND: ${{ matrix.mano }}
+          LABEL: ${{ matrix.nombre }}
+        run: |
+          python -m laboratorio.simular_versionado \
+            --version 2.2 --jugadores "$N" --politica "$POLICY" --mano "$HAND" \
+            --semillas 40 --inicio 3201 --rondas 100 \
+            --out "resultados/revision/$LABEL/${N}j"
+      - name: Resumir diversidad con población íntegra
+        env:
+          N: ${{ matrix.jugadores }}
+          LABEL: ${{ matrix.nombre }}
+        run: |
+          python -m laboratorio.analizar_experimentos_politicas_v22 \
+            --out "resultados/revision/$LABEL/${N}j"
+      - name: Publicar resultados reproducibles sin trazas ZIP
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: "SIMLOG_v22_diversidad_${{ matrix.nombre }}_${{ matrix.jugadores }}j"
+          path: |
+            resultados/revision/${{ matrix.nombre }}/${{ matrix.jugadores }}j/resumen_experimento.json
+            resultados/revision/${{ matrix.nombre }}/${{ matrix.jugadores }}j/resumen_experimento.csv
+            resultados/revision/${{ matrix.nombre }}/${{ matrix.jugadores }}j/diversidad_decisiones_por_grupo.csv
+            resultados/revision/${{ matrix.nombre }}/${{ matrix.jugadores }}j/partidas.csv
+          retention-days: 30
+          if-no-files-found: warn
