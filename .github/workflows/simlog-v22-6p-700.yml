@@ -1,0 +1,63 @@
+name: SIMLOG v2.2 · 6 jugadores · límite 700 rondas
+
+on:
+  push:
+    branches:
+      - feature/simulador-v22
+    paths:
+      - '.github/workflows/simlog-v22-6p-700.yml'
+  workflow_dispatch:
+
+jobs:
+  partida-6j:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+      - name: Ejecutar una partida 3 Clarisa + 3 Lucas con máximo 700 rondas
+        run: |
+          python -m laboratorio.simular_versionado \
+            --version 2.2 --jugadores 6 --semillas 1 --inicio 701 \
+            --rondas 700 --out resultados/SIMLOG_v22_6j_max700
+      - name: Validar archivos y preparar ZIP para visualizador
+        run: |
+          python - <<'PY'
+          import csv
+          import json
+          import zipfile
+          from pathlib import Path
+          base = Path('resultados/SIMLOG_v22_6j_max700')
+          games = list(csv.DictReader((base / 'partidas.csv').open(encoding='utf-8-sig')))
+          assert len(games) == 1 and int(games[0]['size']) == 6, games
+          assert int(games[0]['rounds']) <= 700
+          folders = sorted((base / 'trazas').glob('n6_s*/manifest.json'))
+          assert len(folders) == 1, folders
+          manifest = json.loads(folders[0].read_text(encoding='utf-8'))
+          assert manifest['schema'] == 'SIMLOG-2.2'
+          assert manifest['ruleset'] == 'especificacion-integral-2026-11-09'
+          assert manifest['player_count'] == 6
+          assert int(manifest['summary']['rounds']) <= 700
+          from simulador.simlog_v22 import FORBIDDEN_SOURCES
+          with (folders[0].parent / 'eventos.csv').open(encoding='utf-8-sig') as f:
+              events = list(csv.DictReader(f))
+          assert not any(json.loads(e['Detalle_JSON']).get('source') in FORBIDDEN_SOURCES
+                         for e in events if e['Accion'] == 'issue')
+          output = base.parent / 'SIMLOG_v22_6j_max700_s701.zip'
+          with zipfile.ZipFile(output, 'w', compression=zipfile.ZIP_DEFLATED, compresslevel=6) as archive:
+              for path in sorted(base.rglob('*')):
+                  if path.is_file():
+                      archive.write(path, path.relative_to(base))
+          print('PARTIDA', games[0])
+          print('ZIP', output, 'SIZE', output.stat().st_size)
+          with zipfile.ZipFile(output) as archive:
+              assert any(name.endswith('/manifest.json') for name in archive.namelist())
+          PY
+      - name: Publicar ZIP SIMLOG para el visualizador
+        uses: actions/upload-artifact@v4
+        with:
+          name: SIMLOG_v22_6j_max700_s701
+          path: resultados/SIMLOG_v22_6j_max700_s701.zip
+          retention-days: 30
+          if-no-files-found: error
