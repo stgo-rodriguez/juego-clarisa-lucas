@@ -25,7 +25,9 @@ SUPPORTED_RULESETS = {
 
 def _supported(manifest: dict) -> bool:
     """Validar el par esquema + reglas, sin confundir trazas entre versiones."""
-    return SUPPORTED_RULESETS.get(manifest.get("schema")) == manifest.get("ruleset")
+    schema = manifest.get("schema")
+    return (schema in SUPPORTED_RULESETS
+            and SUPPORTED_RULESETS[schema] == manifest.get("ruleset"))
 CATEGORIES = (
     "Situación A/B", "Movimiento", "Duelos", "Canjes", "Noviazgo",
     "Subhitos", "Acuerdos", "Hitos", "Afinidad", "Perfil",
