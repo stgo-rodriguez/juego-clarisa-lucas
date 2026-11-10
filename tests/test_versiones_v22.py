@@ -1,4 +1,4 @@
-"""Pruebas del guardarraíl de versiones antes de una futura adaptación v2.2."""
+"""Pruebas de aislamiento de versiones tras la adaptación funcional v2.2."""
 from __future__ import annotations
 
 import tempfile
@@ -20,19 +20,17 @@ class VersionRegistryTests(unittest.TestCase):
         self.assertEqual(info.version, "2.1")
         self.assertEqual(info.engine_module, "simulador.reglas_v21")
 
-    def test_v22_is_not_implemented_without_approved_rules(self):
-        info = get_version("2.2")
-        self.assertIsNone(info.specification)
-        self.assertIsNone(info.engine_module)
-        with self.assertRaisesRegex(RulesetNotReady, "v2.2"):
-            require_implemented("2.2")
+    def test_v22_is_distinct_implemented_version(self):
+        info = require_implemented("2.2")
+        self.assertIn('v2_2', info.specification)
+        self.assertEqual(info.engine_module, 'simulador.reglas_v22')
 
-    def test_no_v21_simulation_runs_for_requested_v22(self):
-        invocations = []
-        with self.assertRaises(RulesetNotReady):
-            run_versioned("2.2", lambda **kw: invocations.append(kw),
-                          seeds=100, version_label="v2.2")
-        self.assertEqual(invocations, [])
+    def test_v22_dispatches_explicitly(self):
+        seen = []
+        result = run_versioned("2.2", lambda **kw: seen.append(kw) or 'v22',
+                               seeds=101)
+        self.assertEqual(result, 'v22')
+        self.assertEqual(seen, [{'seeds': 101}])
 
     def test_v21_dispatches_only_to_its_own_engine(self):
         seen = []
@@ -41,12 +39,11 @@ class VersionRegistryTests(unittest.TestCase):
         self.assertEqual(output, {"ok": True})
         self.assertEqual(seen, [{"seeds": 1}])
 
-    def test_cli_exits_before_writing_files_if_v22_requested(self):
+    def test_cli_rejects_unknown_version_before_writing(self):
         with tempfile.TemporaryDirectory() as tmp:
-            target = Path(tmp) / "simlog_v22"
+            target = Path(tmp) / 'desconocida'
             with self.assertRaises(SystemExit) as exc:
-                main(["--version", "2.2", "--out", str(target),
-                      "--semillas", "2"])
+                main(['--version', '2.3', '--out', str(target)])
             self.assertEqual(exc.exception.code, 2)
             self.assertFalse(target.exists())
 
