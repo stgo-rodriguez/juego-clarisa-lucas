@@ -1,0 +1,55 @@
+name: SIMLOG v2.3 · Casa de propietarios móviles
+
+on:
+  push:
+    branches: [feature/simlog-v23-casa-propietarios]
+    paths:
+      - '.github/workflows/simlog-v23-casa.yml'
+  workflow_dispatch:
+
+jobs:
+  regression:
+    name: "Regresión SIMLOG v2.3 Python ${{ matrix.python-version }}"
+    runs-on: ubuntu-latest
+    timeout-minutes: 35
+    strategy:
+      fail-fast: false
+      matrix:
+        python-version: ['3.11', '3.13']
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: ${{ matrix.python-version }}
+      - name: Comprobar sintaxis
+        run: python -m compileall -q simulador laboratorio tests
+      - name: Pruebas nuevas de Casa v2.3
+        run: python -m unittest discover -s tests -p 'test_casa_v23.py' -v
+      - name: Banco y políticas heredadas de v2.2
+        run: python -m unittest discover -s tests -p 'test_experimento_politicas_v22.py' -v
+      - name: Regresión de reglas v2.2
+        run: python -m unittest discover -s tests -p 'test_reglas_simlog_v22.py' -v
+      - name: Regresión de reglas v2.1
+        run: python -m unittest discover -s tests -p 'test_reglas_simlog_v21.py' -v
+      - name: Simulación v2.3 — dos tamaños de mesa, variantes de políticas
+        run: |
+          python -m laboratorio.simular_versionado --version 2.3 \
+            --jugadores ambos --politica planificador --mano 3 \
+            --semillas 5 --inicio 4001 --rondas 100 \
+            --out resultados/simlog_v23_pruebas
+          python -m laboratorio.simular_versionado --version 2.3 \
+            --jugadores ambos --politica mixto --mano 4 \
+            --semillas 2 --inicio 4101 --rondas 100 \
+            --out resultados/simlog_v23_mixto
+      - name: Publicar resultados tabulares (sin ZIP de trazas)
+        if: always() && matrix.python-version == '3.11'
+        uses: actions/upload-artifact@v4
+        with:
+          name: simlog-v23-casa-regresion
+          path: |
+            resultados/simlog_v23_pruebas/partidas.csv
+            resultados/simlog_v23_pruebas/resumen.json
+            resultados/simlog_v23_mixto/partidas.csv
+            resultados/simlog_v23_mixto/resumen.json
+          if-no-files-found: warn
+          retention-days: 30
