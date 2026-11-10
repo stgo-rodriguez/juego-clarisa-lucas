@@ -479,6 +479,7 @@ def _inspector_css():
     [data-testid="stHeader"] {display:none !important;}
     [data-testid="stMain"] {overflow:hidden !important;}
     .block-container {max-width:100% !important;padding:0 !important;}
+    .st-key-viewer_selection {display:none !important;}
     .st-key-inspector_header {
         position:fixed !important;top:0 !important;left:0 !important;
         right:0 !important;z-index:10010 !important;
@@ -527,6 +528,8 @@ def _inspector_css():
     .inspector-event-grid {display:grid;grid-template-columns:1fr 1fr;
         gap:12px;margin-top:7px;font-size:.81rem;}
     .inspector-event-grid ul {margin:3px 0 0 0;padding-left:17px;}
+    .inspector-event-grid > div > strong {display:block;margin-bottom:3px;}
+    .inspector-event-grid .inspector-muted {display:block;}
     .inspector-event-grid li {margin-bottom:3px;}
     @media (max-width:850px) {
         .st-key-inspector_content {top:126px !important;padding:5px .5rem !important;}
@@ -549,7 +552,7 @@ def pantalla_inspeccion(game, selected, ids, winners, max_round):
             [2.4,.56,1.20,.56,3.3,.65], vertical_alignment="center")
         with titulo:
             st.markdown(
-                f"**SIMLOG {escape(str(selected['schema']))} · "
+                f"**{escape(str(selected['schema']))} · "
                 f"{selected['size']} jugadores · Semilla {selected['seed']}**")
         with prev:
             st.button("◀", key="ins_prev", help="Ronda anterior",
@@ -627,170 +630,171 @@ def pantalla_inspeccion(game, selected, ids, winners, max_round):
                             game,ronda,pid,catalogo,show_options)
 
 
-st.title("Visualizador de partidas · SIMLOG v2.1 / v2.2 / v2.3")
-st.caption("Decisiones y eventos SIMLOG v2.1/v2.2/v2.3 por partida y jugadores seleccionados. "
-           "Solo lectura: no modifica simulaciones ni inventa resultados.")
+with st.container(key="viewer_selection"):
+    st.title("Visualizador de partidas · SIMLOG v2.1 / v2.2 / v2.3")
+    st.caption("Decisiones y eventos SIMLOG v2.1/v2.2/v2.3 por partida y jugadores seleccionados. "
+               "Solo lectura: no modifica simulaciones ni inventa resultados.")
 
-with st.expander("Origen de los datos · carpetas y ZIP SIMLOG v2.1/v2.2/v2.3", expanded=False):
-    src1, src2 = st.columns([2.4, 1.5], vertical_alignment="bottom")
-    with src1:
-        root_path = st.text_input(
-            "Carpeta principal de resultados",
-            value=os.environ.get("SIMLOG_RESULTS_ROOT", str(ROOT / "resultados")),
-            help="Se buscan de forma recursiva TODAS las partidas SIMLOG v2.1/v2.2/v2.3 "
-                 "de esta carpeta, sin limitar semillas ni tamaño de mesa.")
-    with src2:
-        uploaded = st.file_uploader(
-            "Agregar ZIP de trazas", type=["zip"],
-            help="Las partidas del ZIP se suman a las de las carpetas locales.")
-    extra_roots = st.text_area(
-        "Otras carpetas de simulaciones (opcional, una ruta por línea)",
-        value="", height=78, placeholder="/ruta/a/otra/corrida",
-        help="Se suman al índice, incluso cuando están fuera de resultados/.")
-    st.caption("También se detectan automáticamente los ZIP SIMLOG guardados "
-               "en Descargas (Downloads) y en la carpeta de resultados, "
-               "sin necesidad de extraerlos.")
-    st.button(
-        "Actualizar listado de partidas",
-        on_click=lambda: (cached_discovery.clear(), cached_game.clear()),
-        help="Volvé a buscar archivos nuevos o modificados, sin reiniciar el laboratorio.")
-    zip_bytes = uploaded.getvalue() if uploaded is not None else None
-    if zip_bytes is not None and len(zip_bytes) > 120_000_000:
-        st.error("ZIP demasiado grande (>120 MB). Usá una carpeta local.")
+    with st.expander("Origen de los datos · carpetas y ZIP SIMLOG v2.1/v2.2/v2.3", expanded=False):
+        src1, src2 = st.columns([2.4, 1.5], vertical_alignment="bottom")
+        with src1:
+            root_path = st.text_input(
+                "Carpeta principal de resultados",
+                value=os.environ.get("SIMLOG_RESULTS_ROOT", str(ROOT / "resultados")),
+                help="Se buscan de forma recursiva TODAS las partidas SIMLOG v2.1/v2.2/v2.3 "
+                     "de esta carpeta, sin limitar semillas ni tamaño de mesa.")
+        with src2:
+            uploaded = st.file_uploader(
+                "Agregar ZIP de trazas", type=["zip"],
+                help="Las partidas del ZIP se suman a las de las carpetas locales.")
+        extra_roots = st.text_area(
+            "Otras carpetas de simulaciones (opcional, una ruta por línea)",
+            value="", height=78, placeholder="/ruta/a/otra/corrida",
+            help="Se suman al índice, incluso cuando están fuera de resultados/.")
+        st.caption("También se detectan automáticamente los ZIP SIMLOG guardados "
+                   "en Descargas (Downloads) y en la carpeta de resultados, "
+                   "sin necesidad de extraerlos.")
+        st.button(
+            "Actualizar listado de partidas",
+            on_click=lambda: (cached_discovery.clear(), cached_game.clear()),
+            help="Volvé a buscar archivos nuevos o modificados, sin reiniciar el laboratorio.")
+        zip_bytes = uploaded.getvalue() if uploaded is not None else None
+        if zip_bytes is not None and len(zip_bytes) > 120_000_000:
+            st.error("ZIP demasiado grande (>120 MB). Usá una carpeta local.")
+            st.stop()
+
+    roots = list(dict.fromkeys(
+        [root_path] + [p.strip() for p in extra_roots.splitlines() if p.strip()]
+    ))
+    games = []
+    try:
+        for source_root in roots:
+            for g in cached_discovery(source_root, None):
+                games.append({**g, "source_root": source_root, "source_type": "carpeta"})
+        # Buscar archivos ZIP de corridas ya ejecutadas; no generar partidas nuevas.
+        auto_zips = set()
+        downloads = Path.home() / "Downloads"
+        if downloads.is_dir():
+            auto_zips.update(downloads.glob("SIMLOG*.zip"))
+        result_dir = Path(root_path).expanduser()
+        if result_dir.is_dir():
+            auto_zips.update(result_dir.rglob("SIMLOG*.zip"))
+        for extra in roots[1:]:
+            folder = Path(extra).expanduser()
+            if folder.is_dir():
+                auto_zips.update(folder.rglob("SIMLOG*.zip"))
+        for local_zip in sorted(auto_zips):
+            if not local_zip.is_file() or local_zip.stat().st_size > 150_000_000:
+                continue
+            try:
+                for g in cached_discovery(str(local_zip), None):
+                    games.append({**g, "source_root": str(local_zip),
+                                  "source_type": "ZIP local"})
+            except (OSError, ValueError, zipfile.BadZipFile):
+                continue
+        if zip_bytes is not None:
+            for g in cached_discovery(root_path, zip_bytes):
+                games.append({**g, "source_root": root_path, "source_type": "ZIP"})
+    except (ValueError, OSError, KeyError) as exc:
+        st.error(f"No se pudo leer la fuente SIMLOG: {exc}")
+        st.stop()
+    # La misma traza puede estar copiada en Descargas y también en resultados.
+    # Se muestran una sola vez los Run_ID idénticos, preservando corridas distintas.
+    seen_runs = set()
+    unique_games = []
+    for g in games:
+        identity = (g["id"], g["size"], g["seed"], g["rounds"])
+        if identity not in seen_runs:
+            seen_runs.add(identity)
+            unique_games.append(g)
+    games = unique_games
+    games.sort(key=lambda g: (g["size"], g["seed"], g["id"], g["directory"]))
+    if not games:
+        st.info("No se encontraron trazas completas SIMLOG v2.1/v2.2/v2.3 compatibles. "
+                "Buscá otras carpetas o agregá un ZIP de partidas. "
+                "El historial v1.3 y las simulaciones anteriores sin SIMLOG v2.1 "
+                "no permiten reconstruir estos eventos por ronda.")
         st.stop()
 
-roots = list(dict.fromkeys(
-    [root_path] + [p.strip() for p in extra_roots.splitlines() if p.strip()]
-))
-games = []
-try:
-    for source_root in roots:
-        for g in cached_discovery(source_root, None):
-            games.append({**g, "source_root": source_root, "source_type": "carpeta"})
-    # Buscar archivos ZIP de corridas ya ejecutadas; no generar partidas nuevas.
-    auto_zips = set()
-    downloads = Path.home() / "Downloads"
-    if downloads.is_dir():
-        auto_zips.update(downloads.glob("SIMLOG*.zip"))
-    result_dir = Path(root_path).expanduser()
-    if result_dir.is_dir():
-        auto_zips.update(result_dir.rglob("SIMLOG*.zip"))
-    for extra in roots[1:]:
-        folder = Path(extra).expanduser()
-        if folder.is_dir():
-            auto_zips.update(folder.rglob("SIMLOG*.zip"))
-    for local_zip in sorted(auto_zips):
-        if not local_zip.is_file() or local_zip.stat().st_size > 150_000_000:
-            continue
-        try:
-            for g in cached_discovery(str(local_zip), None):
-                games.append({**g, "source_root": str(local_zip),
-                              "source_type": "ZIP local"})
-        except (OSError, ValueError, zipfile.BadZipFile):
-            continue
-    if zip_bytes is not None:
-        for g in cached_discovery(root_path, zip_bytes):
-            games.append({**g, "source_root": root_path, "source_type": "ZIP"})
-except (ValueError, OSError, KeyError) as exc:
-    st.error(f"No se pudo leer la fuente SIMLOG: {exc}")
-    st.stop()
-# La misma traza puede estar copiada en Descargas y también en resultados.
-# Se muestran una sola vez los Run_ID idénticos, preservando corridas distintas.
-seen_runs = set()
-unique_games = []
-for g in games:
-    identity = (g["id"], g["size"], g["seed"], g["rounds"])
-    if identity not in seen_runs:
-        seen_runs.add(identity)
-        unique_games.append(g)
-games = unique_games
-games.sort(key=lambda g: (g["size"], g["seed"], g["id"], g["directory"]))
-if not games:
-    st.info("No se encontraron trazas completas SIMLOG v2.1/v2.2/v2.3 compatibles. "
-            "Buscá otras carpetas o agregá un ZIP de partidas. "
-            "El historial v1.3 y las simulaciones anteriores sin SIMLOG v2.1 "
-            "no permiten reconstruir estos eventos por ronda.")
-    st.stop()
-
-winners_count = sum(g["won"] for g in games)
-six_count = sum(g["size"] == 6 for g in games)
-ten_count = sum(g["size"] == 10 for g in games)
-st.caption(
-    f"**{len(games)} simulaciones SIMLOG v2.1/v2.2/v2.3 encontradas** · "
-    f"{winners_count} con casamiento · {len(games)-winners_count} sin ganador · "
-    f"{six_count} de 6 jugadores · {ten_count} de 10 jugadores. "
-    "Se incluyen todos los archivos compatibles encontrados en las fuentes seleccionadas."
-)
-
-a, b, c = st.columns([1, 3, 1], vertical_alignment="bottom")
-with a:
-    only_won = st.checkbox("Solo partidas con ganador", value=False)
-available = [g for g in games if g["won"]] if only_won else games
-if not available:
-    st.warning("El filtro no devuelve partidas con casamiento. Desactivalo para ver todas.")
-    st.stop()
-with b:
-    selected = st.selectbox(
-        "Seleccionar partida", available,
-        format_func=lambda g: (
-            pill_of_game(g) + f" · {g['source_type']}: "
-            + (Path(g["directory"]).parent.parent.name
-               if g["source_type"] == "carpeta" else
-               Path(g["source_root"]).name if g["source_type"] == "ZIP local"
-               else g["directory"])
-        ),
+    winners_count = sum(g["won"] for g in games)
+    six_count = sum(g["size"] == 6 for g in games)
+    ten_count = sum(g["size"] == 10 for g in games)
+    st.caption(
+        f"**{len(games)} simulaciones SIMLOG v2.1/v2.2/v2.3 encontradas** · "
+        f"{winners_count} con casamiento · {len(games)-winners_count} sin ganador · "
+        f"{six_count} de 6 jugadores · {ten_count} de 10 jugadores. "
+        "Se incluyen todos los archivos compatibles encontrados en las fuentes seleccionadas."
     )
-with c:
-    st.caption(f"{len(available)} partidas seleccionables")
 
-try:
-    game = cached_game(
-        selected["source_root"], selected["directory"],
-        zip_bytes if selected["source_type"] == "ZIP" else None,
+    a, b, c = st.columns([1, 3, 1], vertical_alignment="bottom")
+    with a:
+        only_won = st.checkbox("Solo partidas con ganador", value=False)
+    available = [g for g in games if g["won"]] if only_won else games
+    if not available:
+        st.warning("El filtro no devuelve partidas con casamiento. Desactivalo para ver todas.")
+        st.stop()
+    with b:
+        selected = st.selectbox(
+            "Seleccionar partida", available,
+            format_func=lambda g: (
+                pill_of_game(g) + f" · {g['source_type']}: "
+                + (Path(g["directory"]).parent.parent.name
+                   if g["source_type"] == "carpeta" else
+                   Path(g["source_root"]).name if g["source_type"] == "ZIP local"
+                   else g["directory"])
+            ),
+        )
+    with c:
+        st.caption(f"{len(available)} partidas seleccionables")
+
+    try:
+        game = cached_game(
+            selected["source_root"], selected["directory"],
+            zip_bytes if selected["source_type"] == "ZIP" else None,
+        )
+    except (ValueError, OSError, KeyError) as exc:
+        st.error(f"No se pudo abrir la partida: {exc}")
+        st.stop()
+
+    manifest = game["manifest"]
+    pair = pair_from_manifest(manifest)
+    ids = sorted({
+        int(pid) for pid in (manifest.get("roles") or {}) if str(pid).isdigit()
+    } | {integer(t.get("Jugador")) for t in game["turnos.csv"] if integer(t.get("Jugador")) > 0})
+    if not ids:
+        st.warning("La partida no registra jugadores para seguir.")
+        st.stop()
+    if pair:
+        defaults = [pid for pid in pair if pid in ids]
+    else:
+        first_clarisa = next((p for p in ids
+                              if (manifest.get("roles") or {}).get(str(p)) == "Clarisa"), None)
+        first_lucas = next((p for p in ids
+                            if (manifest.get("roles") or {}).get(str(p)) == "Lucas"), None)
+        defaults = [p for p in (first_clarisa, first_lucas) if p is not None]
+    if not defaults:
+        defaults = ids[:2]
+
+    winners = st.multiselect(
+        "Jugadores a recorrer en el Gantt y en Ronda a ronda",
+        options=ids, default=defaults,
+        key=f"players_{selected['source_type']}_{selected['directory']}",
+        format_func=lambda pid: role_name(manifest, pid),
+        help="Las partidas sin casamiento también pueden recorrerse. "
+             "El selector no presenta a esos jugadores como ganadores.",
     )
-except (ValueError, OSError, KeyError) as exc:
-    st.error(f"No se pudo abrir la partida: {exc}")
-    st.stop()
+    if not winners:
+        st.warning("Seleccioná al menos un jugador para mostrar los eventos.")
+        st.stop()
 
-manifest = game["manifest"]
-pair = pair_from_manifest(manifest)
-ids = sorted({
-    int(pid) for pid in (manifest.get("roles") or {}) if str(pid).isdigit()
-} | {integer(t.get("Jugador")) for t in game["turnos.csv"] if integer(t.get("Jugador")) > 0})
-if not ids:
-    st.warning("La partida no registra jugadores para seguir.")
-    st.stop()
-if pair:
-    defaults = [pid for pid in pair if pid in ids]
-else:
-    first_clarisa = next((p for p in ids
-                          if (manifest.get("roles") or {}).get(str(p)) == "Clarisa"), None)
-    first_lucas = next((p for p in ids
-                        if (manifest.get("roles") or {}).get(str(p)) == "Lucas"), None)
-    defaults = [p for p in (first_clarisa, first_lucas) if p is not None]
-if not defaults:
-    defaults = ids[:2]
+    items = build_events(game, winners)
+    max_round = max(1, selected["rounds"],
+                    max((integer(t.get("Ronda")) for t in game["turnos.csv"]), default=1))
 
-winners = st.multiselect(
-    "Jugadores a recorrer en el Gantt y en Ronda a ronda",
-    options=ids, default=defaults,
-    key=f"players_{selected['source_type']}_{selected['directory']}",
-    format_func=lambda pid: role_name(manifest, pid),
-    help="Las partidas sin casamiento también pueden recorrerse. "
-         "El selector no presenta a esos jugadores como ganadores.",
-)
-if not winners:
-    st.warning("Seleccioná al menos un jugador para mostrar los eventos.")
-    st.stop()
-
-items = build_events(game, winners)
-max_round = max(1, selected["rounds"],
-                max((integer(t.get("Ronda")) for t in game["turnos.csv"]), default=1))
-
-if st.button("Abrir inspección de rondas y tablero", type="primary",
-             key="abrir_inspector_simlog"):
-    st.session_state["inspector_simlog"] = True
-    st.rerun()
+    if st.button("Abrir inspección de rondas y tablero", type="primary",
+                 key="abrir_inspector_simlog"):
+        st.session_state["inspector_simlog"] = True
+        st.rerun()
 if st.session_state.get("inspector_simlog"):
     pantalla_inspeccion(game,selected,ids,winners,max_round)
     st.stop()
