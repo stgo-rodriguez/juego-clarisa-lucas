@@ -32,14 +32,18 @@ jobs:
         run: python -m unittest discover -s tests -p 'test_cartas_vigentes_v21.py' -v
       - name: Smoke versionado v2.1
         run: python -m laboratorio.simular_versionado --version 2.1 --semillas 1 --rondas 35 --out resultados/simlog_v21_preparacion
-      - name: Simular 10 partidas v2.2 (6 y 10 jugadores)
-        run: python -m laboratorio.simular_versionado --version 2.2 --semillas 5 --rondas 100 --out resultados/simlog_v22_pruebas
+      - name: Simular 200 partidas v2.2 en Python 3.11
+        if: matrix.python-version == '3.11'
+        run: python -m laboratorio.simular_versionado --version 2.2 --semillas 100 --inicio 101 --rondas 100 --out resultados/simlog_v22_pruebas
+      - name: Simular 10 partidas cruzadas en Python 3.13
+        if: matrix.python-version == '3.13'
+        run: python -m laboratorio.simular_versionado --version 2.2 --semillas 5 --inicio 101 --rondas 100 --out resultados/simlog_v22_pruebas
       - name: Auditoría de recursos nuevos v2.2
         run: python -m laboratorio.analizar_simlog_v21_revision --out resultados/simlog_v22_pruebas
       - name: Publicar trazas v2.2
         if: always() && matrix.python-version == '3.11'
         uses: actions/upload-artifact@v4
         with:
-          name: simlog-v22-prueba-10-partidas
+          name: simlog-v22-200-partidas-semillas-101-200
           path: resultados/simlog_v22_pruebas/
           if-no-files-found: ignore
