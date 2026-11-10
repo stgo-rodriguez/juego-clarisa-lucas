@@ -38,9 +38,10 @@ class BankTests(unittest.TestCase):
         self.assertEqual(self.eco.accounts[1].free['P'], 2)
 
     def test_legal_adjacency_both_directions(self):
-        self.eco.convert(1, 'A', 'P', 1, round_no=1)
+        self.eco.convert(1, 'A', 'P', 2, round_no=1)
         self.eco.convert(1, 'P', 'K', 1, round_no=2)
-        self.eco.convert(1, 'K', 'M', 1, round_no=3) if self.eco.accounts[1].free['K']>=2 else None
+        self.eco.issue(1, 'K', 1, 'fixture')
+        self.eco.convert(1, 'K', 'P', 1, round_no=3)
         self.assertTrue(self.eco.audit())
         with self.assertRaisesRegex(ValueError, 'adyacentes'):
             self.eco.convert(1, 'A', 'M', 1, round_no=4)
