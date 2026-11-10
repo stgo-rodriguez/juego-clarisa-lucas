@@ -1,5 +1,5 @@
 #!/usr/bin/env bash
-# Preparación y arranque en un solo paso de Visualizador SIMLOG v2.1 (macOS/Linux).
+# Preparación y arranque en un solo paso de Visualizador SIMLOG v2.1/v2.2 (macOS/Linux).
 # Reutiliza .venv, no modifica el Python global y conserva las corridas existentes.
 set -Eeuo pipefail
 
@@ -9,7 +9,7 @@ cd "$ROOT"
 say() { printf '\n%s\n' "$*"; }
 fail() { printf '\nERROR: %s\n' "$*" >&2; exit 1; }
 
-say "=== Clarisa & Lucas · Visualizador SIMLOG v2.1 ==="
+say "=== Clarisa & Lucas · Visualizador SIMLOG v2.1/v2.2 ==="
 
 [[ -f "requirements.txt" ]] || fail "No encuentro requirements.txt en $ROOT."
 [[ -f "laboratorio/pages/1_Visualizador_SIMLOG_v21.py" ]] ||
@@ -48,19 +48,19 @@ say "[3/5] Validando el laboratorio"
 "$VENV_PY" -m laboratorio.diagnostico ||
   fail "El diagnóstico detectó errores; no iniciaré una instancia inválida."
 
-# Solo generar datos si no existe ninguna partida v2.1 con ganadores en resultados/.
+# Solo generar datos de demostración si no existe ninguna partida compatible con ganadores.
 # La generación se ejecuta localmente y produce trazas reales, sin alterar las existentes.
-say "[4/5] Buscando partidas SIMLOG v2.1"
+say "[4/5] Buscando partidas SIMLOG v2.1 y v2.2"
 if "$VENV_PY" -c '
 from pathlib import Path
 import sys
 from laboratorio.simlog_viewer_v21 import discover_games
 games = discover_games(Path("resultados"))
 winners = sum(bool(game["won"]) for game in games)
-print(f"Partidas v2.1 encontradas: {len(games)}; con ganadores: {winners}")
+print(f"Partidas compatibles encontradas: {len(games)}; con ganadores: {winners}")
 sys.exit(0 if winners else 1)
 '; then
-  say "Se reutilizarán las partidas v2.1 existentes."
+  say "Se reutilizarán las partidas compatibles existentes."
 else
   say "No hay partidas ganadoras v2.1 locales; generando 10 partidas reales (5 semillas × 2 mesas)."
   "$VENV_PY" -m laboratorio.simular_mazos_vigentes_v2 \
