@@ -32,6 +32,9 @@ from laboratorio.paneles_ronda_v21 import (
     eventos_hitos_ronda, eventos_sociales_ronda,
 )
 from simulador.mazos_vigentes_v2 import load_current
+from laboratorio.tablero_simlog_v23 import (
+    snapshot_de_ronda, dibujar_tablero, resumen_ubicaciones,
+)
 
 st.set_page_config(page_title="Visualizador SIMLOG v2.1 / v2.2 / v2.3", page_icon="📊", layout="wide")
 
@@ -385,6 +388,244 @@ def plot_affinity(game, winners):
                       hovermode="x unified")
     return fig
 
+
+# -------- Inspección de una sola ronda: controles fijos y vistas compactas -------
+
+def _navegar_ronda(delta, max_round):
+    actual = integer(st.session_state.get("selected_round_v21"), 1)
+    st.session_state["selected_round_v21"] = min(max_round, max(1, actual + delta))
+
+
+def _etiqueta_evento(item):
+    estado = str(item.get("estado") or "")
+    titulo = str(item.get("titulo") or "")
+    descripcion = str(item.get("descripcion") or "")
+    return (
+        f'<li><strong>{escape(titulo)}</strong> '
+        f'<span style="color:#64748b">({escape(estado)})</span>'
+        + (f'<div class="inspector-secondary">{escape(descripcion)}</div>'
+           if descripcion else "") + "</li>"
+    )
+
+
+def resumen_compacto_jugador(game, ronda, pid, catalogo, snapshot):
+    """La síntesis solo usa asientos SIMLOG y el estado efectivo de cierre."""
+    manifest = game["manifest"]
+    datos = next((x for x in snapshot["jugadores"] if x["jugador"] == pid), None)
+    etapa = datos["etapa"] if datos else "Sin estado"
+    pareja = estado_noviazgo(game, ronda, pid)
+    saldos = recursos_fin_ronda(game, ronda, pid)
+    hitos = estado_hitos(game, ronda, pid)
+    avances = eventos_hitos_ronda(game, ronda, pid)
+    sociales = eventos_sociales_ronda(game, ronda, pid)
+    decisiones = decisiones_registradas(game, ronda, pid, catalogo)
+    resource_cells = []
+    for letter in RECURSOS:
+        val = (saldos or {}).get(letter)
+        total = str(val["total"]) if val else "—"
+        delta = val.get("variacion") if val else None
+        variation = f'{delta:+d}' if delta is not None else "—"
+        resource_cells.append(
+            f'<div class="inspector-resource"><small>'
+            f'{RECURSO_ICONOS[letter]} {escape(RECURSO_ABREV[letter])}</small>'
+            f'<b>{total}</b><span>{variation}</span></div>'
+        )
+    achievements = "".join(
+        f'<span class="inspector-hito">{escape(h["nombre"])}: '
+        f'<strong>{escape(h["estado"])}</strong></span>'
+        for h in hitos["hitos"]
+    )
+    movement = decisiones.get("movimiento") or {}
+    card = decisiones.get("carta") or {}
+    fragments = []
+    if movement.get("dado") not in ("", None):
+        fragments.append(f'D6 {escape(str(movement["dado"]))}')
+    if movement.get("carta"):
+        fragments.append(f'Mov. {escape(str(movement["carta"]))}')
+    if movement.get("inicio") not in ("", None) and movement.get("fin") not in ("", None):
+        fragments.append(f'{escape(str(movement["inicio"]))} → {escape(str(movement["fin"]))}')
+    if card:
+        fragments.append(f'Situación {escape(str(card.get("id") or ""))}: '
+                         f'{escape(str(card.get("elegida") or "—"))}')
+    mov_text = " · ".join(fragments) or "Sin decisión de movimiento registrada"
+    no = '<span class="inspector-muted">Sin eventos registrados</span>'
+    advances = "<ul>" + "".join(_etiqueta_evento(e) for e in avances[:3]) + "</ul>" if avances else no
+    social = "<ul>" + "".join(_etiqueta_evento(e) for e in sociales[:3]) + "</ul>" if sociales else no
+    extra = len(avances) + len(sociales) - min(3,len(avances)) - min(3,len(sociales))
+    if extra:
+        social += f'<div class="inspector-secondary">+{extra} eventos en la vista Detalle</div>'
+    st.markdown(
+        '<section class="inspector-player">'
+        f'<div class="inspector-person-header"><strong>{escape(role_name(manifest,pid))}'
+        f'</strong><span>{escape(etapa)} · {escape(pareja["estado"])}'
+        f' · {escape(str(pareja.get("afinidad") or ""))}</span></div>'
+        '<div class="inspector-resources">' + "".join(resource_cells) + '</div>'
+        '<div class="inspector-hitos">' + achievements + '</div>'
+        f'<div class="inspector-movement">{mov_text}</div>'
+        '<div class="inspector-event-grid">'
+        '<div><strong>Hitos e inversiones de la ronda</strong>' + advances + '</div>'
+        '<div><strong>Interacciones sociales</strong>' + social + '</div>'
+        '</div></section>', unsafe_allow_html=True,
+    )
+
+
+def _inspector_css():
+    st.markdown("""
+    <style>
+    html, body, #root, [data-testid="stApp"] {
+        height:100dvh !important; overflow:hidden !important;
+    }
+    [data-testid="stHeader"] {display:none !important;}
+    [data-testid="stMain"] {overflow:hidden !important;}
+    .block-container {max-width:100% !important;padding:0 !important;}
+    .st-key-inspector_header {
+        position:fixed !important;top:0 !important;left:0 !important;
+        right:0 !important;z-index:10010 !important;
+        padding:.38rem .8rem !important;
+        box-sizing:border-box !important;
+        background:var(--background-color,#fff) !important;
+        border-bottom:1px solid #cbd5e1;
+        box-shadow:0 2px 8px rgba(0,0,0,.07);
+    }
+    .st-key-inspector_header [data-testid="stVerticalBlock"] {gap:.2rem !important;}
+    .st-key-inspector_header [data-testid="stMarkdownContainer"] p {margin:0 !important;}
+    .st-key-inspector_content {
+        position:fixed !important;top:78px !important;bottom:0 !important;
+        left:0 !important;right:0 !important;z-index:10000 !important;
+        overflow-y:auto !important;overflow-x:hidden !important;
+        overscroll-behavior:contain;
+        background:var(--background-color,#fff) !important;
+        padding:.25rem 1rem 2rem !important;
+        box-sizing:border-box !important;
+        scrollbar-gutter:stable;
+    }
+    .st-key-inspector_content [data-testid="stVerticalBlock"] {gap:.4rem !important;}
+    .inspector-player {
+        border:1px solid #dbe2ea;border-radius:10px;
+        padding:9px 12px;margin:3px 0;
+    }
+    .inspector-person-header {display:flex;align-items:center;gap:14px;}
+    .inspector-person-header strong {font-size:1.05rem;}
+    .inspector-person-header span,.inspector-secondary,.inspector-muted {
+        font-size:.79rem;color:#64748b;
+    }
+    .inspector-resources {
+        display:grid;grid-template-columns:repeat(4,minmax(0,1fr));
+        gap:5px;margin:8px 0;
+    }
+    .inspector-resource {background:#f1f5f9;border-radius:6px;
+        padding:3px 7px;display:flex;align-items:center;gap:5px;}
+    .inspector-resource small {font-size:.70rem;color:#64748b;}
+    .inspector-resource b {font-size:1.25rem;}
+    .inspector-resource span {margin-left:auto;font-size:.70rem;color:#166534;}
+    .inspector-hitos {display:flex;gap:4px;flex-wrap:wrap;}
+    .inspector-hito {font-size:.74rem;border:1px solid #dbe2ea;
+        padding:2px 6px;border-radius:5px;}
+    .inspector-movement {font-size:.80rem;margin-top:7px;
+        border-top:1px solid #e2e8f0;padding-top:5px;}
+    .inspector-event-grid {display:grid;grid-template-columns:1fr 1fr;
+        gap:12px;margin-top:7px;font-size:.81rem;}
+    .inspector-event-grid ul {margin:3px 0 0 0;padding-left:17px;}
+    .inspector-event-grid li {margin-bottom:3px;}
+    @media (max-width:850px) {
+        .st-key-inspector_content {top:126px !important;padding:5px .5rem !important;}
+        .inspector-event-grid {grid-template-columns:1fr;}
+        .inspector-resources {grid-template-columns:repeat(2,minmax(0,1fr));}
+    }
+    </style>
+    """, unsafe_allow_html=True)
+
+
+def pantalla_inspeccion(game, selected, ids, winners, max_round):
+    """Una única navegación compartida por Resumen, Detalle y Tablero."""
+    _inspector_css()
+    if "selected_round_v21" not in st.session_state or not (
+        1 <= integer(st.session_state["selected_round_v21"]) <= max_round
+    ):
+        st.session_state["selected_round_v21"] = 1
+    with st.container(key="inspector_header"):
+        titulo, prev, num, nxt, vista, salir = st.columns(
+            [2.4,.56,1.20,.56,3.3,.65], vertical_alignment="center")
+        with titulo:
+            st.markdown(
+                f"**SIMLOG {escape(str(selected['schema']))} · "
+                f"{selected['size']} jugadores · Semilla {selected['seed']}**")
+        with prev:
+            st.button("◀", key="ins_prev", help="Ronda anterior",
+                      disabled=st.session_state["selected_round_v21"] <= 1,
+                      on_click=_navegar_ronda, args=(-1,max_round))
+        with num:
+            st.number_input("Ronda", min_value=1,max_value=max_round,step=1,
+                            key="selected_round_v21", label_visibility="collapsed")
+        with nxt:
+            st.button("▶", key="ins_next", help="Ronda siguiente",
+                      disabled=st.session_state["selected_round_v21"] >= max_round,
+                      on_click=_navegar_ronda, args=(1,max_round))
+        with vista:
+            modo = st.radio("Vista de inspección", ["Resumen","Detalle","Tablero"],
+                            horizontal=True,key="inspector_vista_simlog",
+                            label_visibility="collapsed")
+        with salir:
+            if st.button("Salir",key="ins_salir",help="Volver al visualizador"):
+                st.session_state["inspector_simlog"] = False
+                st.rerun()
+    ronda = st.session_state["selected_round_v21"]
+    snapshot = snapshot_de_ronda(game, ronda)
+    with st.container(key="inspector_content"):
+        if modo == "Tablero":
+            st.caption(f"Ubicaciones al cierre de la ronda {ronda} · "
+                       f"último turno global {snapshot['turno'] or 'sin datos'}. "
+                       "Los circuitos se representan esquemáticamente.")
+            if snapshot["sin_datos"]:
+                st.warning("Esta traza no incluye estados de jugadores para la ronda indicada.")
+            else:
+                st.plotly_chart(dibujar_tablero(game,ronda,height=590),
+                                use_container_width=True,
+                                config={"displaylogo":False,"responsive":True})
+                missing = snapshot["faltantes"]
+                unplaced = [p for p in resumen_ubicaciones(snapshot)
+                            if p["Ubicación dibujada"] == "No"]
+                if missing:
+                    st.warning(f"Faltan estados del cierre para: {', '.join(map(str, missing))}")
+                if unplaced:
+                    st.warning("Hay posiciones no dibujadas porque la traza no "
+                               "contiene una coordenada reconocible.")
+                st.dataframe(resumen_ubicaciones(snapshot),
+                             use_container_width=True,hide_index=True)
+            return
+        try:
+            catalogo = catalogo_narrativo()
+        except (OSError, ValueError, AssertionError):
+            catalogo = {}
+        if modo == "Resumen":
+            st.caption(f"Ronda {ronda} · Recursos al cierre · "
+                       "Eventos observados · Elegí Detalle para consultar la traza completa.")
+            for inicio in range(0,len(winners),2):
+                columns=st.columns(2,gap="small")
+                for col,pid in zip(columns,winners[inicio:inicio+2]):
+                    with col:
+                        resumen_compacto_jugador(game,ronda,pid,catalogo,snapshot)
+        else:
+            show_options=st.toggle("Mostrar opciones A/B de las cartas",
+                                   value=False,key="inspector_opciones_ab")
+            for inicio in range(0,len(winners),2):
+                columns=st.columns(2,gap="small")
+                for col,pid in zip(columns,winners[inicio:inicio+2]):
+                    with col:
+                        st.markdown(f"**{role_name(game['manifest'],pid)}**")
+                        mostrar_estado_pareja(game,ronda,pid)
+                        panel_recursos(game,ronda,pid)
+                        mostrar_hitos_y_subhitos(game,ronda,pid)
+                        mostrar_tarjetas_eventos(
+                            "Avances de esta ronda",eventos_hitos_ronda(game,ronda,pid),
+                            "No hay inversiones o adjudicaciones registradas.")
+                        mostrar_tarjetas_eventos(
+                            "Interacciones y eventos",eventos_sociales_ronda(game,ronda,pid),
+                            "No hay interacciones registradas.")
+                        mostrar_decisiones_del_turno(
+                            game,ronda,pid,catalogo,show_options)
+
+
 st.title("Visualizador de partidas · SIMLOG v2.1 / v2.2 / v2.3")
 st.caption("Decisiones y eventos SIMLOG v2.1/v2.2/v2.3 por partida y jugadores seleccionados. "
            "Solo lectura: no modifica simulaciones ni inventa resultados.")
@@ -544,6 +785,15 @@ if not winners:
 items = build_events(game, winners)
 max_round = max(1, selected["rounds"],
                 max((integer(t.get("Ronda")) for t in game["turnos.csv"]), default=1))
+
+if st.button("Abrir inspección de rondas y tablero", type="primary",
+             key="abrir_inspector_simlog"):
+    st.session_state["inspector_simlog"] = True
+    st.rerun()
+if st.session_state.get("inspector_simlog"):
+    pantalla_inspeccion(game,selected,ids,winners,max_round)
+    st.stop()
+
 st.caption(
     f"**Partida:** {selected['id']} · **Mesa:** {selected['size']} jugadores · "
     f"**Resultado:** {'Casamiento' if selected['won'] else 'Sin ganador registrado'} · "
@@ -585,7 +835,7 @@ m4.metric("Duelos registrados", len({
 m5.metric("Decisiones A/B", sum(x["categoria"] == "Situación A/B" for x in items))
 
 tabs = st.tabs(["Gantt", "Ronda a ronda", "Economía",
-                "Interacciones", "Afinidad", "Auditoría"])
+                "Interacciones", "Afinidad", "Auditoría", "Tablero"])
 
 with tabs[0]:
     st.plotly_chart(build_gantt(game, filtered, winners, low, high),
@@ -607,6 +857,10 @@ with tabs[0]:
                        file_name=f"eventos_ganadores_{selected['seed']}.csv", mime="text/csv")
 
 with tabs[1]:
+    if st.button("Abrir vista compacta con navegación fija y Tablero",
+                 key="inspector_desde_ronda"):
+        st.session_state["inspector_simlog"] = True
+        st.rerun()
     if "selected_round_v21" not in st.session_state or st.session_state["selected_round_v21"] > max_round:
         st.session_state["selected_round_v21"] = low
     rcol1, rcol2, rcol3 = st.columns([1, 4, 1], vertical_alignment="bottom")
@@ -752,5 +1006,26 @@ with tabs[5]:
         file_name=f"simlog_v21_analisis_{selected['seed']}.json",
         mime="application/json",
     )
+with tabs[6]:
+    st.caption("Posiciones de todos los jugadores al final de la ronda seleccionada. "
+               "Para cambiar de ronda sin desplazar la página, abrí el inspector.")
+    numero_tablero = integer(st.session_state.get("selected_round_v21"), 1)
+    if numero_tablero > max_round:
+        numero_tablero = max_round
+    if st.button("Abrir tablero con controles fijos",key="inspector_desde_tablero"):
+        st.session_state["inspector_vista_simlog"] = "Tablero"
+        st.session_state["inspector_simlog"] = True
+        st.rerun()
+    snap_tablero = snapshot_de_ronda(game,numero_tablero)
+    if snap_tablero["sin_datos"]:
+        st.warning("No hay estados físicos de SIMLOG en esta ronda.")
+    else:
+        st.plotly_chart(dibujar_tablero(game,numero_tablero),
+                        use_container_width=True)
+        st.dataframe(resumen_ubicaciones(snap_tablero),
+                     use_container_width=True,hide_index=True)
+        if snap_tablero["faltantes"]:
+            st.warning(f"Faltan jugadores al cierre: {snap_tablero['faltantes']}")
+
 st.caption("SIMLOG v2.1/v2.2/v2.3 · Vista de solo lectura · Resultados del simulador experimental; "
            "no constituyen una certificación del balance ni de reglas pendientes.")
