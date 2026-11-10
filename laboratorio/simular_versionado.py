@@ -1,7 +1,7 @@
 """Ejecutor versionado de Clarisa & Lucas.
 
-La versión se valida ANTES de simular o escribir trazas. No admite
-re-etiquetar resultados de v2.1 como si fueran de v2.2.
+La versión se valida antes de simular o escribir trazas. Los motores
+v2.1 y v2.2 conservan directorios y manifiestos distintos.
 """
 from __future__ import annotations
 
@@ -29,13 +29,14 @@ def main(argv=None):
     # Importar el motor únicamente después de comprobar la versión.
     if args.version == "2.1":
         from laboratorio.simular_mazos_vigentes_v2 import execute
-
-        result = execute(
-            args.out, seeds=args.semillas, start_seed=args.inicio,
-            round_limit=args.rondas, competition=not args.sin_competencia
-        )
+    elif args.version == "2.2":
+        from laboratorio.simular_v22 import execute
     else:
         raise AssertionError("Selección de reglas inesperada.")
+    result = execute(
+        args.out, seeds=args.semillas, start_seed=args.inicio,
+        round_limit=args.rondas, competition=not args.sin_competencia
+    )
     print(json.dumps(result, ensure_ascii=False, indent=2))
     return result
 
