@@ -3,8 +3,6 @@ name: SIMLOG v2.3 · Casa de propietarios móviles
 on:
   push:
     branches: [feature/simlog-v23-casa-propietarios]
-    paths:
-      - '.github/workflows/simlog-v23-casa.yml'
   workflow_dispatch:
 
 jobs:
