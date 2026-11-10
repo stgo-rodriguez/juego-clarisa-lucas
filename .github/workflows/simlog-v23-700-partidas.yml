@@ -1,0 +1,149 @@
+name: SIMLOG v2.3 - 700 partidas comparables (350 de 6 y 350 de 10)
+
+on:
+  push:
+    branches:
+      - feature/simlog-v23-casa-propietarios
+    paths:
+      - '.github/workflows/simlog-v23-700-partidas.yml'
+  workflow_dispatch:
+
+jobs:
+  simular:
+    name: "v2.3 - 350 partidas de ${{ matrix.jugadores }} jugadores"
+    runs-on: ubuntu-latest
+    timeout-minutes: 90
+    strategy:
+      fail-fast: false
+      max-parallel: 2
+      matrix:
+        jugadores: [6, 10]
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+      - name: Simular v2.3 con las semillas 2001-2350 de la corrida v2.2
+        env:
+          N: ${{ matrix.jugadores }}
+        run: |
+          python -m laboratorio.simular_versionado \
+            --version 2.3 --jugadores "$N" --politica planificador \
+            --mano 3 --sin-banco --semillas 350 --inicio 2001 \
+            --rondas 100 --out "resultados/SIMLOG_v23_350_jug${N}"
+      - name: Auditar trazas, versiones, semillas, reglas y resultados
+        env:
+          N: ${{ matrix.jugadores }}
+        run: |
+          python - <<'PY'
+          import csv
+          import hashlib
+          import json
+          import math
+          import os
+          import statistics
+          from pathlib import Path
+          n = int(os.environ['N'])
+          root = Path(f'resultados/SIMLOG_v23_350_jug{n}')
+          with (root/'partidas.csv').open(encoding='utf-8-sig',newline='') as f:
+              games = list(csv.DictReader(f))
+          assert len(games)==350, f'Se esperaban 350 partidas y hay {len(games)}'
+          assert {int(g['size']) for g in games} == {n}
+          assert {int(g['seed']) for g in games} == set(range(2001,2351))
+          assert {g['policy'] for g in games} == {'planificador'}
+          assert {int(g['hand_size']) for g in games} == {3}
+          assert {g['bank_enabled'] for g in games} == {'False'}
+          assert all(int(g['bank_conversions'])==0 for g in games)
+          assert all(1 <= int(g['rounds']) <= 100 for g in games)
+          valid_stops={'marriage','rule_pending','round_limit'}
+          assert {g['stop'] for g in games} <= valid_stops
+          assert all((g['won']=='True')==(g['stop']=='marriage') for g in games)
+          completed = sum(g['stop']!='rule_pending' for g in games)
+          trace_manifests=list((root/'trazas').glob(f'n{n}_s*/manifest.json'))
+          assert len(trace_manifests)==completed,(len(trace_manifests),completed)
+          for g in games:
+              directory=root/'trazas'/f"n{n}_s{g['seed']}"
+              if g['stop']=='rule_pending':
+                  assert (directory/'bloqueo_reglamentario.json').is_file(),directory
+                  assert not (directory/'manifest.json').exists(),directory
+                  continue
+              m=json.loads((directory/'manifest.json').read_text(encoding='utf-8'))
+              assert m['schema']=='SIMLOG-2.3'
+              assert m['ruleset']=='especificacion-integral-2026-11-10'
+              assert m['source_document_id']=='16IOCwC72fT__n5b19PQm-LRa7CenB5S_'
+              assert int(m['seed'])==int(g['seed']) and int(m['player_count'])==n
+              assert m['bank_conversion_enabled'] is False and m['adult_hand_size']==3
+              for basename,digest in m.get('file_sha256',{}).items():
+                  file=directory/basename
+                  assert file.is_file(),file
+                  assert hashlib.sha256(file.read_bytes()).hexdigest()==digest, file
+              with (directory/'eventos.csv').open(encoding='utf-8-sig',newline='') as stream:
+                  for event in csv.DictReader(stream):
+                      if event['Accion'] not in ('house_attempt','house_encounter','house_bought'):
+                          continue
+                      detail=json.loads(event['Detalle_JSON'])
+                      loc=detail.get('location')
+                      assert isinstance(loc,list) and len(loc)==2,(directory,event)
+                      assert detail.get('mode') in ('banca','propietarios')
+                      if detail['mode']=='banca':
+                          assert loc==[3,3]
+                      if event['Accion']=='house_encounter':
+                          assert detail['mode']=='propietarios'
+          wins=[int(g['rounds']) for g in games if g['stop']=='marriage']
+          ordered=sorted(wins)
+          summary={
+              'schema':'SIMLOG-2.3',
+              'ruleset':'especificacion-integral-2026-11-10',
+              'jugadores':n,
+              'partidas':len(games),
+              'semillas_desde':2001,
+              'semillas_hasta':2350,
+              'politica':'planificador',
+              'mano_adulta':3,
+              'banco_conversion_habilitado':False,
+              'maximo_rondas':100,
+              'casamientos':len(wins),
+              'reglas_pendientes':sum(g['stop']=='rule_pending' for g in games),
+              'agotaron_rondas':sum(g['stop']=='round_limit' for g in games),
+              'trazas_completas':completed,
+              'mediana_rondas_casamientos':statistics.median(wins) if wins else None,
+              'p80_rondas_casamientos':ordered[math.ceil(.8*len(ordered))-1] if wins else None,
+              'media_rondas_casamientos':round(statistics.mean(wins),2) if wins else None,
+              'min_rondas_casamientos':min(wins) if wins else None,
+              'max_rondas_casamientos':max(wins) if wins else None,
+              'total_turnos':sum(int(g['turns']) for g in games),
+              'encuentros_casa':sum(int(g['house_encounters']) for g in games),
+              'intentos_disputa_casa':sum(int(g['house_dispute_attempts']) for g in games),
+              'transferencias_propiedad':sum(int(g['house_owner_transfers']) for g in games)
+          }
+          (root/'AUDITORIA_350_PARTIDAS.json').write_text(
+              json.dumps(summary,ensure_ascii=False,indent=2)+'\n',encoding='utf-8')
+          with (root/'AUDITORIA_350_PARTIDAS.csv').open('w',newline='',encoding='utf-8-sig') as f:
+              writer=csv.DictWriter(f,fieldnames=list(summary))
+              writer.writeheader()
+              writer.writerow(summary)
+          print('VALIDACION_V23_350_OK',json.dumps(summary,ensure_ascii=False),flush=True)
+          PY
+      - name: Publicar resultados consolidados SIN ZIP propios (CSV y JSON)
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: "SIMLOG_v23_350_resultados_${{ matrix.jugadores }}jug_semillas_2001_2350"
+          path: |
+            resultados/SIMLOG_v23_350_jug${{ matrix.jugadores }}/partidas.csv
+            resultados/SIMLOG_v23_350_jug${{ matrix.jugadores }}/resumen.json
+            resultados/SIMLOG_v23_350_jug${{ matrix.jugadores }}/AUDITORIA_350_PARTIDAS.csv
+            resultados/SIMLOG_v23_350_jug${{ matrix.jugadores }}/AUDITORIA_350_PARTIDAS.json
+            resultados/SIMLOG_v23_350_jug${{ matrix.jugadores }}/diversidad_decisiones_por_grupo.csv
+            resultados/SIMLOG_v23_350_jug${{ matrix.jugadores }}/preferencias_por_etapa_rol.csv
+          if-no-files-found: warn
+          retention-days: 30
+      - name: Publicar trazas SIMLOG por partida para visualizador
+        if: success()
+        uses: actions/upload-artifact@v4
+        with:
+          name: "SIMLOG_v23_350_trazas_${{ matrix.jugadores }}jug_semillas_2001_2350"
+          path: resultados/SIMLOG_v23_350_jug${{ matrix.jugadores }}/
+          compression-level: 6
+          retention-days: 30
+          if-no-files-found: error
