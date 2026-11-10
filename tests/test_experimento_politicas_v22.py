@@ -125,6 +125,20 @@ class EndToEndTests(unittest.TestCase):
             self.assertTrue(renewed)
             self.assertTrue(all(len(ev['cards'])==4 for ev in renewed))
 
+    def test_missing_adult_break_rule_is_censored_not_silently_ignored(self):
+        with tempfile.TemporaryDirectory() as tmp:
+            root=Path(tmp)
+            out=run_game(6,3201,round_limit=100,trace_dir=root,
+                         policy='mixto',hand_size=3,bank_enabled=True)
+            self.assertIn(out['stop'], ('marriage','round_limit','rule_pending'))
+            if out['stop']=='rule_pending':
+                self.assertFalse(out['won'])
+                self.assertIn('Ruptura',out['blocked_reason'])
+                self.assertTrue((root/'bloqueo_reglamentario.json').exists())
+                self.assertFalse((root/'turnos.csv').exists())
+            else:
+                self.assertTrue((root/'turnos.csv').exists())
+
     def test_random_policy_no_mixed_mapping_leak(self):
         with tempfile.TemporaryDirectory() as tmp:
             out=run_game(6,3103,round_limit=90,trace_dir=Path(tmp),
