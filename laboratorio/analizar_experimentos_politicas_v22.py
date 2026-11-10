@@ -47,7 +47,8 @@ def main(folder):
     durations=[int(g['rounds']) for g in won]
     observed=[int(g['rounds']) for g in games]
     turns=[int(g['turns']) for g in games]
-    diversity=read_csv(folder/'diversidad_decisiones_por_grupo.csv')
+    diversity=(read_csv(folder/'diversidad_decisiones_por_grupo.csv')
+               if (folder/'diversidad_decisiones_por_grupo.csv').is_file() else [])
     first=[g for g in diversity if g['etapa']=='Infancia'
            and int(g['ronda'])==1 and int(g['participantes'])>=2]
     winner_policy=Counter()
