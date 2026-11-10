@@ -52,6 +52,10 @@ def main(root):
     unknown = []
     for game in games:
         folder = root / 'trazas' / f"n{game['size']}_s{game['seed']}"
+        if not (folder/'turnos.csv').exists():
+            if game['stop'] != 'rule_pending':
+                raise AssertionError(f'Falta traza de la partida {game["seed"]}')
+            continue
         turn_map = {int(row['Turno_global']): row for row in read(folder / 'turnos.csv')}
         for row in turn_map.values():
             if row['Etapa_situacion'] in STAGES:
@@ -101,9 +105,10 @@ def main(root):
             })
     write(root / 'balance_por_etapa.csv', economy)
     write(root / 'balance_por_mecanismo.csv', breakdown)
-    groups = list(read(root / 'diversidad_decisiones_por_grupo.csv'))
+    groups = (list(read(root / 'diversidad_decisiones_por_grupo.csv'))
+              if (root / 'diversidad_decisiones_por_grupo.csv').is_file() else [])
     first = []
-    for size in (6, 10):
+    for size in sorted({int(g['size']) for g in games}):
         selected = [g for g in groups if int(g['size']) == size and
                     g['etapa'] == 'Infancia' and int(g['ronda']) == 1 and
                     int(g['participantes']) >= 2]
@@ -111,18 +116,23 @@ def main(root):
             'Mesa': size, 'Grupos': len(selected),
             'Contextos_distintos': sum(int(g['recursos_diversos']) for g in selected),
             'Ambas_AB': sum(int(g['ambas_opciones']) for g in selected),
-            'Ambas_AB_pct': round(100 * sum(int(g['ambas_opciones']) for g in selected) / len(selected), 2),
+            'Ambas_AB_pct': (round(100 * sum(int(g['ambas_opciones']) for g in selected) / len(selected), 2)
+                                  if selected else None),
         })
     write(root / 'primera_ronda_por_mesa.csv', first)
     durations = []
-    for size in (6, 10):
-        cohort = [int(g['rounds']) for g in games if int(g['size']) == size]
+    for size in sorted({int(g['size']) for g in games}):
+        selected=[g for g in games if int(g['size'])==size]
+        cohort = [int(g['rounds']) for g in selected if g['stop']=='marriage']
         ordered = sorted(cohort)
         durations.append({
-            'Mesa': size, 'Partidas': len(cohort),
-            'Mediana_rondas': statistics.median(cohort),
-            'P80_rondas': ordered[math.ceil(len(ordered) * .8) - 1],
-            'Media_rondas': round(statistics.mean(cohort), 2),
+            'Mesa': size, 'Partidas': len(selected),
+            'Casamientos':len(cohort),
+            'Bloqueadas_por_regla':sum(g['stop']=='rule_pending' for g in selected),
+            'Limite_rondas':sum(g['stop']=='round_limit' for g in selected),
+            'Mediana_rondas': statistics.median(cohort) if cohort else None,
+            'P80_rondas': ordered[math.ceil(len(ordered) * .8) - 1] if cohort else None,
+            'Media_rondas': round(statistics.mean(cohort), 2) if cohort else None,
         })
     write(root / 'duracion_por_mesa.csv', durations)
     output = {'duracion': durations, 'primera_ronda': first,
