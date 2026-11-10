@@ -11,6 +11,7 @@ import zipfile
 from html import escape
 from io import StringIO
 import json
+import os
 import sys
 from collections import Counter, defaultdict
 from pathlib import Path
@@ -635,7 +636,7 @@ with st.expander("Origen de los datos · carpetas y ZIP SIMLOG v2.1/v2.2/v2.3", 
     with src1:
         root_path = st.text_input(
             "Carpeta principal de resultados",
-            value=str(ROOT / "resultados"),
+            value=os.environ.get("SIMLOG_RESULTS_ROOT", str(ROOT / "resultados")),
             help="Se buscan de forma recursiva TODAS las partidas SIMLOG v2.1/v2.2/v2.3 "
                  "de esta carpeta, sin limitar semillas ni tamaño de mesa.")
     with src2:
