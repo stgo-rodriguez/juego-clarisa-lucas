@@ -139,6 +139,113 @@ def _shape_ellipse(fig, x, y, size=.69, **kwargs):
                   line=dict(color=kwargs.get("line", "#cbd5e1"), width=1),
                   fillcolor=kwargs.get("fill", "#f8fafc"), layer="below")
 
+
+def etiqueta_jugador(p: dict) -> str:
+    """Código breve de la ficha sin alterar el identificador registrado."""
+    prefix = "C" if p["rol"] == "Clarisa" else "L" if p["rol"] == "Lucas" else "J"
+    return f"{prefix}{p['jugador']}"
+
+
+def _ubicaciones(snapshot: dict) -> dict:
+    """Agrupa solo por coordenadas efectivamente dibujables del SIMLOG."""
+    locations = {}
+    for player in snapshot["jugadores"]:
+        coordinates = _coordinates(player)
+        if coordinates is not None:
+            locations.setdefault(coordinates, []).append(player)
+    return locations
+
+
+def _grupos_del_casillero(players: list[dict]) -> list[dict]:
+    """Agrupa una pareja solo si AMBOS están aquí y el vínculo es recíproco."""
+    by_id = {player["jugador"]: player for player in players}
+    used = set()
+    groups = []
+    for player in sorted(players, key=lambda p: p["jugador"]):
+        pid = player["jugador"]
+        if pid in used:
+            continue
+        partner = by_id.get(player["pareja"])
+        if (partner is not None and partner["jugador"] != pid
+                and partner.get("pareja") == pid
+                and partner["jugador"] not in used):
+            members = sorted((player, partner),
+                             key=lambda p: (p["rol"] != "Clarisa", p["jugador"]))
+            groups.append({"tipo": "pareja", "miembros": members})
+            used.update((pid, partner["jugador"]))
+        else:
+            groups.append({"tipo": "ficha", "miembros": [player]})
+            used.add(pid)
+    # Las parejas aparecen primero y el orden no depende del turno que terminó la ronda.
+    groups.sort(key=lambda group: (
+        group["tipo"] != "pareja",
+        min(p["jugador"] for p in group["miembros"]),
+    ))
+    return groups
+
+
+def coincidencias_de_casilleros(snapshot: dict) -> list[dict]:
+    """Detalle auditable de casilleros compartidos para ambas vistas Tablero."""
+    coincidences = []
+    for players in _ubicaciones(snapshot).values():
+        if len(players) < 2:
+            continue
+        groups = _grupos_del_casillero(players)
+        coincidences.append({
+            "etapa": players[0]["etapa"],
+            "posicion": players[0]["posicion"],
+            "ronda": snapshot["ronda"],
+            "jugadores": len(players),
+            "grupos": groups,
+        })
+    return sorted(coincidences, key=lambda row: (
+        row["etapa"], row["posicion"]
+    ))
+
+
+def _ficha_plotly(fig, player, x, y, *, size=19):
+    color = (AZUL if player["rol"] == "Clarisa" else
+             NARANJA if player["rol"] == "Lucas" else GRIS)
+    label = etiqueta_jugador(player)
+    fig.add_trace(go.Scatter(
+        x=[x], y=[y], mode="markers+text", text=[label],
+        textposition="middle center",
+        textfont=dict(color="white", size=9 if size < 24 else 10),
+        marker=dict(size=size, color=color,
+                    line=dict(color="#ffffff", width=1.2)),
+        hovertemplate=(
+            f"<b>{player['rol']} #{player['jugador']}</b><br>"
+            f"Etapa: {player['etapa']}<br>"
+            f"Posición: {player['posicion']}<br>"
+            f"Pareja registrada: {player['pareja'] or 'No'}<extra></extra>"
+        ),
+        showlegend=False,
+    ))
+
+
+def _tarjeta_grupo(fig, group, x, y, number):
+    """Una fila compacta con ambas fichas de la pareja dentro del mismo marco."""
+    is_pair = group["tipo"] == "pareja"
+    fig.add_shape(
+        type="rect", x0=x-1.08, x1=x+1.08,
+        y0=y-.32, y1=y+.32,
+        line=dict(color=VERDE if is_pair else "#94a3b8", width=1.7),
+        fillcolor="#ecfdf5" if is_pair else "#f8fafc",
+        layer="below",
+    )
+    if is_pair:
+        for offset, player in zip((-.57, .07), group["miembros"]):
+            _ficha_plotly(fig, player, x+offset, y, size=19)
+        text = f"<b>P{number}</b>"
+    else:
+        _ficha_plotly(fig, group["miembros"][0], x-.40, y, size=19)
+        text = "Solo"
+    fig.add_annotation(
+        x=x+.78, y=y, text=text, showarrow=False,
+        font=dict(size=9, color=VERDE if is_pair else GRIS),
+    )
+
+
 def dibujar_tablero(game: dict, ronda: int, *, height: int = 590) -> go.Figure:
     snapshot = snapshot_de_ronda(game, ronda)
     fig = go.Figure()
@@ -164,7 +271,7 @@ def dibujar_tablero(game: dict, ronda: int, *, height: int = 590) -> go.Figure:
             theta = math.pi / 2 - (pos - 1) * math.pi / 3
             x, y = 5.4 + 2.9 * math.cos(theta), cy + 2.3 * math.sin(theta)
             _shape_ellipse(fig, x, y)
-            fig.add_annotation(x=x, y=y+.46, text=str(pos), showarrow=False,
+            fig.add_annotation(x=x, y=y+.84, text=str(pos), showarrow=False,
                                font=dict(size=10, color=GRIS))
         _shape_ellipse(fig, 10.0, cy, .6, fill="#fef3c7")
         fig.add_annotation(x=10.0, y=cy+.5, text="UTN", showarrow=False,
@@ -173,7 +280,7 @@ def dibujar_tablero(game: dict, ronda: int, *, height: int = 590) -> go.Figure:
         theta = math.pi / 2 - (pos-1) * math.pi / 3
         x, y = 17.3 + 3.0*math.cos(theta), 8.5+5.6*math.sin(theta)
         _shape_ellipse(fig, x, y, .72)
-        fig.add_annotation(x=x, y=y+.46, text=str(pos), showarrow=False,
+        fig.add_annotation(x=x, y=y+.84, text=str(pos), showarrow=False,
                            font=dict(size=10, color=GRIS))
     for row in range(1, 6):
         for col in range(1, 6):
@@ -185,41 +292,54 @@ def dibujar_tablero(game: dict, ronda: int, *, height: int = 590) -> go.Figure:
                           line=dict(color="#cbd5e1",width=1),
                           fillcolor=fill,layer="below")
             label = name or (f"{row},{col}" if not access else f"{row},{col} ↑")
-            fig.add_annotation(x=cx,y=cy+.74,text=label,showarrow=False,
+            fig.add_annotation(x=cx,y=cy+.91,text=label,showarrow=False,
                                font=dict(size=9,color="#64748b"))
     for x, y, label in [(23,1.5,"DUBLÍN"), (37.2,16.0,"CASAMIENTO")]:
         _shape_ellipse(fig, x, y, .85, fill="#fef3c7" if label=="DUBLÍN" else "#dcfce7")
         fig.add_annotation(x=x,y=y+1.0,text=label,showarrow=False,
                            font=dict(size=9,color="#475569"))
-    locations = {}
-    unplaced = []
-    for p in snapshot["jugadores"]:
-        coords = _coordinates(p)
-        if coords is None:
-            unplaced.append(p)
+
+    locations = _ubicaciones(snapshot)
+    for (x, y), players in locations.items():
+        groups = _grupos_del_casillero(players)
+        if len(groups) == 1 and len(groups[0]["miembros"]) == 1:
+            _ficha_plotly(fig, players[0], x, y-.1, size=26)
+        elif len(groups) <= 2:
+            # Dos parejas comparten casillero: dos filas, cada pareja enmarcada.
+            y_offsets = [0.0] if len(groups) == 1 else [.28, -.53]
+            pair_number = 0
+            for group, offset in zip(groups, y_offsets):
+                if group["tipo"] == "pareja":
+                    pair_number += 1
+                _tarjeta_grupo(fig, group, x, y+offset, pair_number)
         else:
-            locations.setdefault(coords, []).append(p)
-    for (x,y), players in locations.items():
-        for idx,p in enumerate(players):
-            # Hasta 10 fichas pueden ocupar el mismo casillero.
-            columns = 3
-            dx = (idx%columns-1) * .47
-            dy = (idx//columns) * -.48 + .19
-            color = AZUL if p["rol"]=="Clarisa" else NARANJA if p["rol"]=="Lucas" else GRIS
-            border = VERDE if p["pareja"] is not None else "#fff"
-            label = ("C" if p["rol"]=="Clarisa" else "L" if p["rol"]=="Lucas" else "J")+str(p["jugador"])
+            # Tres o más grupos: icono de ocupación sin solapamientos;
+            # cada grupo se identifica debajo del tablero.
+            description = []
+            pair_number = 0
+            for group in groups:
+                names = " + ".join(etiqueta_jugador(p) for p in group["miembros"])
+                if group["tipo"] == "pareja":
+                    pair_number += 1
+                    description.append(f"Pareja {pair_number}: {names}")
+                else:
+                    description.append(f"Ficha: {names}")
             fig.add_trace(go.Scatter(
-                x=[x+dx],y=[y+dy],mode="markers+text",text=[label],
-                textposition="middle center",
-                textfont=dict(color="white",size=10),
-                marker=dict(size=26,color=color,line=dict(color=border,width=3)),
+                x=[x], y=[y-.18], mode="markers+text",
+                text=[str(len(players))], textposition="middle center",
+                textfont=dict(size=11, color="white"),
+                marker=dict(size=34, color="#334155",
+                            line=dict(color="#ffffff", width=2)),
                 hovertemplate=(
-                    f"<b>{p['rol']} #{p['jugador']}</b><br>"
-                    f"Etapa: {p['etapa']}<br>Posición: {p['posicion']}<br>"
-                    f"Pareja: {p['pareja'] or 'No'}<extra></extra>"
-                ),
-                showlegend=False,
+                    f"<b>{len(players)} fichas en {players[0]['etapa']} "
+                    f"{players[0]['posicion']}</b><br>"
+                    + "<br>".join(description) + "<extra></extra>"
+                ), showlegend=False,
             ))
+            fig.add_annotation(
+                x=x, y=y-.88, text=f"{len(groups)} grupos",
+                showarrow=False, font=dict(size=9, color="#334155"),
+            )
     return fig
 
 def resumen_ubicaciones(snapshot: dict) -> list[dict]:
