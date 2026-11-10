@@ -82,7 +82,7 @@ def run():
             page.get_by_role("button",name="▶").click()
             page.wait_for_timeout(250)
             assert page.locator(".st-key-inspector_header input").first.input_value() == "2"
-            page.get_by_role("radio",name="Tablero").check()
+            page.get_by_text("Tablero",exact=True).click()
             page.locator('[data-testid="stPlotlyChart"]').first.wait_for(state="visible")
             page.wait_for_timeout(450)
             _verify_viewport(page)
@@ -92,7 +92,7 @@ def run():
             page.wait_for_timeout(350)
             _verify_viewport(page)
             page.screenshot(path=str(CAPTURES/"tablero_1280.png"))
-            page.get_by_role("radio",name="Detalle").check()
+            page.get_by_text("Detalle",exact=True).click()
             page.locator(".st-key-inspector_content").wait_for(state="visible")
             page.wait_for_timeout(550)
             area=page.locator(".st-key-inspector_content")
