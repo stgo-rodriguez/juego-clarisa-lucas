@@ -1,4 +1,4 @@
-name: v2.2 · Banco, políticas por jugador y SIMLOG auditado
+name: v2.2 · Banco, políticas por jugador y SIMLOG auditado (regresión)
 
 on:
   push:
