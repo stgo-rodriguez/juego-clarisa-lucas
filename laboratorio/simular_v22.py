@@ -28,6 +28,7 @@ from simulador.turnos_v2 import CardPool,PlayerState,RoundEngine,SituationCard,S
 from laboratorio.experimento_agentes_v2 import adult_cards
 from laboratorio.sensibilidad_v2 import progress_score
 from simulador.mazos_propuestos_v2 import BalanceVariant
+from simulador.turnos_v2 import PendingRuleError
 
 
 def write_rows(file,rows):
@@ -84,24 +85,34 @@ def run_game(size,seed,round_limit=100,competition=True,trace_dir=None,catalog=N
             policy_by_player=policies,hand_size=hand_size,bank_enabled=bank_enabled)
         logger.new_sources=catalog['sources'];logger.attach_hooks(hooks)
     rounds=0;turns=0;no_progress=0;stop='round_limit'
+    blocked_reason=None
+    blocked_player=None
     for _ in range(round_limit):
-        if logger:logger.begin_round()
-        engine.start_round()
-        if logger:logger.end_round_start()
-        for p in players:
-            before=progress_score(engine,eco)
-            if logger:logger.begin_turn(p.id)
-            outcome=engine.play_turn(p.id,
-                youth_choice=logger.wrap_youth_choice(youth) if logger else youth,
-                adult_choice=logger.wrap_adult_choice(agent.choose_adult) if logger else agent.choose_adult,
-                choose_utn=True,choose_dublin=True)
-            if logger:logger.end_turn(outcome)
-            turns+=1
-            if progress_score(engine,eco)<=before:no_progress+=1
-            if eco.married is not None:
-                stop='marriage';break
-        if logger:logger.end_round(ended=stop=='marriage')
-        if stop=='marriage':break
+        try:
+            if logger:logger.begin_round()
+            engine.start_round()
+            if logger:logger.end_round_start()
+            for p in players:
+                before=progress_score(engine,eco)
+                if logger:logger.begin_turn(p.id)
+                outcome=engine.play_turn(p.id,
+                    youth_choice=logger.wrap_youth_choice(youth) if logger else youth,
+                    adult_choice=logger.wrap_adult_choice(agent.choose_adult) if logger else agent.choose_adult,
+                    choose_utn=True,choose_dublin=True)
+                if logger:logger.end_turn(outcome)
+                turns+=1
+                if progress_score(engine,eco)<=before:no_progress+=1
+                if eco.married is not None:
+                    stop='marriage'
+                    break
+            if logger:logger.end_round(ended=stop=='marriage')
+            if stop=='marriage':
+                break
+        except PendingRuleError as exc:
+            blocked_reason=str(exc)
+            blocked_player=p.id if 'p' in locals() else None
+            stop='rule_pending'
+            break
     eco.audit();profiles.audit()
     for d in engine.situation_decks.values():d.assert_conservation()
     engine.youth_deck.assert_conservation();engine.adult_deck.assert_conservation()
@@ -115,6 +126,7 @@ def run_game(size,seed,round_limit=100,competition=True,trace_dir=None,catalog=N
             'bank_conversions':sum(e['action']=='conversion_bancaria' for e in eco.events),
             'competition':competition,
             'rounds':engine.round_no,'turns':turns,'won':pair is not None,'stop':stop,
+            'blocked_reason':blocked_reason,'blocked_player':blocked_player,
             'winning_pair':json.dumps(pair_final),'winning_zone':pair_zone,
             'no_progress_ratio':round(no_progress/turns,5) if turns else 0,
             'situations_resolved':len(resolver.events),
@@ -124,9 +136,13 @@ def run_game(size,seed,round_limit=100,competition=True,trace_dir=None,catalog=N
             'affinity_final_positions':json.dumps(eco.dynamic_affinity,sort_keys=True),
             'affinity_final_zones':json.dumps({pid:zone(pos) for pid,pos in eco.dynamic_affinity.items()},sort_keys=True),
             'shuffled_decks_sha256':hashlib.sha256(json.dumps(shuffled,sort_keys=True).encode()).hexdigest()}
-    if logger:
+    if logger and stop!='rule_pending':
         logger.write(trace_dir,status=stop,summary=result)
         (Path(trace_dir)/'orden_mazos.json').write_text(json.dumps(shuffled,ensure_ascii=False,indent=2)+'\n',encoding='utf-8')
+    elif trace_dir is not None and stop=='rule_pending':
+        Path(trace_dir).mkdir(parents=True,exist_ok=True)
+        (Path(trace_dir)/'bloqueo_reglamentario.json').write_text(
+            json.dumps(result,ensure_ascii=False,indent=2)+'\n',encoding='utf-8')
     return result
 
 
@@ -150,6 +166,10 @@ def execute(out:Path,seeds:int=20,sizes=(6,10),round_limit=100,competition=True,
     assigned_cards={}
     for x in rows:
         root=out/'trazas'/f'n{x["size"]}_s{x["seed"]}'
+        if not (root/'turnos.csv').is_file():
+            if x['stop']!='rule_pending':
+                raise AssertionError('Falta traza de una partida no bloqueada')
+            continue
         with (root/'turnos.csv').open(newline='',encoding='utf-8-sig') as f:
             for t in csv.DictReader(f):
                 stage=t['Etapa_situacion'];role=t['Rol'];card=t['Carta_ID'];choice=t['Desenlace_elegido']
@@ -221,6 +241,7 @@ def execute(out:Path,seeds:int=20,sizes=(6,10),round_limit=100,competition=True,
             'summary':aggregated,'winners_by_zone':dict(zones),
             'total_decisions':sum(x['choices_A']+x['choices_B'] for x in rows),
             'total_games':len(rows),'total_marriages':sum(x['won'] for x in rows),
+            'total_blocked_by_pending_rules':sum(x['stop']=='rule_pending' for x in rows),
             'bank_conversions':sum(x['bank_conversions'] for x in rows),
             'diversidad_infancia_primera_ronda':first_diversity}
     (out/'resumen.json').write_text(json.dumps(result,ensure_ascii=False,indent=2)+'\n',encoding='utf-8')
