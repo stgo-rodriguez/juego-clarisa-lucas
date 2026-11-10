@@ -1,0 +1,47 @@
+name: Control experimental v2.2 · sin banco, mismas semillas
+
+on:
+  push:
+    branches: [feature/v22-auditoria-politicas-banco]
+    paths: ['.github/workflows/v22-control-sin-banco.yml']
+  workflow_dispatch:
+
+jobs:
+  control:
+    name: "Planificador mano 3 sin banco · ${{ matrix.jugadores }} jugadores"
+    runs-on: ubuntu-latest
+    timeout-minutes: 45
+    strategy:
+      fail-fast: false
+      matrix:
+        jugadores: [6, 10]
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+      - name: Ejecutar 40 partidas sin canjes, con semillas emparejadas
+        env:
+          N: ${{ matrix.jugadores }}
+        run: |
+          python -m laboratorio.simular_versionado \
+            --version 2.2 --jugadores "$N" --politica planificador --mano 3 \
+            --sin-banco --semillas 40 --inicio 3201 --rondas 100 \
+            --out "resultados/control/F_planificador_mano3_sin_banco/${N}j"
+      - name: Resumir control
+        env:
+          N: ${{ matrix.jugadores }}
+        run: |
+          python -m laboratorio.analizar_experimentos_politicas_v22 \
+            --out "resultados/control/F_planificador_mano3_sin_banco/${N}j"
+      - name: Archivos tabulares sin ZIP de trazas
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: "SIMLOG_v22_control_sin_banco_${{ matrix.jugadores }}j"
+          path: |
+            resultados/control/F_planificador_mano3_sin_banco/${{ matrix.jugadores }}j/resumen_experimento.json
+            resultados/control/F_planificador_mano3_sin_banco/${{ matrix.jugadores }}j/resumen_experimento.csv
+            resultados/control/F_planificador_mano3_sin_banco/${{ matrix.jugadores }}j/partidas.csv
+          retention-days: 30
+          if-no-files-found: warn
