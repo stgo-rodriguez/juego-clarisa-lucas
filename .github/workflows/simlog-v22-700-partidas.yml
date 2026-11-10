@@ -47,7 +47,6 @@ jobs:
           traces = sorted((source/'trazas').glob(f'n{n}_s*/manifest.json'))
           assert len(traces)==350, len(traces)
           from simulador.simlog_v22 import FORBIDDEN_SOURCES
-          from laboratorio.simlog_viewer_v21 import discover_games
           for manifest_file in traces:
               manifest = json.loads(manifest_file.read_text(encoding='utf-8'))
               assert manifest['schema']=='SIMLOG-2.2'
