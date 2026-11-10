@@ -136,6 +136,12 @@ class EndToEndTests(unittest.TestCase):
                 self.assertIn('Ruptura',out['blocked_reason'])
                 self.assertTrue((root/'bloqueo_reglamentario.json').exists())
                 self.assertFalse((root/'turnos.csv').exists())
+                self.assertTrue((root/'turnos_completados.csv').exists())
+                with (root/'turnos_completados.csv').open(encoding='utf-8-sig') as stream:
+                    prior=list(csv.DictReader(stream))
+                self.assertGreater(len(prior),0)
+                self.assertTrue(all(r['Desenlace_elegido'] in ('A','B')
+                                    for r in prior if r['Carta_ID']))
             else:
                 self.assertTrue((root/'turnos.csv').exists())
 
