@@ -168,6 +168,10 @@ class CompetitiveController:
                     return ('perfil',{})
             elif self.core_agent.config.policy=='aleatorio' and self.rng.randrange(3)==0:
                 return ('perfil',{})
+        # Solo Título puede disputarse entre Clarisa y Lucas. Un duelo
+        # ordinario exige mismo rol incluso si comparten casillero.
+        if active.role != target.role:
+            return None
         resource = 'M'
         stake = self.config.ordinary_stake
         if min(a.free[resource], d.free[resource]) >= stake:
