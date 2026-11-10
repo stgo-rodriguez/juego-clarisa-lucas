@@ -14,7 +14,7 @@ from simulador.versiones import RulesetNotReady, require_implemented
 
 def main(argv=None):
     parser = argparse.ArgumentParser(description="Ejecutor SIMLOG por versión.")
-    parser.add_argument("--version", choices=("2.1", "2.2"), required=True)
+    parser.add_argument("--version", choices=("2.1", "2.2", "2.3"), required=True)
     parser.add_argument("--out", type=Path, required=True)
     parser.add_argument("--semillas", type=int, default=20)
     parser.add_argument("--inicio", type=int, default=1)
@@ -41,6 +41,10 @@ def main(argv=None):
         kwargs = {"policy": args.politica}
     elif args.version == "2.2":
         from laboratorio.simular_v22 import execute
+        kwargs = {"policy": args.politica, "hand_size": args.mano,
+                  "bank_enabled": not args.sin_banco}
+    elif args.version == "2.3":
+        from laboratorio.simular_v23 import execute
         kwargs = {"policy": args.politica, "hand_size": args.mano,
                   "bank_enabled": not args.sin_banco}
     else:
