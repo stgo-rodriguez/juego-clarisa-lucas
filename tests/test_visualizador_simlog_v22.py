@@ -95,7 +95,7 @@ class VisualizadorV22Tests(unittest.TestCase):
             dest = Path(tmp) / "resultados"
             target = import_archive(source, dest)
             self.assertEqual(target.read_bytes(), inner)
-            self.assertEqual(len(discover_games(dest)), 1)
+            self.assertEqual(len(discover_games(target)), 1)  # La UI indexa ZIP locales por separado.
             self.assertEqual(import_archive(source, dest), target)
             self.assertEqual(len(list(dest.glob("SIMLOG*.zip"))), 1)
 
