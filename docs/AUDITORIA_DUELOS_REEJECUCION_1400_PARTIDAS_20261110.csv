@@ -1,0 +1,5 @@
+version,jugadores,partidas,casamientos,bloqueos_regla,mediana_rondas,p80_rondas,media_rondas,total_turnos,duelos_total,duelos_ordinarios,duelos_hito,duelos_perfil,disputas_hito_cruzadas_validas,duelos_ordinarios_invalidos,encuentros_casa,intentos_disputa_casa,transferencias_propiedad_casa,semillas_desde,semillas_hasta
+2.2,6,350,350,0,21,24,21.000,43196,2384,1902,72,410,9,0,,,,2001,2350
+2.3,6,350,350,0,20,24,20.880,42910,2457,1967,72,418,9,0,943,909,403,2001,2350
+2.2,10,350,350,0,20,22,19.957,68168,6197,4927,119,1151,11,0,,,,2001,2350
+2.3,10,350,350,0,20,22,19.720,67521,6199,4937,117,1145,10,0,2041,1969,836,2001,2350
