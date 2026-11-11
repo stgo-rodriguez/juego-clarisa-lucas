@@ -136,6 +136,20 @@ class TableroSIMLOGV23Tests(unittest.TestCase):
             sum(getattr(shape.line, "color", None) == "#16a34a"
                 for shape in fig.layout.shapes), 2)
 
+    def test_dos_jugadores_sueltos_se_ven_como_contador(self):
+        # Evita tarjetas flotantes que ocultan el casillero 5 de Infancia.
+        self.game["estados_jugadores.csv"] = [
+            _row(1, 6, 2, "Infancia", "5", "Clarisa"),
+            _row(1, 6, 3, "Infancia", "5", "Clarisa"),
+        ]
+        snap = snapshot_de_ronda(self.game, 1)
+        self.assertEqual(coincidencias_de_casilleros(snap)[0]["jugadores"], 2)
+        fig = dibujar_tablero(self.game, 1)
+        markers = [trace for trace in fig.data if trace.mode == "markers+text"]
+        self.assertEqual([marker.text[0] for marker in markers], ["2"])
+        self.assertIn("C2", markers[0].hovertemplate)
+        self.assertIn("C3", markers[0].hovertemplate)
+
     def test_sin_reciprocidad_no_inventa_parejas(self):
         self.game["estados_jugadores.csv"] = [
             _row(19, 114, 1, "Juventud", "2", "Clarisa", partner="4"),
