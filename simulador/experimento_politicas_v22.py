@@ -259,6 +259,8 @@ class SIMLogAuditV22(SIMLogV22):
         from pathlib import Path
         manifest = super().write(out, status=status, summary=summary)
         manifest['experimental_variant'] = 'v22-bank-mixed-policy'
+        manifest['utn_entry_policy'] = 'bot_requires_free_2P_1K_before_moving'
+        manifest['utn_physical_rule'] = 'entry_allowed_without_resources;check_after_situation'
         manifest['policies_by_player'] = {str(k):v for k,v in self.policy_by_player.items()}
         manifest['adult_hand_size'] = self.hand_size_variant
         manifest['bank_conversion_enabled'] = self.bank_enabled
