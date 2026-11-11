@@ -11,3 +11,6 @@ __pycache__/
 
 # Historial local del Laboratorio (no subir experimentos)
 .laboratorio/
+
+# Trazas locales importadas de GitHub Actions (700 partidas, hasta cientos de MB)
+/resultados/SIMLOG_v23_UTN_CORREGIDO_gh_42933927583/
