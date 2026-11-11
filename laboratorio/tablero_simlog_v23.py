@@ -304,8 +304,8 @@ def dibujar_tablero(game: dict, ronda: int, *, height: int = 590) -> go.Figure:
         groups = _grupos_del_casillero(players)
         if len(groups) == 1 and len(groups[0]["miembros"]) == 1:
             _ficha_plotly(fig, players[0], x, y-.1, size=26)
-        elif len(groups) <= 2:
-            # Dos parejas comparten casillero: dos filas, cada pareja enmarcada.
+        elif len(groups) <= 2 and all(g["tipo"] == "pareja" for g in groups):
+            # Solo las parejas completas se muestran en marcos dentro del casillero.
             y_offsets = [0.0] if len(groups) == 1 else [.28, -.53]
             pair_number = 0
             for group, offset in zip(groups, y_offsets):
@@ -313,8 +313,8 @@ def dibujar_tablero(game: dict, ronda: int, *, height: int = 590) -> go.Figure:
                     pair_number += 1
                 _tarjeta_grupo(fig, group, x, y+offset, pair_number)
         else:
-            # Tres o más grupos: icono de ocupación sin solapamientos;
-            # cada grupo se identifica debajo del tablero.
+            # Varias fichas sin pareja compartida, o más de dos grupos:
+            # contador sobre el casillero y desglose de integrantes debajo.
             description = []
             pair_number = 0
             for group in groups:
