@@ -52,6 +52,14 @@ def cached_discovery(path, zip_bytes):
 def cached_game(path, directory, zip_bytes):
     return load_game(path, directory, zip_bytes)
 
+def prioridad_fuente(g):
+    """Preferir trazas auditadas antes que copias anteriores de igual Run_ID."""
+    origin = (str(g.get("source_root", "")) + "/" +
+              str(g.get("directory", ""))).casefold()
+    return (0 if "utn_corregido" in origin else
+            1 if "duelos_corregidos" in origin else 2)
+
+
 def pill_of_game(g):
     ending = "casamiento" if g["won"] else "sin victoria"
     return (f"{g.get('schema', 'SIMLOG-2.1')} · {g['size']} jugadores · Semilla {g['seed']} · "
@@ -761,6 +769,9 @@ with st.container(key="viewer_selection"):
         st.stop()
     # La misma traza puede estar copiada en Descargas y también en resultados.
     # Se muestran una sola vez los Run_ID idénticos, preservando corridas distintas.
+    # La misma semilla puede existir en una corrida previa y otra corregida.
+    # Para Run_ID idénticos se conserva primero la fuente UTN corregida.
+    games.sort(key=lambda g: (prioridad_fuente(g), g["schema"]))
     seen_runs = set()
     unique_games = []
     for g in games:
@@ -769,7 +780,10 @@ with st.container(key="viewer_selection"):
             seen_runs.add(identity)
             unique_games.append(g)
     games = unique_games
-    games.sort(key=lambda g: (g["size"], g["seed"], g["id"], g["directory"]))
+    games.sort(key=lambda g: (
+        {"SIMLOG-2.3": 0, "SIMLOG-2.2": 1, "SIMLOG-2.1": 2}.get(g["schema"], 3),
+        prioridad_fuente(g), g["size"], g["seed"], g["id"], g["directory"],
+    ))
     if not games:
         st.info("No se encontraron trazas completas SIMLOG v2.1/v2.2/v2.3 compatibles. "
                 "Buscá otras carpetas o agregá un ZIP de partidas. "
@@ -787,18 +801,43 @@ with st.container(key="viewer_selection"):
         "Se incluyen todos los archivos compatibles encontrados en las fuentes seleccionadas."
     )
 
-    a, b, c = st.columns([1, 3, 1], vertical_alignment="bottom")
-    with a:
-        only_won = st.checkbox("Solo partidas con ganador", value=False)
-    available = [g for g in games if g["won"]] if only_won else games
+    versiones = [v for v in ("SIMLOG-2.3", "SIMLOG-2.2", "SIMLOG-2.1")
+                 if any(g["schema"] == v for g in games)]
+    if "SIMLOG-2.3" not in versiones:
+        st.warning(
+            "Todavía no se encontraron trazas **SIMLOG-2.3**. La versión 2.2 que "
+            "aparece en el selector es anterior. Descargá los artefactos de trazas "
+            "v2.3 (6 y 10 jugadores) desde "
+            "[GitHub Actions #42933927583]"
+            "(https://github.com/stgo-rodriguez/juego-clarisa-lucas/actions/runs/42933927583), "
+            "guardalos como ZIP en Descargas y pulsá 'Actualizar listado de partidas'."
+        )
+    vcol, mcol, woncol = st.columns([1.6, 1.1, 1.6], vertical_alignment="bottom")
+    with vcol:
+        version_elegida = st.selectbox("Versión SIMLOG", versiones + ["Todas"],
+                                      index=0, key="simlog_filtro_version")
+    with mcol:
+        mesa_elegida = st.selectbox("Mesa", ["Todas", "6 jugadores", "10 jugadores"],
+                                   key="simlog_filtro_mesa")
+    with woncol:
+        only_won = st.checkbox("Solo partidas con casamiento", value=False)
+    available = [
+        g for g in games
+        if (version_elegida == "Todas" or g["schema"] == version_elegida)
+        and (mesa_elegida == "Todas" or g["size"] == int(mesa_elegida.split()[0]))
+        and (not only_won or g["won"])
+    ]
     if not available:
-        st.warning("El filtro no devuelve partidas con casamiento. Desactivalo para ver todas.")
+        st.warning("No hay partidas que cumplan los filtros seleccionados.")
         st.stop()
+    b, c = st.columns([5, 1], vertical_alignment="bottom")
     with b:
         selected = st.selectbox(
             "Seleccionar partida", available,
             format_func=lambda g: (
-                pill_of_game(g) + f" · {g['source_type']}: "
+                pill_of_game(g) +
+                (" · UTN corregida" if prioridad_fuente(g) == 0 else "") +
+                f" · {g['source_type']}: "
                 + (Path(g["directory"]).parent.parent.name
                    if g["source_type"] == "carpeta" else
                    Path(g["source_root"]).name if g["source_type"] == "ZIP local"
