@@ -37,6 +37,10 @@ from laboratorio.tablero_simlog_v23 import (
     snapshot_de_ronda, dibujar_tablero, resumen_ubicaciones,
     coincidencias_de_casilleros, etiqueta_jugador,
 )
+from laboratorio.actualizar_simlog_actions_v23 import (
+    RUN_ID as RUN_ACCIONES_SIMLOG,
+    ErrorImportacion, importar_run,
+)
 
 st.set_page_config(page_title="Visualizador SIMLOG v2.1 / v2.2 / v2.3", page_icon="📊", layout="wide")
 
@@ -701,6 +705,9 @@ def pantalla_inspeccion(game, selected, ids, winners, max_round):
 
 with st.container(key="viewer_selection"):
     st.title("Visualizador de partidas · SIMLOG v2.1 / v2.2 / v2.3")
+    mensaje_importacion = st.session_state.pop("simlog_importacion_correcta", None)
+    if mensaje_importacion:
+        st.success(mensaje_importacion)
     st.caption("Decisiones y eventos SIMLOG v2.1/v2.2/v2.3 por partida y jugadores seleccionados. "
                "Solo lectura: no modifica simulaciones ni inventa resultados.")
 
@@ -727,6 +734,49 @@ with st.container(key="viewer_selection"):
             "Actualizar listado de partidas",
             on_click=lambda: (cached_discovery.clear(), cached_game.clear()),
             help="Volvé a buscar archivos nuevos o modificados, sin reiniciar el laboratorio.")
+        st.markdown("**Simulaciones corregidas · GitHub Actions**")
+        st.caption(
+            f"Fuente fija: ejecución #{RUN_ACCIONES_SIMLOG} · SIMLOG-2.3 · "
+            "350 partidas de 6 jugadores + 350 de 10. "
+            "Incluye correcciones de duelos y acceso a UTN. "
+            "Se importan trazas reales verificando sus archivos SHA256; "
+            "no se ejecuta el simulador."
+        )
+        if st.button(
+            "Incorporar las 700 partidas v2.3 desde GitHub",
+            key="simlog_importar_42933927583",
+            help="Descarga local con GitHub CLI (gh) autenticado. "
+                 "Reutiliza las mesas completas que ya se importaron.",
+        ):
+            with st.spinner(
+                "Descargando y verificando las 700 trazas de GitHub Actions…"
+            ):
+                try:
+                    importadas = importar_run(root_path)
+                except ErrorImportacion as exc:
+                    st.error(str(exc))
+                    st.caption(
+                        "Para autorizar GitHub CLI desde tu Mac: "
+                        "brew install gh (si falta), luego gh auth login. "
+                        "También podés descargar los ZIP manualmente "
+                        "desde la ejecución y dejarlos en Descargas."
+                    )
+                else:
+                    cached_discovery.clear()
+                    cached_game.clear()
+                    st.session_state["simlog_filtro_version"] = "SIMLOG-2.3"
+                    st.session_state["simlog_importacion_correcta"] = (
+                        f"Fuente GitHub Actions #{RUN_ACCIONES_SIMLOG} incorporada: "
+                        + " · ".join(
+                            f"{item['partidas']} partidas de {item['jugadores']} jugadores"
+                            for item in importadas
+                        )
+                    )
+                    st.rerun()
+        st.caption(
+            "[Ver ejecución y artefactos]"
+            "(https://github.com/stgo-rodriguez/juego-clarisa-lucas/actions/runs/42933927583)"
+        )
         zip_bytes = uploaded.getvalue() if uploaded is not None else None
         if zip_bytes is not None and len(zip_bytes) > 120_000_000:
             st.error("ZIP demasiado grande (>120 MB). Usá una carpeta local.")
