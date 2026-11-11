@@ -227,6 +227,32 @@ class SIMLogAuditV22(SIMLogV22):
             ]
             if len(canjes) > 1:
                 raise AssertionError('Más de una conversión en el turno')
+            # Para las trazas de agentes, toda entrada elegida a UTN debe
+            # tener una intención previa con 2 P y 1 K libres. La regla
+            # física permite entrar sin ellos si lo decide un humano.
+            turn_events = [
+                e for e in self.events if e['Secuencia'] in related_ids
+                and e['Fuente'] == 'motor'
+            ]
+            entry = [e for e in turn_events if e['Accion'] == 'enter_utn']
+            intent = [e for e in turn_events if e['Accion'] == 'utn_entry_intent']
+            if entry:
+                if len(entry) != 1 or len(intent) != 1:
+                    raise AssertionError('Ingreso bot a UTN sin decisión previa auditable')
+                import json
+                decision = json.loads(intent[0]['Detalle_JSON'])
+                if (not decision.get('choose') or
+                        decision.get('free_P', -1) < 2 or
+                        decision.get('free_K', -1) < 1):
+                    raise AssertionError('El bot ingresó a UTN sin 2 P + 1 K libres')
+                if intent[0]['Secuencia'] >= entry[0]['Secuencia']:
+                    raise AssertionError('La decisión UTN ocurrió después del ingreso')
+            for event in intent:
+                import json
+                data = json.loads(event['Detalle_JSON'])
+                expected = data['free_P'] >= 2 and data['free_K'] >= 1
+                if data.get('choose') != expected:
+                    raise AssertionError('Decisión UTN del bot contraria a requisitos')
 
     def write(self, out, *, status, summary):
         import json
