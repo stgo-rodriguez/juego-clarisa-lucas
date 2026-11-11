@@ -130,3 +130,40 @@ python -m unittest discover -s tests -p 'test_visualizador_simlog_v21.py' -v
 ```
 
 Las pruebas incluyen ganadores/censuradas, versión estricta, ZIP y carpeta, clasificación de duelos, acciones de la pareja, canjes, inversión, cronología, filtros y SHA-256 alterado. CI: `.github/workflows/visualizador-simlog-v21.yml`.
+
+
+## Inspección compacta y vista Tablero · noviembre 2026
+
+El visualizador de solo lectura incorpora **Abrir inspección de rondas y tablero**.
+El inspector conserva en la cabecera fija el esquema SIMLOG, tamaño de mesa,
+semilla, ronda numérica, controles de ronda anterior/siguiente y el selector
+**Resumen | Detalle | Tablero**. Solo el cuerpo inferior se desplaza.
+
+- **Resumen:** dos paneles compactos para los jugadores elegidos, con recursos
+  finales y variación, estado de pareja, hitos, movimiento y eventos de la ronda.
+  La información procede de estados y eventos reales, no de un relato inventado.
+- **Detalle:** mantiene la vista completa de recursos, subhitos, comprobantes,
+  interacciones y situación A/B, accesible con scroll interno sin perder la ronda.
+- **Tablero:** representa los dos circuitos de Infancia, UTN, el anillo de
+  Juventud, Vuelo a Dublín y la cuadrícula 5×5 de Adultez, con las fichas de
+  **todos** los participantes (no solo la pareja seleccionada).
+  Una marca de color indica rol; el borde verde indica pareja registrada.
+  También muestra una tabla de etapas, casilleros y parejas.
+
+**Fuente de posiciones:** estados_jugadores.csv, Momento=despues,
+en el **último Turno_global de la ronda**, para todos los jugadores. Se respeta
+el movimiento de la pareja aunque lo haya originado el turno de un tercero.
+Las coordenadas de Adultez se interpretan como fila,columna (1..5). La
+geometría circular de Infancia y Juventud es topológica/ilustrativa y no
+pretende reproducir el diseño gráfico definitivo del tablero físico.
+Cuando faltan estados o una coordenada no puede interpretarse, se indica;
+nunca se inventa el recorrido ni se sustituyen posiciones de otras rondas.
+
+Las vistas normales anteriores siguen disponibles. Las pruebas de posiciones
+incluyen partidas de 6 y 10 jugadores. La prueba de navegador comprueba el
+encabezado fijo, la navegación de ronda, el cambio de vista y el desplazamiento
+del detalle en pantallas de escritorio.
+
+El lector distingue estrictamente el par schema/ruleset v2.1, v2.2 y v2.3:
+un archivo SIMLOG v2.0 sin ruleset ya no puede aceptarse accidentalmente.
+La pantalla sigue sin modificar motores, bots ni partidas guardadas.
