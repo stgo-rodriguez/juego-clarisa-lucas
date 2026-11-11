@@ -1,0 +1,22 @@
+name: UTN v2.2 - politica de ingreso 2 P + 1 K
+
+on:
+  push:
+    branches: [fix/v22-utn-decision-requisitos]
+  workflow_dispatch:
+
+jobs:
+  tests:
+    runs-on: ubuntu-latest
+    strategy:
+      matrix:
+        python: ['3.11','3.13']
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: ${{ matrix.python }}
+      - run: python -m compileall -q simulador laboratorio tests
+      - run: python -m unittest discover -s tests -p 'test_decision_utn_v22.py' -v
+      - run: python -m unittest discover -s tests -p 'test_reglas_simlog_v21.py' -v
+      - run: python -m unittest discover -s tests -p 'test_experimento_politicas_v22.py' -v
