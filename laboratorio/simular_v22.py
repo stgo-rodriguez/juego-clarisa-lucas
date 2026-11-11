@@ -29,6 +29,7 @@ from laboratorio.experimento_agentes_v2 import adult_cards
 from laboratorio.sensibilidad_v2 import progress_score
 from simulador.mazos_propuestos_v2 import BalanceVariant
 from simulador.turnos_v2 import PendingRuleError
+from simulador.decision_utn_v2 import record_utn_intent
 
 
 def write_rows(file,rows):
@@ -95,10 +96,11 @@ def run_game(size,seed,round_limit=100,competition=True,trace_dir=None,catalog=N
             for p in players:
                 before=progress_score(engine,eco)
                 if logger:logger.begin_turn(p.id)
+                choose_utn=record_utn_intent(engine,eco,p)
                 outcome=engine.play_turn(p.id,
                     youth_choice=logger.wrap_youth_choice(youth) if logger else youth,
                     adult_choice=logger.wrap_adult_choice(agent.choose_adult) if logger else agent.choose_adult,
-                    choose_utn=True,choose_dublin=True)
+                    choose_utn=choose_utn,choose_dublin=True)
                 if logger:logger.end_turn(outcome)
                 turns+=1
                 if progress_score(engine,eco)<=before:no_progress+=1
@@ -124,6 +126,10 @@ def run_game(size,seed,round_limit=100,competition=True,trace_dir=None,catalog=N
     result={'size':size,'seed':seed,'policy':policy,'policies_by_player':json.dumps(policies,sort_keys=True),
             'hand_size':hand_size,'bank_enabled':bank_enabled,
             'bank_conversions':sum(e['action']=='conversion_bancaria' for e in eco.events),
+            'utn_entry_intents_accepted':sum(e.get('action')=='utn_entry_intent' and e.get('choose') for e in engine.events),
+            'utn_entry_intents_denied':sum(e.get('action')=='utn_entry_intent' and not e.get('choose') for e in engine.events),
+            'utn_entries':sum(e.get('action')=='enter_utn' for e in engine.events),
+            'utn_missing_after_situation':sum(e.get('action')=='utn_requirements_missing' for e in engine.events),
             'competition':competition,
             'rounds':engine.round_no,'turns':turns,'won':pair is not None,'stop':stop,
             'blocked_reason':blocked_reason,'blocked_player':blocked_player,
