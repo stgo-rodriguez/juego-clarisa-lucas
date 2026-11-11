@@ -80,7 +80,7 @@ def run_game(size,seed,round_limit=100,competition=True,trace_dir=None,catalog=N
     logger=None
     if trace_dir is not None:
         logger=SIMLogAuditV22(engine,eco,profiles,resolver,interactions,auctions,controller,
-            run_id=f'simlog_v22_econaudit_{size}p_s{seed}_{policy}_h{hand_size}_b{int(bank_enabled)}',
+            run_id=f'simlog_v22_utn_gate_{size}p_s{seed}_{policy}_h{hand_size}_b{int(bank_enabled)}',
             seed=seed,policy=policy,competition=competition,round_limit=round_limit,
             catalog=catalog,balance=BalanceVariant(),
             policy_by_player=policies,hand_size=hand_size,bank_enabled=bank_enabled)
