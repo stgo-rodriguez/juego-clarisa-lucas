@@ -1,0 +1,35 @@
+name: UTN v2.2 y v2.3 - decisión condicionada por 2 P + 1 K
+
+on:
+  push:
+    branches: [fix/v23-utn-decision-requisitos]
+    paths:
+      - '.github/workflows/regresion-utn-requisitos.yml'
+  workflow_dispatch:
+
+jobs:
+  test:
+    runs-on: ubuntu-latest
+    name: "UTN 2 P + 1 K / Python ${{ matrix.py }}"
+    timeout-minutes: 30
+    strategy:
+      fail-fast: false
+      matrix:
+        py: ['3.11','3.13']
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: ${{ matrix.py }}
+      - name: Sintaxis
+        run: python -m compileall -q simulador laboratorio tests
+      - name: Decisiones UTN y SIMLOG v2.2/v2.3
+        run: python -m unittest discover -s tests -p 'test_decision_utn_v23.py' -v
+      - name: Secuencia reglamentaria UTN 06.1/06.2/06.3
+        run: python -m unittest discover -s tests -p 'test_reglas_simlog_v21.py' -v
+      - name: Regresiones de motor y balance v2.2
+        run: python -m unittest discover -s tests -p 'test_experimento_politicas_v22.py' -v
+      - name: Regresiones Casa v2.3
+        run: python -m unittest discover -s tests -p 'test_casa_v23.py' -v
+      - name: Duelos ordinarios y de hito
+        run: python -m unittest discover -s tests -p 'test_interacciones_v2.py' -v

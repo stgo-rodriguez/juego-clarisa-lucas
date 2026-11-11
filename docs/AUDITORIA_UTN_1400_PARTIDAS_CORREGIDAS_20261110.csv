@@ -1,0 +1,5 @@
+version,jugadores,semillas_desde,semillas_hasta,partidas,casamientos,bloqueos,limite_rondas,mediana_rondas,p80_rondas,media_rondas,turnos,utn_intenciones,utn_intenciones_denegadas,utn_oportunidades_rechazadas_sin_recursos,utn_entradas,utn_entradas_sin_requisitos_previos,utn_comprobaciones_insuficientes_post_situacion,duelos_ordinarios_invalidos,duelos_ordinarios_validos,disputas_hito_cruzadas,transferencias_casa
+2.2,6,2001,2350,350,350,0,0,20,23,20.780,42772,15094,9193,3251,2760,0,721,0,1765,4,
+2.3,6,2001,2350,350,350,0,0,20,23,20.703,42674,15094,9193,3250,2760,0,721,0,1829,4,373
+2.2,10,2001,2350,350,350,0,0,20,22,19.991,68183,24593,14988,5298,4466,0,1077,0,5154,10,
+2.3,10,2001,2350,350,350,0,0,19.5,22,19.777,67547,24591,14980,5296,4467,0,1074,0,5106,10,788
