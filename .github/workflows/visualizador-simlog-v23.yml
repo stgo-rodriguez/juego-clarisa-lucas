@@ -22,7 +22,7 @@ jobs:
         run: |
           bash -n iniciar_visualizador_simlog_v21.sh
           bash -n visualizar_simlog_v22.sh
-          python -m compileall -q laboratorio/simlog_viewer_v21.py laboratorio/importar_simlog_v22.py laboratorio/pages tests
+          python -m compileall -q laboratorio/simlog_viewer_v21.py laboratorio/importar_simlog_v22.py laboratorio/actualizar_simlog_actions_v23.py laboratorio/pages tests
       - name: Compatibilidad del visualizador v2.1
         run: python -m unittest discover -s tests -p 'test_visualizador_simlog_v21.py' -v
       - name: Importación y visualización de SIMLOG v2.2
@@ -33,6 +33,8 @@ jobs:
         run: python -m unittest discover -s tests -p 'test_paneles_ronda_v21.py' -v
       - name: Tablero de posiciones y cobertura
         run: python -m unittest discover -s tests -p 'test_tablero_simlog_v23.py' -v
+      - name: Importador de GitHub Actions SIMLOG v2.3 (sin red)
+        run: python -m unittest discover -s tests -p 'test_actualizar_simlog_actions_v23.py' -v
       - name: Preparar navegador para inspección visual
         if: matrix.python-version == '3.11'
         run: |
