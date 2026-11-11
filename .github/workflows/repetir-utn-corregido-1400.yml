@@ -1,0 +1,212 @@
+name: SIMLOG v2.2 y v2.3 - 1400 partidas con acceso UTN planificado
+
+on:
+  push:
+    branches: [fix/v23-utn-decision-requisitos]
+    paths:
+      - '.github/workflows/repetir-utn-corregido-1400.yml'
+  workflow_dispatch:
+
+jobs:
+  simular:
+    name: "v${{ matrix.version }} - ${{ matrix.jugadores }} jugadores, 350 partidas"
+    runs-on: ubuntu-latest
+    timeout-minutes: 90
+    strategy:
+      fail-fast: false
+      max-parallel: 4
+      matrix:
+        include:
+          - {version: '2.2', label: 'v22', jugadores: 6}
+          - {version: '2.2', label: 'v22', jugadores: 10}
+          - {version: '2.3', label: 'v23', jugadores: 6}
+          - {version: '2.3', label: 'v23', jugadores: 10}
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+      - name: Ejecutar 350 partidas con política UTN corregida (2 P + 1 K)
+        env:
+          VERSION: ${{ matrix.version }}
+          N: ${{ matrix.jugadores }}
+          LABEL: ${{ matrix.label }}
+        run: |
+          python -m laboratorio.simular_versionado \
+            --version "$VERSION" --jugadores "$N" \
+            --politica planificador --mano 3 --sin-banco \
+            --semillas 350 --inicio 2001 --rondas 100 \
+            --out "resultados/UTN_CORREGIDO_${LABEL}_350_jug${N}"
+      - name: Verificar cobertura, duelos, decisiones UTN, requisitos y hash de cada traza
+        env:
+          VERSION: ${{ matrix.version }}
+          N: ${{ matrix.jugadores }}
+          LABEL: ${{ matrix.label }}
+        run: |
+          python - <<'PY'
+          import csv,json,hashlib,math,os,statistics
+          from pathlib import Path
+          n=int(os.environ['N'])
+          version=os.environ['VERSION']
+          label=os.environ['LABEL']
+          root=Path(f'resultados/UTN_CORREGIDO_{label}_350_jug{n}')
+          with (root/'partidas.csv').open(encoding='utf-8-sig',newline='') as f:
+              games=list(csv.DictReader(f))
+          assert len(games)==350,len(games)
+          assert {int(g['seed']) for g in games}==set(range(2001,2351))
+          assert {int(g['size']) for g in games}=={n}
+          assert {g['policy'] for g in games}=={'planificador'}
+          assert {int(g['hand_size']) for g in games}=={3}
+          assert {g['bank_enabled'] for g in games}=={'False'}
+          assert all(int(g['bank_conversions'])==0 for g in games)
+          assert all(g['stop'] in ('marriage','rule_pending','round_limit') for g in games)
+          audited=[]
+          duel_events=0
+          ordinary=0
+          milestones=0
+          profiles=0
+          valid_cross_title=0
+          invalid=0
+          utn_intents=0
+          utn_denials=0
+          utn_entries=0
+          utn_illegal_entries=0
+          utn_declined_opportunities=0
+          utn_requirements_missing_after_situation=0
+          for game in games:
+              seed=int(game['seed'])
+              folder=root/'trazas'/f'n{n}_s{seed}'
+              mf=folder/'manifest.json'
+              if game['stop']=='rule_pending':
+                  assert (folder/'bloqueo_reglamentario.json').is_file(),folder
+                  assert not mf.exists(),folder
+                  continue
+              assert mf.is_file(),mf
+              manifest=json.loads(mf.read_text(encoding='utf-8'))
+              assert manifest['schema']==f'SIMLOG-{version}',(mf,manifest['schema'])
+              assert manifest['ruleset']==('especificacion-integral-2026-11-09' if version=='2.2' else 'especificacion-integral-2026-11-10')
+              assert manifest['player_count']==n
+              assert manifest['seed']==seed
+              assert manifest['utn_entry_policy']=='bot_requires_free_2P_1K_before_moving'
+              assert manifest['utn_physical_rule']=='entry_allowed_without_resources;check_after_situation'
+              for filename,digest in manifest.get('file_sha256',{}).items():
+                  source=folder/filename
+                  assert source.exists() and hashlib.sha256(source.read_bytes()).hexdigest()==digest,source
+              turn_utn={}
+              with (folder/'eventos.csv').open(encoding='utf-8-sig',newline='') as f:
+                  for row in csv.DictReader(f):
+                      action=row['Accion']
+                      if row['Fuente']=='motor' and action in (
+                          'utn_entry_intent','enter_utn','childhood_route',
+                          'utn_requirements_missing',
+                      ):
+                          key=row['Turno_global']
+                          if key:
+                              turn_utn.setdefault(key,{})[action]=json.loads(row['Detalle_JSON'])
+                          if action=='utn_requirements_missing':
+                              utn_requirements_missing_after_situation+=1
+                      if action!='duel' or row['Fuente']!='duelo':
+                          continue
+                      detail=json.loads(row['Detalle_JSON'])
+                      duel_events+=1
+                      same=detail['challenger_role']==detail['defender_role']
+                      assert detail['same_role']==same,(folder,detail)
+                      kind=detail['kind']
+                      if kind=='ordinario':
+                          ordinary+=1
+                          if not same:invalid+=1
+                          assert same,(folder,detail)
+                      elif kind=='hito':
+                          milestones+=1
+                          if not same:
+                              assert detail.get('project') is not None,(folder,detail)
+                              valid_cross_title+=1
+                      elif kind=='perfil':
+                          profiles+=1
+                          assert same,(folder,detail)
+                      else:
+                          raise AssertionError(('tipo_inesperado',folder,kind))
+              for turn_id, events in turn_utn.items():
+                  intention=events.get('utn_entry_intent')
+                  arrival=events.get('enter_utn')
+                  route=events.get('childhood_route')
+                  if intention is not None:
+                      utn_intents+=1
+                      sufficient=(intention['free_P']>=2 and intention['free_K']>=1)
+                      assert intention['choose']==sufficient,(folder,turn_id,intention)
+                      if not intention['choose']:
+                          utn_denials+=1
+                          if route and route['kind']=='circuit' and 5 in route['visited'][:-1]:
+                              utn_declined_opportunities+=1
+                  if arrival is not None:
+                      utn_entries+=1
+                      if (intention is None or not intention['choose']
+                          or intention['free_P']<2 or intention['free_K']<1):
+                          utn_illegal_entries+=1
+                          raise AssertionError((folder,turn_id,'Ingreso bot a UTN sin recursos'))
+              audited.append(seed)
+          assert invalid==0,invalid
+          assert utn_illegal_entries==0
+          assert utn_entries==sum(int(g['utn_entries']) for g in games
+                                  if g['stop']!='rule_pending')
+          assert utn_denials==sum(int(g['utn_entry_intents_denied']) for g in games
+                                  if g['stop']!='rule_pending')
+          assert len(audited)==sum(g['stop']!='rule_pending' for g in games)
+          wins=sorted(int(g['rounds']) for g in games if g['stop']=='marriage')
+          def p80(v):
+              return v[math.ceil(.8*len(v))-1] if v else None
+          report={
+              'schema':f'SIMLOG-{version}',
+              'jugadores':n,'partidas':350,'semillas_desde':2001,'semillas_hasta':2350,
+              'casamientos':len(wins),
+              'bloqueos_regla':sum(g['stop']=='rule_pending' for g in games),
+              'limite_rondas':sum(g['stop']=='round_limit' for g in games),
+              'trazas_completas_auditadas':len(audited),
+              'mediana_rondas_casamientos':statistics.median(wins) if wins else None,
+              'p80_rondas_casamientos':p80(wins),
+              'media_rondas_casamientos':round(statistics.mean(wins),3) if wins else None,
+              'total_turnos':sum(int(g['turns']) for g in games),
+              'duelos_total':duel_events,
+              'duelos_ordinarios':ordinary,
+              'duelos_hito':milestones,
+              'duelos_perfil':profiles,
+              'disputas_hito_cruzadas_validas':valid_cross_title,
+              'duelos_ordinarios_cruzados_invalidos':invalid,
+              'utn_entry_intents_total':utn_intents,
+              'utn_entry_intents_denied':utn_denials,
+              'utn_branch_opportunities_declined':utn_declined_opportunities,
+              'utn_entries':utn_entries,
+              'utn_entries_without_precheck':utn_illegal_entries,
+              'utn_requirements_missing_after_situation':utn_requirements_missing_after_situation,
+              'encuentros_casa':sum(int(g['house_encounters']) for g in games) if version=='2.3' else None,
+              'intentos_disputa_casa':sum(int(g['house_dispute_attempts']) for g in games) if version=='2.3' else None,
+              'transferencias_propiedad_casa':sum(int(g['house_owner_transfers']) for g in games) if version=='2.3' else None
+          }
+          (root/'AUDITORIA_UTN_CORREGIDO.json').write_text(
+              json.dumps(report,ensure_ascii=False,indent=2)+'\n',encoding='utf-8')
+          with (root/'AUDITORIA_UTN_CORREGIDO.csv').open('w',encoding='utf-8-sig',newline='') as f:
+              writer=csv.DictWriter(f,fieldnames=list(report))
+              writer.writeheader();writer.writerow(report)
+          print('AUDITORIA_UTN_CORREGIDO_OK',json.dumps(report,ensure_ascii=False),flush=True)
+          PY
+      - name: Publicar tablas CSV y resumen JSON, sin empaquetado adicional
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: "SIMLOG_${{ matrix.label }}_utn_corregido_350_resumen_${{ matrix.jugadores }}jug_2001_2350"
+          path: |
+            resultados/UTN_CORREGIDO_${{ matrix.label }}_350_jug${{ matrix.jugadores }}/partidas.csv
+            resultados/UTN_CORREGIDO_${{ matrix.label }}_350_jug${{ matrix.jugadores }}/resumen.json
+            resultados/UTN_CORREGIDO_${{ matrix.label }}_350_jug${{ matrix.jugadores }}/AUDITORIA_UTN_CORREGIDO.csv
+            resultados/UTN_CORREGIDO_${{ matrix.label }}_350_jug${{ matrix.jugadores }}/AUDITORIA_UTN_CORREGIDO.json
+            resultados/UTN_CORREGIDO_${{ matrix.label }}_350_jug${{ matrix.jugadores }}/diversidad_decisiones_por_grupo.csv
+          if-no-files-found: warn
+          retention-days: 30
+      - name: Publicar trazas individuales con evento, turno, recurso e hito
+        if: success()
+        uses: actions/upload-artifact@v4
+        with:
+          name: "SIMLOG_${{ matrix.label }}_utn_corregido_350_trazas_${{ matrix.jugadores }}jug_2001_2350"
+          path: resultados/UTN_CORREGIDO_${{ matrix.label }}_350_jug${{ matrix.jugadores }}/trazas/
+          retention-days: 30
+          if-no-files-found: error
