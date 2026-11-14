@@ -13,6 +13,7 @@ from __future__ import annotations
 
 import argparse
 import json
+import math
 import random
 import statistics
 from collections import Counter, defaultdict
@@ -796,41 +797,107 @@ class SimulacionV3:
 
 def ejecutar_lote(config, partidas=20, n=6, semilla=2001,
                   politica="planificador"):
+    """Medir activaciones reales del escenario sintético, sin afirmar balance.
+
+    Para frecuencia de mesa por ronda se divide por rondas en las que hay
+    participantes de esa etapa. Para frecuencia individual se divide por
+    exposiciones jugador/ronda de la etapa, incluyendo acompañantes.
+    Las duraciones de partidas censuradas NO se agregan a las de victoria.
+    """
     if type(partidas) is not int or not 1<=partidas<=10000:
         raise ValueError("Cantidad de partidas inválida")
     games=[]
     frequencies=Counter()
+    production=Counter()
+    loss_nominal=Counter()
+    loss_effective=Counter()
+    spending=Counter()
     exposure=Counter()
+    rounds_stage=Counter()
     winners=Counter()
+    by_mechanism = {p["id"]:p["mecanismo"] for p in cargar_matriz()["parametros"]}
     for i in range(partidas):
         g=SimulacionV3(config,n,semilla+i,politica).jugar()
         games.append(g)
         winners[g["cierre"]["tipo"]]+=1
         exposure.update(g["exposicion_jugador_ronda"])
-        events=g["eventos"]
-        for e in events:
-            if e.get("tipo")=="fuente":
-                frequencies[(e["etapa"],e["parametro"],e["recurso"])]+=1
+        for e in g["eventos"]:
+            if e.get("tipo")=="ronda":
+                for stage in ETAPAS:
+                    if any(key.startswith(stage+"_") for key in e["cartas"]):
+                        rounds_stage[stage]+=1
+            elif e.get("tipo")=="fuente":
+                key=(e["etapa"],e["parametro"],e["recurso"])
+                frequencies[key]+=1
+                production[key]+=e["cantidad"]
+            elif e.get("tipo")=="perdida":
+                key=e["recurso"]
+                loss_nominal[key]+=e["nominal"]
+                loss_effective[key]+=e["efectiva"]
+            elif e.get("tipo")=="consumo":
+                spending[e["recurso"]]+=e["cantidad"]
+    complete=[g["rondas"] for g in games
+              if g["cierre"]["tipo"]!="censurada_sin_victoria"]
+    by_stage=defaultdict(lambda:{r:0 for r in RECURSOS})
+    by_mechanism_stage=defaultdict(int)
+    for (stage,param,r),amount in production.items():
+        by_stage[stage][r]+=amount
+        by_mechanism_stage[(stage,by_mechanism.get(param,"DESCONOCIDO"),r)]+=amount
+    perc={}
+    for s in ETAPAS:
+        denom=sum(by_stage[s].values())
+        perc[s]={r:by_stage[s][r]/denom if denom else None
+                 for r in RECURSOS}
     return {
         "status":"EXPERIMENTAL_NO_CALIBRADO",
-        "jugadores":n,"cantidad_partidas":partidas,"semillas":[semilla,semilla+partidas-1],
+        "jugadores":n,"cantidad_partidas":partidas,
+        "semillas":[semilla,semilla+partidas-1],
         "politica":politica,
         "cierres":dict(winners),
-        "rondas_mediana":statistics.median(g["rondas"] for g in games),
-        "rondas_p80":sorted(g["rondas"] for g in games)[
-            max(0,int(.8*partidas+0.999999)-1)
-        ],
+        "partidas_censuradas":winners["censurada_sin_victoria"],
+        "partidas_con_victoria":len(complete),
+        "rondas_mediana_completadas":(
+            statistics.median(complete) if complete else None
+        ),
+        "rondas_p80_completadas":(
+            sorted(complete)[max(0,math.ceil(.8*len(complete))-1)]
+            if complete else None
+        ),
+        "rondas_mediana_observada_con_censura":statistics.median(
+            g["rondas"] for g in games
+        ),
         "activaciones_observadas":[
-            {"etapa":s,"parametro":param,"recurso":r,
-             "activaciones":number,
+            {"etapa":s,"parametro":param,
+             "mecanismo":by_mechanism.get(param,"DESCONOCIDO"),
+             "recurso":r,
+             "activaciones":number,"emision":production[(s,param,r)],
              "exposicion_jugador_ronda":exposure[s],
-             "frecuencia_por_jugador_ronda": number/exposure[s] if exposure[s] else None}
+             "rondas_con_etapa":rounds_stage[s],
+             "frecuencia_por_jugador_ronda":(
+                number/exposure[s] if exposure[s] else None
+             ),
+             "activaciones_por_ronda_mesa":(
+                number/rounds_stage[s] if rounds_stage[s] else None
+             )}
             for (s,param,r),number in sorted(frequencies.items())
         ],
+        "generacion_por_etapa":dict(by_stage),
+        "distribucion_por_etapa":perc,
+        "generacion_por_mecanismo":[
+            {"etapa":s,"mecanismo":m,"recurso":r,"cantidad":amount}
+            for (s,m,r),amount in sorted(by_mechanism_stage.items())
+        ],
+        "perdidas_nominales":dict(loss_nominal),
+        "perdidas_efectivas":dict(loss_effective),
+        "pagos_consumidos":dict(spending),
         "mediciones_por_etapa":dict(exposure),
-        "partidas":[{k:v for k,v in g.items() if k!="eventos"} for g in games],
-        "advertencia":"Frecuencias observadas SOLO bajo escenario sintético y bots; "
-                      "no son probabilidades de v3.0 real. La duración incluye censura.",
+        "rondas_con_etapa":dict(rounds_stage),
+        "partidas":[{k:v for k,v in g.items() if k!="eventos"}
+                    for g in games],
+        "advertencia":"Frecuencias observadas SOLO bajo escenario sintético y bots. "
+                      "Los tiempos de censura no se contabilizan como victorias; "
+                      "la mediana de partidas completadas es condicional. "
+                      "No son probabilidades ni duraciones calibradas de v3.0 real.",
     }
 
 
