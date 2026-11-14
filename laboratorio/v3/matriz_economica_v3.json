@@ -1,0 +1,510 @@
+{
+  "version": "3.0-prototipo",
+  "fuente": "Especificación conceptual v3.0 de 14/11/2026",
+  "notas": "Importes null = A DEFINIR. UTN tiene P(examen aprobado)=0,5. D6 uniforme produce P(destino de Infancia)=1/6 mientras el jugador permanezca en circuito. No se presumen frecuencias de visita en Juventud ni Adultez.",
+  "etapas": {
+    "infancia": {
+      "duracion_objetivo": null,
+      "mecanismos": [
+        {
+          "id": "i_c1",
+          "nombre": "Casillero 1 · A",
+          "rol": "ambos",
+          "tipo": "casillero",
+          "frecuencia": 0.16666666666666666,
+          "premios": {
+            "A": null
+          },
+          "origen_frecuencia": "1/6 derivado del D6 sobre el circuito de 6 destinos, mientras permanece en Infancia"
+        },
+        {
+          "id": "i_c2",
+          "nombre": "Casillero 2 · P",
+          "rol": "ambos",
+          "tipo": "casillero",
+          "frecuencia": 0.16666666666666666,
+          "premios": {
+            "P": null
+          },
+          "origen_frecuencia": "1/6 derivado del D6 sobre el circuito de 6 destinos, mientras permanece en Infancia"
+        },
+        {
+          "id": "i_c3",
+          "nombre": "Casillero 3 · A",
+          "rol": "ambos",
+          "tipo": "casillero",
+          "frecuencia": 0.16666666666666666,
+          "premios": {
+            "A": null
+          },
+          "origen_frecuencia": "1/6 derivado del D6 sobre el circuito de 6 destinos, mientras permanece en Infancia"
+        },
+        {
+          "id": "i_c4",
+          "nombre": "Casillero 4 · P",
+          "rol": "ambos",
+          "tipo": "casillero",
+          "frecuencia": 0.16666666666666666,
+          "premios": {
+            "P": null
+          },
+          "origen_frecuencia": "1/6 derivado del D6 sobre el circuito de 6 destinos, mientras permanece en Infancia"
+        },
+        {
+          "id": "i_c5",
+          "nombre": "Casillero 5 · K",
+          "rol": "ambos",
+          "tipo": "casillero",
+          "frecuencia": 0.16666666666666666,
+          "premios": {
+            "K": null
+          },
+          "origen_frecuencia": "1/6 derivado del D6 sobre el circuito de 6 destinos, mientras permanece en Infancia"
+        },
+        {
+          "id": "i_c6",
+          "nombre": "Casillero 6 · A",
+          "rol": "ambos",
+          "tipo": "casillero",
+          "frecuencia": 0.16666666666666666,
+          "premios": {
+            "A": null
+          },
+          "origen_frecuencia": "1/6 derivado del D6 sobre el circuito de 6 destinos, mientras permanece en Infancia"
+        },
+        {
+          "id": "i_s_c",
+          "nombre": "Situación Clarisa",
+          "rol": "Clarisa",
+          "tipo": "situacion",
+          "frecuencia": 1,
+          "probabilidad_A": null,
+          "opcion_A": {
+            "A": null,
+            "P": null,
+            "K": null,
+            "M": null
+          },
+          "opcion_B": {
+            "A": null,
+            "P": null,
+            "K": null,
+            "M": null
+          }
+        },
+        {
+          "id": "i_s_l",
+          "nombre": "Situación Lucas",
+          "rol": "Lucas",
+          "tipo": "situacion",
+          "frecuencia": 1,
+          "probabilidad_A": null,
+          "opcion_A": {
+            "A": null,
+            "P": null,
+            "K": null,
+            "M": null
+          },
+          "opcion_B": {
+            "A": null,
+            "P": null,
+            "K": null,
+            "M": null
+          }
+        },
+        {
+          "id": "i_perdidas",
+          "nombre": "Pérdidas netas ordinarias esperadas",
+          "rol": "ambos",
+          "tipo": "perdida",
+          "frecuencia": null,
+          "premios": {
+            "A": null,
+            "P": null,
+            "K": null,
+            "M": null
+          }
+        }
+      ]
+    },
+    "juventud": {
+      "duracion_objetivo": null,
+      "mecanismos": [
+        {
+          "id": "j_s_c",
+          "nombre": "Situación Clarisa",
+          "rol": "Clarisa",
+          "tipo": "situacion",
+          "frecuencia": 1,
+          "probabilidad_A": null,
+          "opcion_A": {
+            "A": null,
+            "P": null,
+            "K": null,
+            "M": null
+          },
+          "opcion_B": {
+            "A": null,
+            "P": null,
+            "K": null,
+            "M": null
+          }
+        },
+        {
+          "id": "j_s_l",
+          "nombre": "Situación Lucas",
+          "rol": "Lucas",
+          "tipo": "situacion",
+          "frecuencia": 1,
+          "probabilidad_A": null,
+          "opcion_A": {
+            "A": null,
+            "P": null,
+            "K": null,
+            "M": null
+          },
+          "opcion_B": {
+            "A": null,
+            "P": null,
+            "K": null,
+            "M": null
+          }
+        },
+        {
+          "id": "j_universidad_paso",
+          "nombre": "Universidad · paso",
+          "rol": "ambos",
+          "tipo": "casillero",
+          "frecuencia": null,
+          "premios": {
+            "A": null,
+            "P": null,
+            "K": null,
+            "M": null
+          },
+          "variante": "paso"
+        },
+        {
+          "id": "j_universidad_destino",
+          "nombre": "Universidad · destino",
+          "rol": "ambos",
+          "tipo": "casillero",
+          "frecuencia": null,
+          "premios": {
+            "A": null,
+            "P": null,
+            "K": null,
+            "M": null
+          },
+          "variante": "destino"
+        },
+        {
+          "id": "j_tramite_paso",
+          "nombre": "Trámite · paso",
+          "rol": "ambos",
+          "tipo": "casillero",
+          "frecuencia": null,
+          "premios": {
+            "A": null,
+            "P": null,
+            "K": null,
+            "M": null
+          },
+          "variante": "paso"
+        },
+        {
+          "id": "j_tramite_destino",
+          "nombre": "Trámite · destino",
+          "rol": "ambos",
+          "tipo": "casillero",
+          "frecuencia": null,
+          "premios": {
+            "A": null,
+            "P": null,
+            "K": null,
+            "M": null
+          },
+          "variante": "destino"
+        },
+        {
+          "id": "j_perfil_c",
+          "nombre": "Perfil por vuelta · Clarisa",
+          "rol": "Clarisa",
+          "tipo": "perfil",
+          "frecuencia": null,
+          "premios": {
+            "A": null,
+            "P": null,
+            "K": null,
+            "M": null
+          }
+        },
+        {
+          "id": "j_perfil_l",
+          "nombre": "Perfil por vuelta · Lucas",
+          "rol": "Lucas",
+          "tipo": "perfil",
+          "frecuencia": null,
+          "premios": {
+            "A": null,
+            "P": null,
+            "K": null,
+            "M": null
+          }
+        },
+        {
+          "id": "j_perdidas",
+          "nombre": "Pérdidas netas ordinarias esperadas",
+          "rol": "ambos",
+          "tipo": "perdida",
+          "frecuencia": null,
+          "premios": {
+            "A": null,
+            "P": null,
+            "K": null,
+            "M": null
+          }
+        }
+      ]
+    },
+    "adultez": {
+      "duracion_objetivo": null,
+      "mecanismos": [
+        {
+          "id": "a_s_c",
+          "nombre": "Situación Clarisa",
+          "rol": "Clarisa",
+          "tipo": "situacion",
+          "frecuencia": 1,
+          "probabilidad_A": null,
+          "opcion_A": {
+            "A": null,
+            "P": null,
+            "K": null,
+            "M": null
+          },
+          "opcion_B": {
+            "A": null,
+            "P": null,
+            "K": null,
+            "M": null
+          }
+        },
+        {
+          "id": "a_s_l",
+          "nombre": "Situación Lucas",
+          "rol": "Lucas",
+          "tipo": "situacion",
+          "frecuencia": 1,
+          "probabilidad_A": null,
+          "opcion_A": {
+            "A": null,
+            "P": null,
+            "K": null,
+            "M": null
+          },
+          "opcion_B": {
+            "A": null,
+            "P": null,
+            "K": null,
+            "M": null
+          }
+        },
+        {
+          "id": "a_c1_1",
+          "nombre": "Casillero 1,1 · K",
+          "rol": "ambos",
+          "tipo": "casillero",
+          "frecuencia": null,
+          "premios": {
+            "K": null
+          }
+        },
+        {
+          "id": "a_c1_5",
+          "nombre": "Casillero 1,5 · A",
+          "rol": "ambos",
+          "tipo": "casillero",
+          "frecuencia": null,
+          "premios": {
+            "A": null
+          }
+        },
+        {
+          "id": "a_c2_1",
+          "nombre": "Casillero 2,1 · M",
+          "rol": "ambos",
+          "tipo": "casillero",
+          "frecuencia": null,
+          "premios": {
+            "M": null
+          }
+        },
+        {
+          "id": "a_c3_5",
+          "nombre": "Casillero 3,5 · M",
+          "rol": "ambos",
+          "tipo": "casillero",
+          "frecuencia": null,
+          "premios": {
+            "M": null
+          }
+        },
+        {
+          "id": "a_c4_2",
+          "nombre": "Casillero 4,2 · P",
+          "rol": "ambos",
+          "tipo": "casillero",
+          "frecuencia": null,
+          "premios": {
+            "P": null
+          }
+        },
+        {
+          "id": "a_c5_2",
+          "nombre": "Casillero 5,2 · A",
+          "rol": "ambos",
+          "tipo": "casillero",
+          "frecuencia": null,
+          "premios": {
+            "A": null
+          }
+        },
+        {
+          "id": "a_perfil_c",
+          "nombre": "Perfil al terminar en 5,3 · Clarisa",
+          "rol": "Clarisa",
+          "tipo": "perfil",
+          "frecuencia": null,
+          "premios": {
+            "A": null,
+            "P": null,
+            "K": null,
+            "M": null
+          }
+        },
+        {
+          "id": "a_perfil_l",
+          "nombre": "Perfil al terminar en 5,3 · Lucas",
+          "rol": "Lucas",
+          "tipo": "perfil",
+          "frecuencia": null,
+          "premios": {
+            "A": null,
+            "P": null,
+            "K": null,
+            "M": null
+          }
+        },
+        {
+          "id": "a_perdidas",
+          "nombre": "Pérdidas netas ordinarias esperadas",
+          "rol": "ambos",
+          "tipo": "perdida",
+          "frecuencia": null,
+          "premios": {
+            "A": null,
+            "P": null,
+            "K": null,
+            "M": null
+          }
+        }
+      ]
+    }
+  },
+  "requisitos": {
+    "utn": {
+      "P": null,
+      "K": null
+    },
+    "titulo": [
+      {
+        "A": null,
+        "P": null,
+        "K": null,
+        "M": null
+      },
+      {
+        "A": null,
+        "P": null,
+        "K": null,
+        "M": null
+      },
+      {
+        "A": null,
+        "P": null,
+        "K": null,
+        "M": null
+      }
+    ],
+    "pasaporte": [
+      {
+        "A": null,
+        "P": null,
+        "K": null,
+        "M": null
+      },
+      {
+        "A": null,
+        "P": null,
+        "K": null,
+        "M": null
+      },
+      {
+        "A": null,
+        "P": null,
+        "K": null,
+        "M": null
+      }
+    ],
+    "adjudicacion_titulo": {
+      "A": null,
+      "P": null,
+      "K": null,
+      "M": null
+    },
+    "adjudicacion_pasaporte": {
+      "A": null,
+      "P": null,
+      "K": null,
+      "M": null
+    },
+    "pareja": {
+      "A": null
+    },
+    "vuelo": {
+      "K": null,
+      "M": null
+    },
+    "casa": {
+      "reserva_individual": {
+        "A": null,
+        "P": null
+      },
+      "precio_M": null
+    },
+    "afinidad": {
+      "A": null,
+      "P": null,
+      "K": null,
+      "M": null
+    },
+    "falso_lucas_M": null
+  },
+  "supuestos": {
+    "jugadores": 6,
+    "variante_juvenil": "destino",
+    "probabilidad_adjudicacion_titulo": null,
+    "probabilidad_adjudicacion_pasaporte": null,
+    "demora_estructural_infancia": null,
+    "demora_estructural_juventud": null,
+    "demora_estructural_adultez": null,
+    "fraccion_precio_casa_lucas": null,
+    "multiplicador_destinos_en_pareja_juventud": null,
+    "multiplicador_destinos_en_pareja_adultez": 2,
+    "afinidad_clarisa": "A",
+    "afinidad_lucas": "P",
+    "regla_afinidad": "pago"
+  },
+  "catalogo_version": "Catálogo inicial reconstruido desde concepto porque laboratorio/v3 no estaba en el repositorio indicado"
+}
