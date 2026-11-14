@@ -76,7 +76,12 @@ function analizar(cfg){
  let houseCs=[];
  for(const role of roles)for(const k of ["A","P"])
    houseCs.push(condition(val(r.casa.reserva_individual,k),youthBal[role][k],flows.adultez[role][k]));
- houseCs.push(condition(r.casa.precio_M,pair(youthBal,"M"),pair(flows.adultez,"M")));
+ const share=cfg.supuestos.fraccion_precio_casa_lucas;
+ if(share===null)houseCs.push(condition(r.casa.precio_M,pair(youthBal,"M"),pair(flows.adultez,"M")));
+ else{
+   houseCs.push(condition(r.casa.precio_M===null?null:r.casa.precio_M*(1-share),youthBal.Clarisa.M,flows.adultez.Clarisa.M));
+   houseCs.push(condition(r.casa.precio_M===null?null:r.casa.precio_M*share,youthBal.Lucas.M,flows.adultez.Lucas.M));
+ }
  const tHouse=first(houseCs);
  const houseBal=debit(grow(youthBal,flows.adultez,tHouse),r.casa.reserva_individual);
  const frac=cfg.supuestos.fraccion_precio_casa_lucas;
@@ -89,7 +94,7 @@ function analizar(cfg){
  const affinity=Object.fromEntries(keys.map(k=>[k,(ca===k||la===k)?val(r.afinidad,k):0]));
  const tWedding=first(keys.map(k=>condition(affinity[k],pair(houseBal,k),pair(flows.adultez,k))));
  const tFalse=first([condition(r.falso_lucas_M,houseBal.Lucas.M,flows.adultez.Lucas.M)]);
- const cumulative=(...ns)=>ns.some(x=>x===null)?null:ns.reduce((a,b)=>a+b,0);
+ const cumulative=(...ns)=>ns.some(x=>x===Infinity)?Infinity:ns.some(x=>x===null)?null:ns.reduce((a,b)=>a+b,0);
  const estimates={
     utn:tInf,titulo:cumulative(tInf,tTitle),pasaporte:cumulative(tInf,tPassport),
     dublin:cumulative(tInf,tYoung),casa:cumulative(tInf,tYoung,tHouse),
