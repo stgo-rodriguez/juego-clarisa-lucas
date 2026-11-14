@@ -8,6 +8,7 @@ on:
       - 'tests/test_matriz_economica_v3.py'
       - 'tests/test_modelo_matematico_v3.py'
       - 'tests/test_optimizador_economico_v3.py'
+      - 'tests/test_simulador_experimental_v3.py'
       - '.github/workflows/laboratorio-balance-v3.yml'
   workflow_dispatch:
 
@@ -32,6 +33,12 @@ jobs:
         run: python -m unittest discover -s tests -p 'test_modelo_matematico_v3.py' -v
       - name: Ejecutar escenario didáctico v3.0 reproducible
         run: python -m laboratorio.v3.ejecutar_modelo --salida /tmp/salida_modelo_v3.json
+      - name: Probar simulador experimental de partidas v3.0
+        run: python -m unittest discover -s tests -p 'test_simulador_experimental_v3.py' -v
+      - name: Ejecutar partidas de prueba con 6 y 10 jugadores
+        run: |
+          python -m laboratorio.v3.simulador_experimental --jugadores 6 --partidas 12 --semilla 2001 --salida /tmp/simlog_v3_6p.json --traza /tmp/simlog_v3_traza_6p.json
+          python -m laboratorio.v3.simulador_experimental --jugadores 10 --partidas 12 --semilla 2001 --salida /tmp/simlog_v3_10p.json --traza /tmp/simlog_v3_traza_10p.json
       - name: Probar optimización conjunta de premios y costos
         run: python -m unittest discover -s tests -p 'test_optimizador_economico_v3.py' -v
       - name: Optimizar escenario didáctico y verificar salida
@@ -75,5 +82,10 @@ jobs:
         uses: actions/upload-artifact@v4
         with:
           name: optimizacion-v3-demostracion-py${{ matrix.python-version }}
-          path: /tmp/optimizacion_v3.json
+          path: |
+            /tmp/optimizacion_v3.json
+            /tmp/simlog_v3_6p.json
+            /tmp/simlog_v3_10p.json
+            /tmp/simlog_v3_traza_6p.json
+            /tmp/simlog_v3_traza_10p.json
           retention-days: 30
