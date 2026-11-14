@@ -95,10 +95,16 @@ def validar_config(config: dict) -> None:
             raise ValueError("Perfil experimental incompleto: "+role)
         if any(type(n) is not int or n<0 for n in prof.values()):
             raise ValueError("Perfil inválido")
-    for r in RECURSOS:
-        if any(type(config.get("juventud_casilleros",{}).get(
-            t,{}).get(r,0)) is not int for t in ("UNIVERSIDAD","TRAMITE")):
-            raise ValueError("Premio juvenil inválido")
+    young = config.get("juventud_casilleros", {})
+    if not isinstance(young,dict) or set(young)!= {"UNIVERSIDAD","TRAMITE"}:
+        raise ValueError("Definición de casilleros juveniles incompleta")
+    for place, resources in young.items():
+        if not isinstance(resources,list) or len(set(resources))!=len(resources):
+            raise ValueError("Recursos juveniles inválidos")
+        for r in resources:
+            key = f"CAS_J_{place}_{variants['juvenil_cobro'].upper()}_{r}"
+            if key not in validated:
+                raise ValueError(f"Falta premio juvenil parametrizado {key}")
     if type(config.get("rondas_maximas")) is not int or config["rondas_maximas"]<1:
         raise ValueError("Límite de rondas inválido")
 
@@ -162,11 +168,12 @@ class SimulacionV3:
             p = Personaje(id=pid, rol=role, falso=pid==false_id,
                           afinidad_recurso=resource,
                           afinidad_cantidad=self.values[f"AFINIDAD_META_{resource}"])
-            p.perfil = role
             self.personas[pid] = p
         self.orden = list(ids)
         self.rng.shuffle(self.orden)
         self.economia = LibroMayor(self.personas)
+        # Un solo registro cronológico: asientos y eventos de reglas intercalados.
+        self.economia.eventos = self.eventos
         for project_type in ("TITULO","PASAPORTE_C","PASAPORTE_L"):
             self._nuevo_proyecto(project_type)
         self._log("preparacion", jugadores=self.n, politica=self.politica,
@@ -203,14 +210,16 @@ class SimulacionV3:
         return "Neutro"
 
     def _efecto(self,p,card,choice):
-        sig = "IJD"[ETAPAS.index(p.etapa)]
-        role = "C" if p.rol=="Clarisa" else "L"
+        sig = "IJD"[ETAPAS.index(card["_situation_stage"])]
+        role = "C" if card["_situation_role"]=="Clarisa" else "L"
         previous = p.zona
         delta = -1 if choice=="A" else 1
         p.zona = max(-self.rules["limite_afinidad"],
                      min(self.rules["limite_afinidad"],p.zona+delta))
-        self._log("situacion", jugador=p.id, carta=card["id"], etapa=p.etapa,
-                  opcion=choice, afinidad_antes=previous, afinidad_despues=p.zona)
+        self._log("situacion", jugador=p.id, carta=card["id"],
+                  etapa_asignada=card["_situation_stage"],
+                  etapa_actual=p.etapa, opcion=choice,
+                  afinidad_antes=previous, afinidad_despues=p.zona)
         for r,amount in card[choice].items():
             if amount>0:
                 param=f"SIT_{sig}_{role}_{choice}_{r}_GANANCIA"
@@ -313,6 +322,7 @@ class SimulacionV3:
                 self._log("examen_utn",jugador=p.id,dado=rolled,aprobado=passed)
                 if passed:
                     p.examen_aprobado=True
+                    p.perfil="perfil_"+p.rol
                     p.etapa="Juventud"
                     p.posicion=1
                     self._log("ingreso_juventud",jugador=p.id)
@@ -482,9 +492,9 @@ class SimulacionV3:
             "TRAMITE" if pos in (2,5) else None
         )
         if not kind:return
-        for r,amount in self.config["juventud_casilleros"][kind].items():
-            if amount<=0:continue
+        for r in self.config["juventud_casilleros"][kind]:
             param=f"CAS_J_{kind}_{self.rules['juvenil_cobro'].upper()}_{r}"
+            amount=self.values[param]
             for z in (p, self.personas[p.pareja]) if p.pareja else (p,):
                 self._ganar(z,r,amount,param,"Casillero",posicion=pos)
 
@@ -717,7 +727,11 @@ class SimulacionV3:
             start={pid:(p.etapa,p.rol) for pid,p in self.personas.items()}
             assignments={}
             for stage,role in sorted(set(start.values())):
-                assignments[(stage,role)]=self.situaciones[stage+"_"+role].tomar()
+                original=self.situaciones[stage+"_"+role].tomar()
+                assignments[(stage,role)]={
+                    **original, "_situation_stage":stage,
+                    "_situation_role":role
+                }
             juvenile_cards={pid:self.mazo_joven.tomar()
                             for pid,(stage,_) in start.items() if stage=="Juventud"}
             self._log("ronda",cartas={
@@ -767,7 +781,7 @@ class SimulacionV3:
                      "falso_revelado":p.secreto_revelado}
                 for pid,p in self.personas.items()
             },
-            "eventos":self.eventos + self.economia.eventos,
+            "eventos":self.eventos,
             "advertencias_modelo":[
                 "Importes y cartas sintéticos, no calibrados.",
                 "No incluye duelos ordinarios, disputa de hitos, cambios de rol, "
