@@ -813,7 +813,7 @@ def ejecutar_lote(config, partidas=20, n=6, semilla=2001,
                 frequencies[(e["etapa"],e["parametro"],e["recurso"])]+=1
     return {
         "status":"EXPERIMENTAL_NO_CALIBRADO",
-        "jugadores":n,"partidas":partidas,"semillas":[semilla,semilla+partidas-1],
+        "jugadores":n,"cantidad_partidas":partidas,"semillas":[semilla,semilla+partidas-1],
         "politica":politica,
         "cierres":dict(winners),
         "rondas_mediana":statistics.median(g["rondas"] for g in games),
