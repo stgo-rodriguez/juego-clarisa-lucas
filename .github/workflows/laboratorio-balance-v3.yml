@@ -6,6 +6,7 @@ on:
     paths:
       - 'laboratorio/v3/**'
       - 'tests/test_matriz_economica_v3.py'
+      - 'tests/test_modelo_matematico_v3.py'
       - '.github/workflows/laboratorio-balance-v3.yml'
   workflow_dispatch:
 
@@ -26,3 +27,7 @@ jobs:
         run: python -m laboratorio.v3.catalogo --validar
       - name: Ejecutar pruebas de matriz
         run: python -m unittest discover -s tests -p 'test_matriz_economica_v3.py' -v
+      - name: Verificar modelo matemático, rutas y escenarios
+        run: python -m unittest discover -s tests -p 'test_modelo_matematico_v3.py' -v
+      - name: Ejecutar escenario didáctico v3.0 reproducible
+        run: python -m laboratorio.v3.ejecutar_modelo --salida /tmp/salida_modelo_v3.json
