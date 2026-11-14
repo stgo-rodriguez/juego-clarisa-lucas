@@ -241,7 +241,7 @@ def calibrar_emisiones(
                 f"{etapa}/{recurso}: cuotas positivas para emisión objetivo cero"
             )
         for key, s, instancia, freq, cuota, row in g:
-            if quota := (cuota > 0 and freq == 0):
+            if cuota > 0 and freq == 0:
                 raise CatalogoInvalido(
                     f"{key}: cuota positiva sin frecuencia de activación"
                 )
@@ -349,7 +349,8 @@ def calcular_demanda_secuencial(
         if key not in amounts:
             raise CatalogoInvalido(f"Falta importe objetivo: {key}")
         if row["flujo"] not in ("REQUISITO", "RESERVA",
-                               "CONSUMO", "INVERSION", "OBJETIVO"):
+                               "CONSUMO", "INVERSION", "OBJETIVO",
+                               "CONSUMO/TRANSFERENCIA"):
             raise CatalogoInvalido(
                 f"{key}: no admite flujo {row['flujo']} en demanda"
             )
@@ -365,6 +366,14 @@ def calcular_demanda_secuencial(
         if isinstance(count, bool) or not isinstance(count, int) or count <= 0:
             raise CatalogoInvalido(f"veces debe ser entero positivo: {key}")
         kind = row["flujo"]
+        destino = event.get("destino")
+        if kind == "CONSUMO/TRANSFERENCIA":
+            if destino not in ("banca", "propietarios"):
+                raise CatalogoInvalido(
+                    f"{key}: especificar destino banca o propietarios"
+                )
+        elif destino is not None:
+            raise CatalogoInvalido(f"{key}: destino no aplicable")
         modo = event.get("modo_objetivo")
         if kind == "OBJETIVO" and modo not in ("pago", "comprobacion"):
             raise CatalogoInvalido(f"{key}: objetivo requiere modo explícito")
@@ -407,6 +416,7 @@ def calcular_demanda_secuencial(
             "actores": involved, "por_integrante": individual,
             "demanda_adicional": step_deficit,
             "tipo": kind, "modo_objetivo": modo,
+            "destino": destino,
         })
     grouped = defaultdict(lambda: defaultdict(int))
     for (stage, _actor, r), amount in additions.items():
