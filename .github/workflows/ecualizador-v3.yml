@@ -1,0 +1,21 @@
+name: Pruebas Ecualizador v3
+on:
+  push:
+    branches: [feature/ecualizador-teorico-v3]
+    paths: ['laboratorio/v3/**', '.github/workflows/ecualizador-v3.yml']
+  pull_request:
+    paths: ['laboratorio/v3/**', '.github/workflows/ecualizador-v3.yml']
+jobs:
+  model:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+      - run: python -m unittest discover -s laboratorio/v3/tests -p 'test_*.py'
+      - run: node laboratorio/v3/tests/test_engine.cjs
+      - run: python laboratorio/v3/modelo_matematico.py > /tmp/v3-output.json
