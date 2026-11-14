@@ -39,6 +39,27 @@ jobs:
         run: |
           python -m laboratorio.v3.simulador_experimental --jugadores 6 --partidas 12 --semilla 2001 --salida /tmp/simlog_v3_6p.json --traza /tmp/simlog_v3_traza_6p.json
           python -m laboratorio.v3.simulador_experimental --jugadores 10 --partidas 12 --semilla 2001 --salida /tmp/simlog_v3_10p.json --traza /tmp/simlog_v3_traza_10p.json
+      - name: Resumir resultados de partidas v3.0 sin atribuir balance
+        shell: bash
+        run: |
+          python - <<'PY'
+          import json
+          from pathlib import Path
+
+          for n in (6, 10):
+              run = json.loads(Path(f"/tmp/simlog_v3_{n}p.json").read_text())
+              print(f"SIMLOG-3.0-EXPERIMENTAL · {n} jugadores · "
+                    f"{run['cantidad_partidas']} partidas "
+                    f"semillas {run['semillas']}")
+              print("Cierres:", run["cierres"])
+              print("Censuradas:", run["partidas_censuradas"])
+              print("Mediana completadas:", run["rondas_mediana_completadas"])
+              print("p80 completadas:", run["rondas_p80_completadas"])
+              print("Producción por etapa:", run["generacion_por_etapa"])
+              print("Pérdidas efectivas:", run["perdidas_efectivas"])
+              print("Activaciones distintas:", len(run["activaciones_observadas"]))
+              print("---")
+          PY
       - name: Probar optimización conjunta de premios y costos
         run: python -m unittest discover -s tests -p 'test_optimizador_economico_v3.py' -v
       - name: Optimizar escenario didáctico y verificar salida
