@@ -77,6 +77,7 @@ class LibroMayor:
         elif destino is None:
             self.total_consumido[recurso] += cantidad
         event = {
+            "tipo": "transaccion",
             "ronda": ronda, "causa": causa, "parametro": parametro,
             "recurso": recurso, "cantidad": cantidad,
             "origen": list(origen) if origen else None,
