@@ -76,6 +76,30 @@ class SimuladorExperimentalV3Tests(unittest.TestCase):
         self.assertNotEqual(p.perfil,"")
         self.assertTrue(s.economia.comprobar())
 
+    def test_bot_puede_entrar_a_utn_sin_umbral_y_sufrir_regreso(self):
+        s=self.make()
+        s.rules["politica_entrada_utn"]="entrar_aunque_falten"
+        p=s.personas["C1"];p.posicion=1;s.ronda=1
+        s._lanzar=lambda:5
+        moved,rolled=s._mover_infancia(p)
+        self.assertTrue(moved)
+        self.assertEqual(p.posicion,"UTN")
+        card={"id":"I-C-test","_situation_stage":"Infancia",
+              "_situation_role":"Clarisa","A":{},"B":{}}
+        s._efecto(p,card,"A")
+        self.assertFalse(s._satisface_utn(p))
+        p.utm_regreso=True
+        moved,rolled=s._mover_infancia(p)
+        self.assertEqual(p.posicion,3)  # UTN → 5 consume 1 step, then four.
+        s.economia.comprobar()
+
+    def test_boda_no_puede_hacerse_desde_un_casillero_no_conectado(self):
+        s,p,q=self._boda_setup(False)
+        p.posicion=(3,3);q.posicion=(3,3)
+        self.assertTrue(s._puede_casarse(p))
+        self.assertFalse(s._casarse(p))
+        self.assertIsNone(s.cierre)
+
     def test_utm_sin_requisitos_regresa_con_un_paso_consumido(self):
         s=self.make()
         p=s.personas["C1"];p.posicion="UTN";p.utm_regreso=True
