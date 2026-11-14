@@ -39,7 +39,7 @@ class ModeloMatematicoV3Tests(unittest.TestCase):
         self.assertEqual(inf["delta_libre_sin_transferencias"], 1.5)
         youth = p["etapas"]["Juventud"]["recursos"]["A"]
         self.assertEqual(youth["flujos"]["RESERVA"], 0.75)
-        self.assertEqual(youth["volumen_redistribuido"], 2.8)
+        self.assertAlmostEqual(youth["volumen_redistribuido"], 2.8)
         self.assertEqual(youth["creacion_mesa_neta"], 0.0)
         self.assertEqual(youth["delta_libre_sin_transferencias"], -0.75)
         self.assertEqual(
