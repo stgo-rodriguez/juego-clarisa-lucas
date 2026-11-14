@@ -67,9 +67,9 @@ jobs:
               "Estos números son válidos exclusivamente bajo las hipótesis "
               "del escenario de prueba. No se han simulado partidas v3.0."
           ])
-          print("\\n".join(summary))
+          print(chr(10).join(summary))
           with open(os.environ["GITHUB_STEP_SUMMARY"], "a", encoding="utf-8") as stream:
-              stream.write("\\n".join(summary) + "\\n")
+              stream.write(chr(10).join(summary) + chr(10))
           PY
       - name: Guardar salida experimental para inspección
         uses: actions/upload-artifact@v4
