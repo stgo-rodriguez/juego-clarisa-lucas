@@ -1,0 +1,139 @@
+name: Laboratorio de Balance v3.0 · modelo y optimización
+
+on:
+  push:
+    branches: [feature/visualizador-simlog-v23]
+    paths:
+      - 'laboratorio/v3/**'
+      - 'tests/test_matriz_economica_v3.py'
+      - 'tests/test_modelo_matematico_v3.py'
+      - 'tests/test_optimizador_economico_v3.py'
+      - 'tests/test_simulador_experimental_v3.py'
+      - 'tests/test_sensibilidad_v3.py'
+      - '.github/workflows/laboratorio-balance-v3.yml'
+  workflow_dispatch:
+
+jobs:
+  validar-economia-y-optimizacion:
+    runs-on: ubuntu-latest
+    strategy:
+      matrix:
+        python-version: ['3.11', '3.13']
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: ${{ matrix.python-version }}
+      - name: Compilar módulo económico v3.0
+        run: python -m compileall -q laboratorio/v3/
+      - name: Auditar esquema y valores abiertos
+        run: python -m laboratorio.v3.catalogo --validar
+      - name: Ejecutar pruebas de matriz
+        run: python -m unittest discover -s tests -p 'test_matriz_economica_v3.py' -v
+      - name: Verificar modelo matemático, rutas y escenarios
+        run: python -m unittest discover -s tests -p 'test_modelo_matematico_v3.py' -v
+      - name: Ejecutar escenario didáctico v3.0 reproducible
+        run: python -m laboratorio.v3.ejecutar_modelo --salida /tmp/salida_modelo_v3.json
+      - name: Probar simulador experimental de partidas v3.0
+        run: python -m unittest discover -s tests -p 'test_simulador_experimental_v3.py' -v
+      - name: Ejecutar partidas de prueba con 6 y 10 jugadores
+        run: |
+          python -m laboratorio.v3.simulador_experimental --jugadores 6 --partidas 12 --semilla 2001 --salida /tmp/simlog_v3_6p.json --traza /tmp/simlog_v3_traza_6p.json
+          python -m laboratorio.v3.simulador_experimental --jugadores 10 --partidas 12 --semilla 2001 --salida /tmp/simlog_v3_10p.json --traza /tmp/simlog_v3_traza_10p.json
+      - name: Resumir resultados de partidas v3.0 sin atribuir balance
+        shell: bash
+        run: |
+          python - <<'PY'
+          import json
+          from pathlib import Path
+
+          for n in (6, 10):
+              run = json.loads(Path(f"/tmp/simlog_v3_{n}p.json").read_text())
+              print(f"SIMLOG-3.0-EXPERIMENTAL · {n} jugadores · "
+                    f"{run['cantidad_partidas']} partidas "
+                    f"semillas {run['semillas']}")
+              print("Cierres:", run["cierres"])
+              print("Censuradas:", run["partidas_censuradas"])
+              print("Mediana completadas:", run["rondas_mediana_completadas"])
+              print("p80 completadas:", run["rondas_p80_completadas"])
+              print("Producción por etapa:", run["generacion_por_etapa"])
+              print("Pérdidas efectivas:", run["perdidas_efectivas"])
+              print("Activaciones distintas:", len(run["activaciones_observadas"]))
+              print("---")
+          PY
+      - name: Verificar sensibilidad económica apareada
+        run: python -m unittest discover -s tests -p 'test_sensibilidad_v3.py' -v
+      - name: Comparar precio Casa y premio Dinero con semillas iguales
+        run: |
+          python -m laboratorio.v3.sensibilidad_experimental --jugadores 6 --partidas 12 --semilla 2001 --salida /tmp/sensibilidad_v3_6p.json
+          python -m laboratorio.v3.sensibilidad_experimental --jugadores 10 --partidas 12 --semilla 2001 --salida /tmp/sensibilidad_v3_10p.json
+      - name: Resumir efectos pareados experimentales
+        shell: bash
+        run: |
+          python - <<'PY'
+          import json
+          from pathlib import Path
+          for n in (6,10):
+              out=json.loads(Path(f"/tmp/sensibilidad_v3_{n}p.json").read_text())
+              print(f"SENSIBILIDAD EXPERIMENTAL: {n} jugadores {out['semillas']}")
+              print("BASE",out["base"])
+              for e in out["experimentos"]:
+                  print("VARIANTE",e["id"],e["cambios"])
+                  print("CIERRES",e["cierres"])
+                  print("MEDIANA",e["mediana_cierres"],"p80",e["p80_cierres"])
+                  print("DELTA RONDAS OBSERVADAS PAREADAS",e["delta_rondas_medio_pareado_observado"])
+                  print("FUENTES CON FRECUENCIA DISTINTA",len(e["frecuencias_que_cambiaron"]))
+              print("---")
+          PY
+      - name: Probar optimización conjunta de premios y costos
+        run: python -m unittest discover -s tests -p 'test_optimizador_economico_v3.py' -v
+      - name: Optimizar escenario didáctico y verificar salida
+        run: python -m laboratorio.v3.optimizar --max-evaluaciones 1500 --salida /tmp/optimizacion_v3.json
+      - name: Resumir combinación de prueba y frontera Pareto
+        shell: bash
+        run: |
+          python - <<'PY'
+          import json
+          import os
+          from pathlib import Path
+
+          obj = json.loads(Path("/tmp/optimizacion_v3.json").read_text())
+          best = obj["mejor_por_pesos"]
+          summary = [
+              "## Optimización económica v3.0 — DEMOSTRACIÓN NO CALIBRADA",
+              "",
+              "**Importes y frecuencias sintéticos: NO son reglas recomendadas.**",
+              "",
+              f"- Búsqueda: {obj['metodo']}",
+              f"- Combinaciones: {obj['combinaciones_evaluadas']} / {obj['espacio_combinaciones']}",
+              f"- Tamaño frontera Pareto: {obj['frontera_pareto_total']}",
+              f"- Puntaje ponderado (ejemplo): {best['puntaje_ponderado']:.5f}",
+              "",
+              "| Parámetro | Cantidad de ejemplo |",
+              "|---|---:|",
+          ]
+          for item in obj["variables"]:
+              p = item["parametro"]
+              summary.append(f"| `{p}` | {best['ajustes'][p]} |")
+          summary.extend([
+              "",
+              "Estos números son válidos exclusivamente bajo las hipótesis "
+              "del escenario de prueba. No se han simulado partidas v3.0."
+          ])
+          print(chr(10).join(summary))
+          with open(os.environ["GITHUB_STEP_SUMMARY"], "a", encoding="utf-8") as stream:
+              stream.write(chr(10).join(summary) + chr(10))
+          PY
+      - name: Guardar salida experimental para inspección
+        uses: actions/upload-artifact@v4
+        with:
+          name: optimizacion-v3-demostracion-py${{ matrix.python-version }}
+          path: |
+            /tmp/optimizacion_v3.json
+            /tmp/simlog_v3_6p.json
+            /tmp/simlog_v3_10p.json
+            /tmp/simlog_v3_traza_6p.json
+            /tmp/simlog_v3_traza_10p.json
+            /tmp/sensibilidad_v3_6p.json
+            /tmp/sensibilidad_v3_10p.json
+          retention-days: 30

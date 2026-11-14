@@ -1,0 +1,306 @@
+{
+  "titulo": "OPTIMIZACIÓN CONJUNTA DIDÁCTICA v3.0 — cantidades NO CALIBRADAS",
+  "esquema": "balance-v3-optimizador-0.1",
+  "proposito": "Demostrar cálculo conjunto de premios y costos bajo hipótesis explícitas; NO se pretende balance definitivo.",
+  "advertencia": "RONDAS, ACTIVACIONES, DOMINIOS, MEZCLA Y PESOS ARBITRARIOS PARA PRUEBA. No son resultados de simulaciones v3.0 ni recomendaciones aprobadas.",
+  "variables": [
+    {
+      "parametro": "CAS_D_F1C5_A",
+      "valores": [
+        1,
+        2,
+        3
+      ]
+    },
+    {
+      "parametro": "SIT_D_C_A_A_GANANCIA",
+      "valores": [
+        1,
+        2,
+        3
+      ]
+    },
+    {
+      "parametro": "CAS_D_F3C5_M",
+      "valores": [
+        2,
+        3,
+        4
+      ]
+    },
+    {
+      "parametro": "PERFIL_C_M",
+      "valores": [
+        2,
+        3,
+        4
+      ]
+    },
+    {
+      "parametro": "CASA_OFERTA_BASE_M",
+      "valores": [
+        4,
+        6
+      ]
+    },
+    {
+      "parametro": "AFINIDAD_META_A",
+      "valores": [
+        5,
+        7
+      ]
+    },
+    {
+      "parametro": "AFINIDAD_META_M",
+      "valores": [
+        5,
+        7
+      ]
+    },
+    {
+      "parametro": "FALSO_LUCAS_META_M",
+      "valores": [
+        9,
+        12
+      ]
+    }
+  ],
+  "ajustes_fijos": {
+    "CAS_D_F4C2_P": 2,
+    "CASA_RESERVA_A": 4,
+    "CASA_RESERVA_P": 2
+  },
+  "fuentes": [
+    {
+      "parametro": "CAS_D_F1C5_A",
+      "etapa": "Adultez",
+      "activaciones_por_ronda_mesa": 0.5
+    },
+    {
+      "parametro": "CAS_D_F4C2_P",
+      "etapa": "Adultez",
+      "activaciones_por_ronda_mesa": 0.5
+    },
+    {
+      "parametro": "CAS_D_F3C5_M",
+      "etapa": "Adultez",
+      "activaciones_por_ronda_mesa": 0.5
+    },
+    {
+      "parametro": "SIT_D_C_A_A_GANANCIA",
+      "etapa": "Adultez",
+      "instancia": "ejemplo-situacion-01",
+      "activaciones_por_ronda_mesa": 0.5
+    },
+    {
+      "parametro": "PERFIL_C_M",
+      "etapa": "Adultez",
+      "instancia": "perfil-ejemplo-01",
+      "activaciones_por_ronda_mesa": 0.5
+    }
+  ],
+  "rondas_por_etapa": {
+    "Adultez": 5
+  },
+  "rutas": [
+    {
+      "id": "boda_lucas_autentico",
+      "participantes": [
+        "C",
+        "L"
+      ],
+      "ganadores_hipoteticos": [
+        "C",
+        "L"
+      ],
+      "eventos": [
+        {
+          "etapa": "Adultez",
+          "hito": "Casa / reserva A",
+          "parametro": "CASA_RESERVA_A",
+          "actores": [
+            "C",
+            "L"
+          ],
+          "por_integrante": true
+        },
+        {
+          "etapa": "Adultez",
+          "hito": "Casa / reserva P",
+          "parametro": "CASA_RESERVA_P",
+          "actores": [
+            "C",
+            "L"
+          ],
+          "por_integrante": true
+        },
+        {
+          "etapa": "Adultez",
+          "hito": "Casa / precio a banca (solo si gana)",
+          "parametro": "CASA_OFERTA_BASE_M",
+          "actores": [
+            "C",
+            "L"
+          ],
+          "por_integrante": true,
+          "destino": "banca"
+        },
+        {
+          "etapa": "Adultez",
+          "hito": "Afinidad A",
+          "parametro": "AFINIDAD_META_A",
+          "actores": [
+            "C",
+            "L"
+          ],
+          "modo_objetivo": "pago"
+        },
+        {
+          "etapa": "Adultez",
+          "hito": "Afinidad M",
+          "parametro": "AFINIDAD_META_M",
+          "actores": [
+            "C",
+            "L"
+          ],
+          "modo_objetivo": "pago"
+        }
+      ],
+      "peso": 2
+    },
+    {
+      "id": "boda_falso_lucas",
+      "participantes": [
+        "C",
+        "F"
+      ],
+      "ganadores_hipoteticos": [
+        "C"
+      ],
+      "eventos": [
+        {
+          "etapa": "Adultez",
+          "hito": "Casa / reserva A",
+          "parametro": "CASA_RESERVA_A",
+          "actores": [
+            "C",
+            "F"
+          ],
+          "por_integrante": true
+        },
+        {
+          "etapa": "Adultez",
+          "hito": "Casa / reserva P",
+          "parametro": "CASA_RESERVA_P",
+          "actores": [
+            "C",
+            "F"
+          ],
+          "por_integrante": true
+        },
+        {
+          "etapa": "Adultez",
+          "hito": "Casa / precio a banca (solo si gana)",
+          "parametro": "CASA_OFERTA_BASE_M",
+          "actores": [
+            "C",
+            "F"
+          ],
+          "por_integrante": true,
+          "destino": "banca"
+        },
+        {
+          "etapa": "Adultez",
+          "hito": "Afinidad A",
+          "parametro": "AFINIDAD_META_A",
+          "actores": [
+            "C",
+            "F"
+          ],
+          "modo_objetivo": "pago"
+        },
+        {
+          "etapa": "Adultez",
+          "hito": "Afinidad M",
+          "parametro": "AFINIDAD_META_M",
+          "actores": [
+            "C",
+            "F"
+          ],
+          "modo_objetivo": "pago"
+        }
+      ],
+      "peso": 1
+    },
+    {
+      "id": "victoria_individual_falso_lucas",
+      "participantes": [
+        "C",
+        "F"
+      ],
+      "ganadores_hipoteticos": [
+        "F"
+      ],
+      "eventos": [
+        {
+          "etapa": "Adultez",
+          "hito": "Casa / reserva A",
+          "parametro": "CASA_RESERVA_A",
+          "actores": [
+            "C",
+            "F"
+          ],
+          "por_integrante": true
+        },
+        {
+          "etapa": "Adultez",
+          "hito": "Casa / reserva P",
+          "parametro": "CASA_RESERVA_P",
+          "actores": [
+            "C",
+            "F"
+          ],
+          "por_integrante": true
+        },
+        {
+          "etapa": "Adultez",
+          "hito": "Casa / precio a banca (solo si gana)",
+          "parametro": "CASA_OFERTA_BASE_M",
+          "actores": [
+            "C",
+            "F"
+          ],
+          "por_integrante": true,
+          "destino": "banca"
+        },
+        {
+          "etapa": "Adultez",
+          "hito": "Dinero individual del Falso Lucas",
+          "parametro": "FALSO_LUCAS_META_M",
+          "actores": [
+            "F"
+          ],
+          "modo_objetivo": "comprobacion"
+        }
+      ],
+      "peso": 1
+    }
+  ],
+  "presion_objetivo": 0.8,
+  "mezcla_objetivo": {
+    "Adultez": {
+      "A": 0.3,
+      "P": 0.15,
+      "K": 0,
+      "M": 0.55
+    }
+  },
+  "pesos": {
+    "deficit": 5,
+    "excedente": 1.5,
+    "desviacion_mezcla": 1.2,
+    "disparidad_rutas": 0.75,
+    "desviacion_presion": 1
+  },
+  "nota": "1296 combinaciones exhaustivas; las 'frecuencias por ronda y mesa' YA agregan las activaciones de los integrantes (no multiplicarlas por número de jugadores). Se supone Casa en primer intento y miembros cooperantes. Falso Lucas necesita dinero propio pero el cálculo aún usa un pozo idealizado: la viabilidad de su victoria queda sin validar hasta simulación."
+}

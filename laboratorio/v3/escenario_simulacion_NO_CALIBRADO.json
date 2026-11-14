@@ -1,0 +1,352 @@
+{
+  "etiqueta": "EXPERIMENTO_NO_CALIBRADO",
+  "nombre": "Clarisa y Lucas v3.0 · vertical de simulación económica · cantidades sintéticas",
+  "origen": "https://docs.google.com/document/d/1AfX65pZX_XmXwsPLMwkXAqg5gL1BfzKB/edit",
+  "advertencia": "NO CALIBRADO. Todos los valores económicos son arbitrarios para probar invariantes y medir activaciones bajo dos bots simples. No se heredan de v2.x.",
+  "parametros": {
+    "UTN_UMBRAL_P": 2,
+    "UTN_UMBRAL_K": 2,
+    "TITULO_SUBHITO_1_K": 1,
+    "TITULO_SUBHITO_2_K": 2,
+    "TITULO_SUBHITO_3_K": 2,
+    "PASAPORTE_SUBHITO_1_P": 2,
+    "PASAPORTE_SUBHITO_2_P": 2,
+    "PASAPORTE_SUBHITO_3_M": 2,
+    "ADJ_TITULO_PAGO_MIN_K": 4,
+    "ADJ_PASAPORTE_PAGO_MIN_P": 4,
+    "PAREJA_RESERVA_A": 4,
+    "DUBLIN_UMBRAL_K": 2,
+    "DUBLIN_UMBRAL_M": 3,
+    "CASA_RESERVA_A": 4,
+    "CASA_RESERVA_P": 2,
+    "CASA_OFERTA_BASE_M": 4,
+    "CASA_OFERTA_INCREMENTO_M": 2,
+    "FALSO_LUCAS_META_M": 13,
+    "AFINIDAD_META_A": 8,
+    "AFINIDAD_META_P": 7,
+    "AFINIDAD_META_K": 6,
+    "AFINIDAD_META_M": 10,
+    "CAS_I_1_A": 3,
+    "CAS_I_2_P": 3,
+    "CAS_I_3_A": 3,
+    "CAS_I_4_P": 3,
+    "CAS_I_5_K": 2,
+    "CAS_I_6_A": 3,
+    "CAS_D_F1C1_K": 3,
+    "CAS_D_F1C5_A": 3,
+    "CAS_D_F2C1_M": 4,
+    "CAS_D_F3C5_M": 4,
+    "CAS_D_F4C2_P": 3,
+    "CAS_D_F5C2_A": 3,
+    "CAS_J_UNIVERSIDAD_DESTINO_K": 2,
+    "CAS_J_TRAMITE_DESTINO_P": 2
+  },
+  "variantes": {
+    "neutral_desde": -2,
+    "neutral_hasta": 2,
+    "limite_afinidad": 6,
+    "mano_adulta": 3,
+    "juvenil_cobro": "destino",
+    "consentimiento_falso": "acepta",
+    "prioridad_cierre": "orden_de_turnos",
+    "numero_casa_reintentos": 1,
+    "intercambio_bancario": "deshabilitado_experimental",
+    "adjudicacion": "D6_menor_o_igual_pago_hasta_6",
+    "proyecto": "proyecto_compartido_por_tipo_y_rol_con_recibos",
+    "pareja": "aceptacion_automatica_sin_negociacion",
+    "regreso_juventud": "casillero_1",
+    "mazos": "barajar_independiente_y_rebarajar_al_agotarse",
+    "paso_afinidad": "uno_por_eleccion",
+    "casamiento": "pago_terminal_Afinidad_sin_pago_fijo",
+    "politica_entrada_utn": "solo_con_umbral_previo"
+  },
+  "juventud_casilleros": {
+    "UNIVERSIDAD": [
+      "K"
+    ],
+    "TRAMITE": [
+      "P"
+    ]
+  },
+  "perfiles": {
+    "Clarisa": {
+      "A": 1,
+      "P": 1,
+      "K": 2,
+      "M": 3
+    },
+    "Lucas": {
+      "A": 1,
+      "P": 1,
+      "K": 2,
+      "M": 3
+    }
+  },
+  "situaciones": {
+    "Infancia_Clarisa": [
+      {
+        "id": "I-C-01",
+        "A": {
+          "P": 2,
+          "K": 1
+        },
+        "B": {
+          "A": 3
+        }
+      },
+      {
+        "id": "I-C-02",
+        "A": {
+          "K": 2
+        },
+        "B": {
+          "P": 3
+        }
+      },
+      {
+        "id": "I-C-03",
+        "A": {
+          "A": 2,
+          "K": 1
+        },
+        "B": {
+          "P": 2
+        }
+      },
+      {
+        "id": "I-C-04",
+        "A": {
+          "K": 1,
+          "M": 1
+        },
+        "B": {
+          "P": 3,
+          "A": -1
+        }
+      }
+    ],
+    "Infancia_Lucas": [
+      {
+        "id": "I-L-01",
+        "A": {
+          "P": 2,
+          "K": 1
+        },
+        "B": {
+          "A": 3
+        }
+      },
+      {
+        "id": "I-L-02",
+        "A": {
+          "K": 2
+        },
+        "B": {
+          "P": 3
+        }
+      },
+      {
+        "id": "I-L-03",
+        "A": {
+          "A": 2,
+          "K": 1
+        },
+        "B": {
+          "P": 2
+        }
+      },
+      {
+        "id": "I-L-04",
+        "A": {
+          "K": 1,
+          "M": 1
+        },
+        "B": {
+          "P": 3,
+          "A": -1
+        }
+      }
+    ],
+    "Juventud_Clarisa": [
+      {
+        "id": "J-C-01",
+        "A": {
+          "K": 3,
+          "M": 1
+        },
+        "B": {
+          "P": 3,
+          "A": 2
+        }
+      },
+      {
+        "id": "J-C-02",
+        "A": {
+          "K": 2,
+          "P": 1
+        },
+        "B": {
+          "M": 3,
+          "A": 2
+        }
+      },
+      {
+        "id": "J-C-03",
+        "A": {
+          "A": 3,
+          "K": 2
+        },
+        "B": {
+          "P": 3,
+          "M": 1
+        }
+      },
+      {
+        "id": "J-C-04",
+        "A": {
+          "K": 3
+        },
+        "B": {
+          "M": 3,
+          "P": 2
+        }
+      }
+    ],
+    "Juventud_Lucas": [
+      {
+        "id": "J-L-01",
+        "A": {
+          "K": 3,
+          "M": 1
+        },
+        "B": {
+          "P": 3,
+          "A": 2
+        }
+      },
+      {
+        "id": "J-L-02",
+        "A": {
+          "K": 2,
+          "P": 1
+        },
+        "B": {
+          "M": 3,
+          "A": 2
+        }
+      },
+      {
+        "id": "J-L-03",
+        "A": {
+          "A": 3,
+          "K": 2
+        },
+        "B": {
+          "P": 3,
+          "M": 1
+        }
+      },
+      {
+        "id": "J-L-04",
+        "A": {
+          "K": 3
+        },
+        "B": {
+          "M": 3,
+          "P": 2
+        }
+      }
+    ],
+    "Adultez_Clarisa": [
+      {
+        "id": "A-C-01",
+        "A": {
+          "A": 3,
+          "P": 1
+        },
+        "B": {
+          "M": 4,
+          "K": 1
+        }
+      },
+      {
+        "id": "A-C-02",
+        "A": {
+          "M": 4
+        },
+        "B": {
+          "A": 3,
+          "P": 2
+        }
+      },
+      {
+        "id": "A-C-03",
+        "A": {
+          "K": 3,
+          "A": 2
+        },
+        "B": {
+          "M": 4,
+          "P": -1
+        }
+      },
+      {
+        "id": "A-C-04",
+        "A": {
+          "P": 3,
+          "A": 1
+        },
+        "B": {
+          "K": 2,
+          "M": 3
+        }
+      }
+    ],
+    "Adultez_Lucas": [
+      {
+        "id": "A-L-01",
+        "A": {
+          "A": 3,
+          "P": 1
+        },
+        "B": {
+          "M": 4,
+          "K": 1
+        }
+      },
+      {
+        "id": "A-L-02",
+        "A": {
+          "M": 4
+        },
+        "B": {
+          "A": 3,
+          "P": 2
+        }
+      },
+      {
+        "id": "A-L-03",
+        "A": {
+          "K": 3,
+          "A": 2
+        },
+        "B": {
+          "M": 4,
+          "P": -1
+        }
+      },
+      {
+        "id": "A-L-04",
+        "A": {
+          "P": 3,
+          "A": 1
+        },
+        "B": {
+          "K": 2,
+          "M": 3
+        }
+      }
+    ]
+  },
+  "rondas_maximas": 100
+}

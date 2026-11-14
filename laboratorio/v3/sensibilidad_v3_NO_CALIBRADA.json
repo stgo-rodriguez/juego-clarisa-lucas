@@ -1,0 +1,34 @@
+{
+  "estado": "EXPERIMENTAL_NO_CALIBRADO",
+  "descripcion": "Sensibilidad pareada con semillas iguales; no se proponen cantidades definitivas.",
+  "variantes": [
+    {
+      "id": "precio_casa_mas_alto",
+      "cambios": {
+        "CASA_OFERTA_BASE_M": 6
+      },
+      "hipotesis": "Mayor precio por integrante retrasa adquisición de Casa y puede modificar proporción de cierres."
+    },
+    {
+      "id": "casillero_dinero_mas_productivo",
+      "cambios": {
+        "CAS_D_F3C5_M": 6
+      },
+      "hipotesis": "Mayor generación de M en F3C5 puede acelerar la compra o facilitar el objetivo del Falso Lucas."
+    },
+    {
+      "id": "precio_casa_estres_economico",
+      "cambios": {
+        "CASA_OFERTA_BASE_M": 24
+      },
+      "hipotesis": "Prueba de estrés: elevar mucho el precio para detectar si la Casa se convierte en un cuello de botella. No se propone este precio para el juego."
+    },
+    {
+      "id": "meta_dinero_falso_estres",
+      "cambios": {
+        "FALSO_LUCAS_META_M": 45
+      },
+      "hipotesis": "Prueba de estrés del objetivo individual; comparar si cambia la proporción de victorias y la duración."
+    }
+  ]
+}
