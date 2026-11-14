@@ -1,0 +1,28 @@
+name: Laboratorio de Balance v3.0 · matriz económica
+
+on:
+  push:
+    branches: [feature/visualizador-simlog-v23]
+    paths:
+      - 'laboratorio/v3/**'
+      - 'tests/test_matriz_economica_v3.py'
+      - '.github/workflows/laboratorio-balance-v3.yml'
+  workflow_dispatch:
+
+jobs:
+  validar-matriz-economica:
+    runs-on: ubuntu-latest
+    strategy:
+      matrix:
+        python-version: ['3.11', '3.13']
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: ${{ matrix.python-version }}
+      - name: Compilar módulo económico v3.0
+        run: python -m compileall -q laboratorio/v3/
+      - name: Auditar esquema y valores abiertos
+        run: python -m laboratorio.v3.catalogo --validar
+      - name: Ejecutar pruebas de matriz
+        run: python -m unittest discover -s tests -p 'test_matriz_economica_v3.py' -v
