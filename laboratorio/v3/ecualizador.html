@@ -13,7 +13,7 @@
 <body><div class="screen">
 <header class="top"><div class="identity"><small>LABORATORIO DE BALANCE / V3.0</small><h1>Ecualizador Teórico de Recursos</h1><small>Clarisa & Lucas · Motor determinista · Valores económicos por definir</small></div>
 <div class="actions">
-<button id="save">Guardar escenario</button><button id="duplicate">Duplicar</button><button id="reset">Restaurar base</button><button id="export">Exportar JSON</button><button id="export-csv">CSV</button><button id="import">Importar</button><input type="file" id="file-import" accept="application/json,.json">
+<button id="save">Guardar escenario</button><button id="duplicate">Duplicar</button><button id="reset">Restaurar base</button><button id="export">Exportar parámetros</button><button id="export-results">Exportar resultados</button><button id="export-csv">CSV</button><button id="import">Importar</button><input type="file" id="file-import" accept="application/json,.json">
 </div></header>
 <div class="notice">Este prototipo calcula <b>cotas económicas</b>, no percentiles ni rondas garantizadas. Los valores vacíos representan parámetros no definidos. El modo «pago de afinidad» es una variante de análisis; su carácter reglamentario aún es abierto en la especificación conceptual.</div>
 <div class="layout">
@@ -117,7 +117,17 @@ function renderEditor(){
  document.querySelectorAll('#editors [data-path]').forEach(el=>el.addEventListener('input',ev=>{
    const value=ev.target.value.trim()===''?null:Number(ev.target.value);
    if(value!==null&&!Number.isFinite(value))return;
-   pathSet(active,ev.target.dataset.path,value);update(false);
+   pathSet(active,ev.target.dataset.path,value);
+   const field=ev.target.closest('.field');
+   if(field){
+     const tag=field.querySelector('label span:last-child');if(tag)tag.textContent=value===null?'SIN DEFINIR':pretty(value);
+     field.querySelectorAll('[data-path]').forEach(other=>{
+       if(other===ev.target)return;
+       if(other.type==='range'){other.disabled=value===null;if(value!==null)other.value=value;}
+       if(other.type==='number')other.value=value===null?'':value;
+     });
+   }
+   renderResults();
  }));
  document.querySelectorAll('#editors [data-choice]').forEach(el=>el.addEventListener('change',ev=>{
    const val=ev.target.value;pathSet(active,ev.target.dataset.choice,ev.target.dataset.choice==='supuestos.jugadores'?Number(val):val);update(false);
@@ -195,6 +205,7 @@ $('reset').onclick=()=>{if(!confirm('¿Restaurar el catálogo de referencia? Se 
 $('scenario').onchange=ev=>{selected=ev.target.value;active=selected==='actual'?clone(base):clone(scenarios[selected]);update(false)};
 $('compare').onchange=ev=>{compare=ev.target.value;update(true)};
 $('export').onclick=()=>download('ecualizador-v3-escenario.json','application/json',JSON.stringify(active,null,2)+'\n');
+$('export-results').onclick=()=>download('ecualizador-v3-resultados.json','application/json',JSON.stringify(analizar(active),(k,v)=>v===Infinity?'inalcanzable':v,2)+'\\n');
 $('export-csv').onclick=()=>{
  const rows=[['etapa','mecanismo','rol','tipo','frecuencia','recurso','importe_A','importe_B','probabilidad_A']];
  for(const [st,obj] of Object.entries(active.etapas))for(const m of obj.mecanismos)for(const k of R)rows.push([st,m.nombre,m.rol,m.tipo,m.frecuencia,k,m.tipo==='situacion'?m.opcion_A[k]:(m.premios[k]??null),m.tipo==='situacion'?m.opcion_B[k]:'',m.probabilidad_A??'']);
