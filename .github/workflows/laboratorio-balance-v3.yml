@@ -1,4 +1,4 @@
-name: Laboratorio de Balance v3.0 · matriz económica
+name: Laboratorio de Balance v3.0 · modelo y optimización
 
 on:
   push:
@@ -12,7 +12,7 @@ on:
   workflow_dispatch:
 
 jobs:
-  validar-matriz-economica:
+  validar-economia-y-optimizacion:
     runs-on: ubuntu-latest
     strategy:
       matrix:
@@ -36,3 +36,44 @@ jobs:
         run: python -m unittest discover -s tests -p 'test_optimizador_economico_v3.py' -v
       - name: Optimizar escenario didáctico y verificar salida
         run: python -m laboratorio.v3.optimizar --max-evaluaciones 1500 --salida /tmp/optimizacion_v3.json
+      - name: Resumir combinación de prueba y frontera Pareto
+        shell: bash
+        run: |
+          python - <<'PY'
+          import json
+          import os
+          from pathlib import Path
+
+          obj = json.loads(Path("/tmp/optimizacion_v3.json").read_text())
+          best = obj["mejor_por_pesos"]
+          summary = [
+              "## Optimización económica v3.0 — DEMOSTRACIÓN NO CALIBRADA",
+              "",
+              "**Importes y frecuencias sintéticos: NO son reglas recomendadas.**",
+              "",
+              f"- Búsqueda: {obj['metodo']}",
+              f"- Combinaciones: {obj['combinaciones_evaluadas']} / {obj['espacio_combinaciones']}",
+              f"- Tamaño frontera Pareto: {obj['frontera_pareto_total']}",
+              f"- Puntaje ponderado (ejemplo): {best['puntaje_ponderado']:.5f}",
+              "",
+              "| Parámetro | Cantidad de ejemplo |",
+              "|---|---:|",
+          ]
+          for item in obj["variables"]:
+              p = item["parametro"]
+              summary.append(f"| `{p}` | {best['ajustes'][p]} |")
+          summary.extend([
+              "",
+              "Estos números son válidos exclusivamente bajo las hipótesis "
+              "del escenario de prueba. No se han simulado partidas v3.0."
+          ])
+          print("\\n".join(summary))
+          with open(os.environ["GITHUB_STEP_SUMMARY"], "a", encoding="utf-8") as stream:
+              stream.write("\\n".join(summary) + "\\n")
+          PY
+      - name: Guardar salida experimental para inspección
+        uses: actions/upload-artifact@v4
+        with:
+          name: optimizacion-v3-demostracion-py${{ matrix.python-version }}
+          path: /tmp/optimizacion_v3.json
+          retention-days: 30
