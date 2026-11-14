@@ -60,7 +60,8 @@ def validar_config(config: dict) -> None:
     variants = config.get("variantes", {})
     for key in ("neutral_desde", "neutral_hasta", "limite_afinidad",
                 "mano_adulta", "juvenil_cobro", "consentimiento_falso",
-                "prioridad_cierre", "numero_casa_reintentos"):
+                "prioridad_cierre", "numero_casa_reintentos",
+                "politica_entrada_utn"):
         if key not in variants:
             raise ValueError(f"Variante explícita requerida: {key}")
     if not (-variants["limite_afinidad"] <= variants["neutral_desde"]
@@ -68,6 +69,8 @@ def validar_config(config: dict) -> None:
         raise ValueError("Límites de afinidad inválidos")
     if variants["mano_adulta"] not in (3,4):
         raise ValueError("Mano adulta inválida")
+    if variants["politica_entrada_utn"] not in ("solo_con_umbral_previo","entrar_aunque_falten"):
+        raise ValueError("Política experimental UTN inválida")
     if variants["juvenil_cobro"] not in ("destino", "paso"):
         raise ValueError("Variante de casilleros de Juventud inválida")
     if variants["consentimiento_falso"] not in ("acepta", "rechaza"):
@@ -286,7 +289,9 @@ class SimulacionV3:
             travelled=False
             for step in range(1,roll+1):
                 current=(pos-1+step)%6+1
-                if current==5 and step<roll and self._satisface_utn(p):
+                if (current==5 and step<roll
+                        and (self.rules["politica_entrada_utn"] == "entrar_aunque_falten"
+                             or self._satisface_utn(p))):
                     p.posicion="UTN"
                     travelled=True
                     self._log("llegada_utn",jugador=p.id,dado=roll,pasos=step+1)
@@ -562,8 +567,11 @@ class SimulacionV3:
                    for r,amount in goals.items())
 
     def _casarse(self,p):
-        other=self.personas[p.pareja]
+        # Requiere entrada al nodo desde acceso superior, nunca boda remota.
+        if p.etapa!="Adultez" or p.posicion not in ((1,2),(1,3),(1,4)):
+            return False
         if not self._puede_casarse(p):return False
+        other=self.personas[p.pareja]
         if other.falso and self.rules["consentimiento_falso"]=="rechaza":
             return False
         if p.falso and self.rules["consentimiento_falso"]=="rechaza":
