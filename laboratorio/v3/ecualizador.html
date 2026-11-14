@@ -1,0 +1,215 @@
+<!doctype html>
+<html lang="es">
+<head>
+<meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Ecualizador Teórico v3.0 · Clarisa & Lucas</title>
+<style>
+:root{color-scheme:dark;--bg:#0c121c;--card:#172131;--card2:#1c2839;--border:#2e3e53;--text:#eef4ff;--muted:#9bafc8;--accent:#8ac3ed;--sub:#90dec2;--warn:#ffcf8a;--A:#f183a4;--P:#b39bf5;--K:#75c9e0;--M:#e3c574}
+*{box-sizing:border-box}html,body{margin:0;min-height:100%;background:var(--bg);color:var(--text);font:14px/1.42 system-ui,-apple-system,Segoe UI,sans-serif}button,input,select{font:inherit}button,select,input{color:var(--text)}button{cursor:pointer;border:1px solid var(--border);background:#253448;padding:8px 11px;border-radius:9px}button:hover{border-color:var(--accent)}button.primary{background:#31688b;border-color:#4385aa;color:white;font-weight:650}.screen{max-width:1900px;margin:auto;padding:15px 20px 26px}.top{display:flex;align-items:center;justify-content:space-between;gap:16px;margin-bottom:14px;flex-wrap:wrap}.identity h1{font-size:1.5rem;letter-spacing:-.03em;margin:2px 0}.identity small{color:var(--muted)}.actions{display:flex;gap:7px;flex-wrap:wrap}.mini{font-size:.8rem;color:var(--muted)}
+.layout{display:grid;grid-template-columns:minmax(285px,340px) minmax(390px,1fr) minmax(270px,335px);gap:13px;align-items:start}.panel{border:1px solid var(--border);background:var(--card);border-radius:15px;min-width:0;overflow:hidden}.panel .header{display:flex;align-items:center;justify-content:space-between;padding:14px 16px;border-bottom:1px solid var(--border)}h2{font-size:1rem;margin:0;font-weight:700}h3{font-size:.86rem;margin:0 0 9px;color:var(--text)}.section{padding:15px 16px;border-bottom:1px solid #ffffff12}.section:last-child{border-bottom:0}.ctrl{position:sticky;top:10px;max-height:calc(100vh - 20px);overflow:auto}.tabs{display:flex;gap:5px}.tabs button{flex:1;padding:8px 4px;font-size:.83rem}.tabs button.on{background:#416b91;border-color:#628bb4}.field{margin:10px 0}.field label{display:flex;justify-content:space-between;gap:8px;color:var(--muted);font-size:.83rem;margin-bottom:5px}.field input[type=number],select,.field input[type=text]{width:100%;border:1px solid var(--border);background:#101928;border-radius:8px;padding:7px 8px;min-height:34px}.field input[type=range]{width:100%;accent-color:var(--accent);margin:5px 0 0}.value-row{display:grid;grid-template-columns:1fr 94px;align-items:center;gap:7px}.value-row input[type=number]{min-width:0}.input-note{font-size:.74rem;color:var(--muted);margin-top:5px}.tag{font-size:.72rem;padding:3px 7px;border-radius:5px;background:#27405a;color:#b7dcf4}.tag.warn{background:#513c2a;color:#ffe0a2}.rewards{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:2px 10px}.rules{font-size:.82rem;color:var(--muted)}.chip{display:inline-block;border:1px solid var(--border);border-radius:7px;padding:3px 7px;margin:2px;font-size:.75rem}.legend-dot{display:inline-block;width:10px;height:10px;border-radius:3px;margin-right:5px}.cards{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:8px}.metric{border:1px solid var(--border);background:var(--card2);border-radius:12px;padding:12px;min-width:0}.metric span{font-size:.74rem;color:var(--muted)}.metric strong{display:block;font-size:1.5rem;font-variant-numeric:tabular-nums;margin-top:4px}.metric .delta{font-size:.76rem;color:var(--sub)}.flowbar{height:12px;border-radius:8px;background:#29384b;margin-top:6px;overflow:hidden;display:flex}.flowbar span{display:block;height:100%}.flow-row{display:grid;grid-template-columns:34px 90px 1fr 62px;gap:9px;align-items:center;margin:11px 0}.flow-row .resname{font-weight:800;font-size:.95rem}.flow-row .number{font-variant-numeric:tabular-nums;text-align:right}.flex{display:flex;gap:7px;align-items:center;flex-wrap:wrap}.block{padding:11px;border:1px solid var(--border);border-radius:10px;background:#111b29;margin:9px 0}.label-line{display:flex;justify-content:space-between;align-items:center;gap:8px}.label-line strong{font-weight:650}.muted{color:var(--muted)}.positive{color:var(--sub)}.negative{color:#ffa6a6}.grid2{display:grid;grid-template-columns:1fr 1fr;gap:9px}.estimate{display:flex;justify-content:space-between;gap:10px;align-items:center;padding:11px 13px;border-bottom:1px solid #ffffff10}.estimate:last-child{border-bottom:0}.estimate strong{font-size:1.08rem;font-variant-numeric:tabular-nums}.estimate small{display:block;font-size:.75rem;color:var(--muted)}.result{border-top:1px solid var(--border)}.result:first-child{border-top:0}.bullets{padding-left:17px;color:var(--muted);font-size:.82rem}.bullets li{margin:7px 0}.scroll{max-height:235px;overflow:auto}.source-list{display:grid;grid-template-columns:1fr auto;gap:6px 10px;font-size:.81rem}.source-list>div{border-bottom:1px solid #ffffff10;padding:3px 0}.formula{font:12px/1.55 ui-monospace,SFMono-Regular,Consolas,monospace;color:#bbcee2;overflow-wrap:anywhere}.footer{color:var(--muted);font-size:.78rem;padding-top:14px}.compare{display:flex;align-items:center;gap:9px;flex-wrap:wrap}.compare select{width:auto;min-width:130px}.notice{padding:10px 12px;border-radius:10px;background:#3b3124;border:1px solid #695236;color:#ffe3b8;font-size:.82rem;margin-bottom:12px}#status{font-size:.79rem;color:var(--muted)}#file-import{display:none}
+@media(max-width:1200px){.layout{grid-template-columns:300px minmax(0,1fr)}.right{grid-column:2}.cards{grid-template-columns:repeat(2,1fr)}}@media(max-width:720px){.screen{padding:10px}.layout{grid-template-columns:1fr}.ctrl{position:static;max-height:none}.right{grid-column:auto}.cards{grid-template-columns:repeat(2,1fr)}.top{align-items:start}}
+</style>
+</head>
+<body><div class="screen">
+<header class="top"><div class="identity"><small>LABORATORIO DE BALANCE / V3.0</small><h1>Ecualizador Teórico de Recursos</h1><small>Clarisa & Lucas · Motor determinista · Valores económicos por definir</small></div>
+<div class="actions">
+<button id="save">Guardar escenario</button><button id="duplicate">Duplicar</button><button id="reset">Restaurar base</button><button id="export">Exportar JSON</button><button id="export-csv">CSV</button><button id="import">Importar</button><input type="file" id="file-import" accept="application/json,.json">
+</div></header>
+<div class="notice">Este prototipo calcula <b>cotas económicas</b>, no percentiles ni rondas garantizadas. Los valores vacíos representan parámetros no definidos. El modo «pago de afinidad» es una variante de análisis; su carácter reglamentario aún es abierto en la especificación conceptual.</div>
+<div class="layout">
+<aside class="panel ctrl">
+<div class="header"><h2>Parámetros</h2><span id="status">Inicializando…</span></div>
+<div class="section"><div class="tabs"><button data-tab="generacion" class="on">Generación</button><button data-tab="objetivos">Costos y metas</button><button data-tab="globales">Supuestos</button></div></div>
+<div class="section" id="editors"></div>
+<div class="section"><h3>Escenarios</h3><div class="field"><label>Escenario activo</label><select id="scenario"></select></div><div class="field"><label>Comparar contra</label><select id="compare"></select></div><div class="mini">Guardados localmente en este navegador. Exportá un JSON para conservar o compartir configuraciones.</div></div>
+</aside>
+<main class="panel center">
+<div class="header"><h2>Economía por ronda</h2><span class="tag" id="mode">Etapa</span></div>
+<div class="section"><div class="label-line"><h3>Producción neta esperada · Clarisa</h3><span class="mini">A / P / K / M</span></div><div class="cards" id="kpis-c"></div></div>
+<div class="section"><div class="label-line"><h3>Producción neta esperada · Lucas</h3><span class="mini">A / P / K / M</span></div><div class="cards" id="kpis-l"></div></div>
+<div class="section"><h3>Composición por recurso y rol</h3><div id="composition"></div><div class="mini">Las barras representan tasas netas conocidas. Los componentes sin definir se señalan como N/D; no se les atribuye peso cero.</div></div>
+<div class="section"><h3>Contribución de cada mecanismo</h3><div class="scroll source-list" id="sources"></div></div>
+<div class="section"><h3>Balance económico teórico por hito</h3><div id="balances" class="grid2"></div></div>
+<div class="section"><h3>Sensibilidad contra el escenario de comparación</h3><div id="deltas"></div></div>
+<div class="section"><h3>Fórmulas y supuestos</h3><div class="formula">Flujo esperado (recurso, etapa, rol) = Σ [frecuencia × premio efectivo].<br>Situación: premio efectivo = p(A) × efecto(A) + (1 − p(A)) × efecto(B).<br>Rondas económicas mínimas = máximo por recurso de max(0, demanda − saldo inicial) / flujo neto por ronda.<br>Etapas secuenciales: Infancia + Juventud + Adultez.<br>Dentro de una etapa: recursos paralelos, no se suman tiempos de acumulación.</div></div>
+</main>
+<aside class="panel right">
+<div class="header"><h2>Resultados económicos</h2><span class="tag warn">Cotas optimistas</span></div>
+<div class="section"><h3>Hitos y desenlaces</h3><div id="estimates"></div></div>
+<div class="section"><h3>Cuellos de botella detectados</h3><div id="bottlenecks"></div></div>
+<div class="section"><h3>Diagnóstico y límites</h3><ul class="bullets" id="warnings"></ul></div>
+<div class="section"><h3>Parámetros aún no identificables</h3><div id="unknown" class="mini scroll"></div></div>
+</aside>
+</div><div class="footer">Modelo v3.0 aislado de v2.x · Datos modificables y exportables · Sin Monte Carlo · <a href="../../" style="color:#9fd0f1">Volver a la aplicación de cartas</a></div>
+</div><script src="./engine.js"></script><script>
+(function(){
+'use strict';
+const R=['A','P','K','M'],colors={A:'#f183a4',P:'#b39bf5',K:'#75c9e0',M:'#e3c574'},names={A:'Amor',P:'Personalidad',K:'Conocimiento',M:'Dinero'};
+const $=id=>document.getElementById(id),clone=o=>JSON.parse(JSON.stringify(o)),pretty=n=>n===null||n===undefined?'N/D':n===Infinity?'Inalcanzable':!Number.isFinite(n)?'N/D':(Math.round(n*100)/100).toLocaleString('es-AR',{maximumFractionDigits:2});
+const esc=v=>String(v).replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
+let base,active,tab='generacion',stage='infancia',mechanismIndex=0,objectiveIndex=0,scenarios={},selected='actual',compare='base';
+const objectives=[
+ ['UTN','requisitos.utn'],['Título · subhito I','requisitos.titulo.0'],['Título · subhito II','requisitos.titulo.1'],
+ ['Título · subhito III','requisitos.titulo.2'],['Título · adjudicación','requisitos.adjudicacion_titulo'],
+ ['Pasaporte · subhito I','requisitos.pasaporte.0'],['Pasaporte · subhito II','requisitos.pasaporte.1'],
+ ['Pasaporte · subhito III','requisitos.pasaporte.2'],['Pasaporte · adjudicación','requisitos.adjudicacion_pasaporte'],
+ ['Reserva individual de Pareja','requisitos.pareja'],['Viaje a Dublín (comprobación)','requisitos.vuelo'],
+ ['Reserva individual de Casa','requisitos.casa.reserva_individual'],['Precio de Casa (M compartido)','requisitos.casa.precio_M'],
+ ['Cartas de Afinidad (meta por recurso)','requisitos.afinidad'],['Falso Lucas (meta individual M)','requisitos.falso_lucas_M']
+];
+const pathGet=(root,path)=>path.split('.').reduce((o,k)=>o[k],root);
+const pathSet=(root,path,val)=>{const p=path.split('.'),key=p.pop();let obj=root;for(const k of p)obj=obj[k];obj[key]=val;};
+const options=(items,current)=>items.map(([val,text])=>'<option value="'+esc(val)+'"'+(String(val)===String(current)?' selected':'')+'>'+esc(text)+'</option>').join('');
+const numberField=(caption,path,value,opts={})=>{
+ const n=value===null?'':String(value),minimum=opts.min===undefined?'':(' min="'+opts.min+'"'),maximum=opts.max===undefined?'':(' max="'+opts.max+'"'),step=opts.step||'any';
+ const sliderMax=opts.max===undefined?40:opts.max,sliderMin=opts.min===undefined?-15:opts.min;
+ return '<div class="field"><label><span>'+esc(caption)+'</span><span>'+(value===null?'SIN DEFINIR':esc(pretty(value)))+'</span></label>'+
+ '<div class="value-row"><input type="range" data-path="'+esc(path)+'" min="'+sliderMin+'" max="'+sliderMax+'" step="'+(opts.step||.5)+'" '+(value===null?'disabled':'value="'+esc(value)+'"')+'><input data-path="'+esc(path)+'" type="number" placeholder="N/D" value="'+esc(n)+'" step="'+esc(step)+'"'+minimum+maximum+'></div></div>';
+};
+function renderEditor(){
+ let html='';
+ if(tab==='generacion'){
+  const ms=active.etapas[stage].mecanismos,m=ms[Math.min(mechanismIndex,ms.length-1)];mechanismIndex=ms.indexOf(m);
+  html+='<div class="field"><label>Etapa</label><select id="stage">'+options([['infancia','Infancia'],['juventud','Juventud'],['adultez','Adultez']],stage)+'</select></div>';
+  html+='<div class="field"><label>Mecanismo</label><select id="mechanism">'+options(ms.map((x,i)=>[i,x.nombre+(x.rol==='ambos'?'':' · '+x.rol)]),mechanismIndex)+'</select></div>';
+  html+='<p class="rules">Rol: '+esc(m.rol)+' · Categoría: '+esc(m.tipo)+(m.variante?' · Variante '+esc(m.variante):'')+'</p>';
+  const root='etapas.'+stage+'.mecanismos.'+mechanismIndex;
+  html+=numberField('Activaciones por turno / ronda',root+'.frecuencia',m.frecuencia,{min:0,max:5,step:.05});
+  if(m.tipo==='situacion'){
+   html+=numberField('Probabilidad de elegir A',root+'.probabilidad_A',m.probabilidad_A,{min:0,max:1,step:.05});
+   for(const [k,label] of [['opcion_A','Opción A'],['opcion_B','Opción B']]){
+    html+='<h3>'+label+' · Efectos (positivos o negativos)</h3><div class="rewards">';
+    for(const r of R)html+=numberField(names[r],root+'.'+k+'.'+r,m[k][r],{min:-20,max:40,step:1});
+    html+='</div>';
+   }
+  }else{
+   html+='<h3>Recursos por activación</h3><div class="rewards">';
+   for(const r of R)if(Object.hasOwn(m.premios,r))
+    html+=numberField(names[r],root+'.premios.'+r,m.premios[r],{min:m.tipo==='perdida'?-40:-20,max:40,step:1});
+   html+='</div>';
+  }
+  if(m.origen_frecuencia)html+='<p class="rules">'+esc(m.origen_frecuencia)+'</p>';
+  if(m.variante)html+='<p class="rules">Solo se contabiliza la variante juvenil seleccionada en Supuestos.</p>';
+ }else if(tab==='objetivos'){
+  const [label,path]=objectives[objectiveIndex],value=pathGet(active,path);
+  html+='<div class="field"><label>Objetivo económico</label><select id="objective">'+options(objectives.map((x,i)=>[i,x[0]]),objectiveIndex)+'</select></div>';
+  html+='<p class="rules">'+esc(label)+' · Distingue consumo/inversión, reserva y tenencia según su naturaleza conceptual.</p>';
+  if(value!==null&&typeof value==='object'){
+   html+='<div class="rewards">';
+   for(const k of Object.keys(value))html+=numberField(names[k]||k,path+'.'+k,value[k],{min:0,max:80,step:1});
+   html+='</div>';
+  }else html+=numberField(label,path,value,{min:0,max:120,step:1});
+  html+='<div class="input-note">Los importes vacíos no se interpretan como cero. Ingresá 0 únicamente cuando la ausencia de costo sea deliberada.</div>';
+ }else{
+  const sp=active.supuestos;
+  const choice=(label,path,items,current)=>'<div class="field"><label>'+esc(label)+'</label><select data-choice="'+path+'">'+options(items,current)+'</select></div>';
+  html+=choice('Configuración de mesa','supuestos.jugadores',[[6,'6 jugadores'],[10,'10 jugadores']],sp.jugadores);
+  html+=choice('Movimiento juvenil','supuestos.variante_juvenil',[['destino','Premio por destino'],['paso','Premio por paso']],sp.variante_juvenil);
+  html+=choice('Afinidad Clarisa','supuestos.afinidad_clarisa',R.map(k=>[k,names[k]]),sp.afinidad_clarisa);
+  html+=choice('Afinidad Lucas','supuestos.afinidad_lucas',R.map(k=>[k,names[k]]),sp.afinidad_lucas);
+  html+=choice('Regla económica de afinidad','supuestos.regla_afinidad',[['pago','Pago terminal (hipótesis)']],sp.regla_afinidad);
+  html+=numberField('Fracción del precio de Casa pagada por Lucas','supuestos.fraccion_precio_casa_lucas',sp.fraccion_precio_casa_lucas,{min:0,max:1,step:.05});
+  html+=numberField('Activaciones de destino por pareja · Juventud','supuestos.multiplicador_destinos_en_pareja_juventud',sp.multiplicador_destinos_en_pareja_juventud,{min:0,max:3,step:.1});
+  html+=numberField('Activaciones de destino por pareja · Adultez','supuestos.multiplicador_destinos_en_pareja_adultez',sp.multiplicador_destinos_en_pareja_adultez,{min:0,max:3,step:.1});
+  html+='<p class="rules">El factor 2 adulto representa dos turnos de movimiento por pareja. La ubicación no es uniforme: las frecuencias de casillero se deben calibrar o estimar por otro modelo.</p>';
+ }
+ $('editors').innerHTML=html;
+ document.querySelectorAll('#editors [data-path]').forEach(el=>el.addEventListener('input',ev=>{
+   const value=ev.target.value.trim()===''?null:Number(ev.target.value);
+   if(value!==null&&!Number.isFinite(value))return;
+   pathSet(active,ev.target.dataset.path,value);update(false);
+ }));
+ document.querySelectorAll('#editors [data-choice]').forEach(el=>el.addEventListener('change',ev=>{
+   const val=ev.target.value;pathSet(active,ev.target.dataset.choice,ev.target.dataset.choice==='supuestos.jugadores'?Number(val):val);update(false);
+ }));
+ if($('stage'))$('stage').onchange=ev=>{stage=ev.target.value;mechanismIndex=0;update(false)};
+ if($('mechanism'))$('mechanism').onchange=ev=>{mechanismIndex=Number(ev.target.value);update(false)};
+ if($('objective'))$('objective').onchange=ev=>{objectiveIndex=Number(ev.target.value);update(false)};
+}
+function fmtGoal(x){return x===null?'N/D':x===Infinity?'Inalcanzable':pretty(Math.ceil(x))+' r';}
+function estimate(label,key,current,old,detail){
+ const x=current.estimaciones[key],o=old.estimaciones[key],diff=Number.isFinite(x)&&Number.isFinite(o)?x-o:null;
+ return '<div class="estimate"><div>'+esc(label)+'<small>'+esc(detail)+'</small></div><div style="text-align:right"><strong>'+esc(fmtGoal(x))+'</strong><small>'+(diff===null?'Comparación N/D':(diff===0?'Sin cambio':(diff>0?'+':'')+esc(pretty(diff))+' r vs. referencia'))+'</small></div></div>';
+}
+function contributions(data,role){
+ const v=data.flujos[stage][role],values=R.map(k=>v[k]),max=Math.max(1,...values.filter(x=>Number.isFinite(x)).map(Math.abs));
+ return R.map((k,i)=>{
+  const n=values[i],width=Number.isFinite(n)?Math.min(100,100*Math.abs(n)/max):0;
+  return '<div class="flow-row"><span class="resname" style="color:'+colors[k]+'">'+k+'</span><span class="muted">'+names[k]+'</span><div class="flowbar"><span style="width:'+width+'%;background:'+colors[k]+'"></span></div><span class="number">'+esc(pretty(n))+'</span></div>';
+ }).join('');
+}
+function renderResults(){
+ const current=analizar(active),comparison=analizar(compare==='base'?base:scenarios[compare]||base);
+ $('mode').textContent=stage.toUpperCase();
+ for(const [role,id] of [['Clarisa','kpis-c'],['Lucas','kpis-l']])
+  $(id).innerHTML=R.map(k=>{
+   const v=current.flujos[stage][role][k],old=comparison.flujos[stage][role][k],delta=Number.isFinite(v)&&Number.isFinite(old)?pretty(v-old):'N/D';
+   return '<div class="metric"><span style="color:'+colors[k]+'">'+esc(names[k])+' · '+k+'</span><strong>'+esc(pretty(v))+'</strong><span class="delta">Δ '+esc(delta)+' / ronda</span></div>';
+  }).join('');
+ $('composition').innerHTML='<div class="grid2"><div><h3>Clarisa</h3>'+contributions(current,'Clarisa')+'</div><div><h3>Lucas</h3>'+contributions(current,'Lucas')+'</div></div>';
+ const sources=current.desglose[stage];
+ $('sources').innerHTML=Object.keys(sources.Clarisa).map(k=>{
+   const m=active.etapas[stage].mecanismos.find(x=>x.id===k);
+   const show=(role)=>R.map(r=>r+': '+pretty(sources[role][k]?.[r]??null)).join(' · ');
+   return '<div>'+esc(m?.nombre||k)+' <span class="mini">'+esc(m?.rol||'')+'</span><div class="mini">Clarisa: '+esc(show('Clarisa'))+'</div>'+(sources.Lucas[k]?'<div class="mini">Lucas: '+esc(show('Lucas'))+'</div>':'')+'</div><div class="mini">'+esc(pretty(m?.frecuencia))+' act.</div>';
+ }).join('');
+ $('balances').innerHTML=Object.entries(current.saldos).map(([label,bal])=>{
+   return '<div class="block"><div class="label-line"><b>'+esc(label.replaceAll('_',' '))+'</b><span class="mini">Saldo libre / persona</span></div>'+
+      ['Clarisa','Lucas'].map(role=>'<div class="mini">'+role+': '+R.map(k=>'<span class="chip" style="color:'+colors[k]+'">'+k+': '+esc(pretty(bal[role][k]))+'</span>').join('')+'</div>').join('')+'</div>';
+ }).join('');
+ const labels=[['utn','UTN','Comprobación P/K'],['titulo','Título','3 subhitos e intento'],['pasaporte','Pasaporte','3 subhitos e intento'],['dublin','Vuelo a Dublín','Título + Pasaporte + Pareja'],['casa','Casa','Reservas + precio compartido'],['boda_autentica','Boda auténtica','Ganan Clarisa y Lucas'],['boda_con_falso','Boda con Falso Lucas','Gana solo Clarisa; consentimiento abierto'],['falso_lucas','Casa + Dinero (Falso Lucas)','Gana solo Falso Lucas']];
+ $('estimates').innerHTML=labels.map(([k,n,d])=>estimate(n,k,current,comparison,d)).join('');
+ $('bottlenecks').innerHTML=current.cuellos.length?current.cuellos.slice(0,6).map(x=>'<div class="block"><div class="label-line"><b>'+esc(x.recurso)+' · '+esc(x.rol)+'</b><b>'+esc(fmtGoal(x.rondas))+'</b></div><div class="mini">'+esc(x.etapa)+'</div></div>').join(''):'<div class="muted">No hay cuellos cuantificables hasta completar las tasas y demandas.</div>';
+ $('warnings').innerHTML=current.avisos.map(x=>'<li>'+esc(x)+'</li>').join('');
+ $('unknown').innerHTML=current.desconocidos.length?esc(current.desconocidos.slice(0,25).join(' · '))+(current.desconocidos.length>25?' · … ('+current.desconocidos.length+' campos)':''):'Sin importes de generación pendientes.';
+ const currentVals=current.estimaciones,oldVals=comparison.estimaciones;
+ $('deltas').innerHTML=labels.filter(([k])=>k==='utn'||k==='dublin'||k==='casa'||k==='boda_autentica'||k==='falso_lucas').map(([k,n])=>{
+   const a=currentVals[k],b=oldVals[k];return '<div class="label-line block"><span>'+esc(n)+'</span><b>'+esc(Number.isFinite(a)&&Number.isFinite(b)?(a-b>0?'+':'')+pretty(a-b)+' rondas':'No comparable')+'</b></div>';
+ }).join('');
+ $('status').textContent=Object.values(current.estimaciones).filter(x=>x===null).length+' resultados N/D';
+}
+function update(soft){
+ if(!soft)renderEditor();
+ renderResults();
+}
+function persist(){try{localStorage.setItem('cl-v3-equ-scenarios',JSON.stringify(scenarios));}catch(e){console.warn(e)}}
+function restoreNames(){
+ const names=['actual',...Object.keys(scenarios)];
+ $('scenario').innerHTML=options(names.map(k=>[k,k==='actual'?'Trabajo actual':k]),selected);
+ $('compare').innerHTML=options([['base','Catálogo original'],...Object.keys(scenarios).map(k=>[k,k])],compare);
+}
+function download(name,mime,text){
+ const b=new Blob([text],{type:mime}),url=URL.createObjectURL(b),a=document.createElement('a');a.href=url;a.download=name;a.click();setTimeout(()=>URL.revokeObjectURL(url),1000);
+}
+document.querySelectorAll('[data-tab]').forEach(el=>el.onclick=()=>{tab=el.dataset.tab;document.querySelectorAll('[data-tab]').forEach(b=>b.classList.toggle('on',b===el));update(false)});
+$('save').onclick=()=>{
+ const name=prompt('Nombre del escenario:',selected==='actual'?'Escenario '+(Object.keys(scenarios).length+1):selected);
+ if(!name||name==='base'||name==='actual')return;scenarios[name]=clone(active);selected=name;persist();restoreNames();update(true);
+};
+$('duplicate').onclick=()=>{
+ const name=prompt('Nombre de la copia:','Copia '+(Object.keys(scenarios).length+1));
+ if(!name||name==='base'||name==='actual'||scenarios[name])return;
+ scenarios[name]=clone(active);selected=name;persist();restoreNames();update(true);
+};
+$('reset').onclick=()=>{if(!confirm('¿Restaurar el catálogo de referencia? Se perderán cambios no guardados.'))return;active=clone(base);selected='actual';restoreNames();update(false)};
+$('scenario').onchange=ev=>{selected=ev.target.value;active=selected==='actual'?clone(base):clone(scenarios[selected]);update(false)};
+$('compare').onchange=ev=>{compare=ev.target.value;update(true)};
+$('export').onclick=()=>download('ecualizador-v3-escenario.json','application/json',JSON.stringify(active,null,2)+'\n');
+$('export-csv').onclick=()=>{
+ const rows=[['etapa','mecanismo','rol','tipo','frecuencia','recurso','importe_A','importe_B','probabilidad_A']];
+ for(const [st,obj] of Object.entries(active.etapas))for(const m of obj.mecanismos)for(const k of R)rows.push([st,m.nombre,m.rol,m.tipo,m.frecuencia,k,m.tipo==='situacion'?m.opcion_A[k]:(m.premios[k]??null),m.tipo==='situacion'?m.opcion_B[k]:'',m.probabilidad_A??'']);
+ download('ecualizador-v3-flujos.csv','text/csv;charset=utf-8','\ufeff'+rows.map(r=>r.map(v=>'"'+String(v??'').replaceAll('"','""')+'"').join(';')).join('\n'));
+};
+$('import').onclick=()=>$('file-import').click();
+$('file-import').onchange=async ev=>{
+ const file=ev.target.files[0];if(!file)return;
+ try{const obj=JSON.parse(await file.text());if(!obj.etapas?.infancia||!obj.requisitos||!obj.supuestos)throw Error('El archivo no tiene la estructura v3.0');
+ active=obj;selected='actual';restoreNames();update(false);}catch(e){alert('No se pudo importar: '+e.message)}ev.target.value='';
+};
+fetch('./matriz_economica_v3.json').then(r=>{if(!r.ok)throw Error('Catálogo HTTP '+r.status);return r.json()}).then(data=>{
+ base=data;active=clone(base);
+ try{scenarios=JSON.parse(localStorage.getItem('cl-v3-equ-scenarios')||'{}')}catch(e){scenarios={}}
+ restoreNames();update(false);
+}).catch(e=>{$('status').textContent='Error';$('editors').textContent='No se pudo cargar el catálogo. Abrí la app mediante GitHub Pages o un servidor HTTP. '+e.message});
+})();
+</script></body></html>
