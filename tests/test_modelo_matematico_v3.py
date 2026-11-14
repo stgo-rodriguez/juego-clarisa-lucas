@@ -5,7 +5,7 @@ import unittest
 from laboratorio.v3.catalogo import CatalogoInvalido, cargar_matriz
 from laboratorio.v3.modelo_matematico import (
     calcular_demanda_secuencial, calibrar_emisiones,
-    combinar_metas_afinidad, proyectar_flujos,
+    combinar_metas_afinidad, proyectar_flujos, tasas_desde_demanda,
 )
 
 
@@ -255,6 +255,61 @@ class ModeloMatematicoV3Tests(unittest.TestCase):
                               "actores": ["C", "L"],
                               "modo_objetivo": "pago"}],
             )
+
+
+    def test_convertir_demanda_en_tasa_por_jugador_y_ronda(self):
+        demands = {"produccion_minima_por_etapa": {
+            "Infancia": {"A": 0, "P": 0, "K": 0, "M": 0},
+            "Juventud": {"A": 0, "P": 0, "K": 0, "M": 0},
+            "Adultez": {"A": 14, "P": 4, "K": 0, "M": 19},
+        }}
+        result = tasas_desde_demanda(
+            demands, {"Adultez": 5}, {"Adultez": 2},
+            perdidas_estimadas={"Adultez": {"A": 2}},
+            holgura={"Adultez": {"M": 1}},
+        )
+        self.assertEqual(result["objetivos_emision"]["Adultez"],
+                         {"A": 1.6, "P": 0.4, "K": 0.0, "M": 2.0})
+        self.assertEqual(result["objetivos_emision"]["Infancia"]["A"], 0)
+        with self.assertRaisesRegex(CatalogoInvalido, "Faltan rondas"):
+            tasas_desde_demanda(demands, {}, {})
+        with self.assertRaisesRegex(CatalogoInvalido, "positivos"):
+            tasas_desde_demanda(
+                demands, {"Adultez": 0}, {"Adultez": 2},
+            )
+
+    def test_escenario_didactico_tres_rutas_reproducible(self):
+        import json
+        from pathlib import Path
+        from laboratorio.v3.ejecutar_modelo import analizar_escenario, EJEMPLO
+        escenario = json.loads(EJEMPLO.read_text(encoding="utf-8"))
+        output = analizar_escenario(escenario)
+        emit = output["flujos_esperados"]["etapas"]["Adultez"]["recursos"]
+        self.assertEqual({r: emit[r]["flujos"].get("EMISION", 0) for r in "APKM"},
+                         {"A": 2, "P": 1, "K": 0, "M": 3})
+        results = output["rutas"]
+        self.assertEqual(set(results),
+                         {"boda_lucas_autentico",
+                          "boda_falso_lucas",
+                          "victoria_individual_falso_lucas"})
+        b1 = results["boda_lucas_autentico"]["demanda"]
+        b2 = results["boda_falso_lucas"]["demanda"]
+        f = results["victoria_individual_falso_lucas"]["demanda"]
+        self.assertEqual(b1["produccion_minima_total"],
+                         {"A": 15, "P": 4, "K": 0, "M": 19})
+        self.assertEqual(b2["produccion_minima_total"],
+                         {"A": 15, "P": 4, "K": 0, "M": 19})
+        self.assertEqual(f["produccion_minima_total"],
+                         {"A": 8, "P": 4, "K": 0, "M": 22})
+        self.assertEqual(results["boda_falso_lucas"]["ganadores_hipoteticos"],
+                         ["C"])
+        self.assertEqual(results["victoria_individual_falso_lucas"]["ganadores_hipoteticos"],
+                         ["F"])
+        cuotas = output["calibracion_inversa_condicionada_a_hipotesis"]
+        self.assertEqual(
+            sorted((x["importe_medio_activacion"] for x in cuotas["recomendaciones"])),
+            [2, 2, 2, 3, 3]
+        )
 
 
 if __name__ == "__main__":
