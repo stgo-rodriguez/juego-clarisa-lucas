@@ -227,9 +227,22 @@
           "variante": "destino"
         },
         {
-          "id": "j_perfil",
-          "nombre": "Perfil por vuelta",
-          "rol": "ambos",
+          "id": "j_perfil_c",
+          "nombre": "Perfil por vuelta · Clarisa",
+          "rol": "Clarisa",
+          "tipo": "perfil",
+          "frecuencia": null,
+          "premios": {
+            "A": null,
+            "P": null,
+            "K": null,
+            "M": null
+          }
+        },
+        {
+          "id": "j_perfil_l",
+          "nombre": "Perfil por vuelta · Lucas",
+          "rol": "Lucas",
           "tipo": "perfil",
           "frecuencia": null,
           "premios": {
@@ -358,9 +371,22 @@
           }
         },
         {
-          "id": "a_perfil",
-          "nombre": "Perfil al terminar en 5,3",
-          "rol": "ambos",
+          "id": "a_perfil_c",
+          "nombre": "Perfil al terminar en 5,3 · Clarisa",
+          "rol": "Clarisa",
+          "tipo": "perfil",
+          "frecuencia": null,
+          "premios": {
+            "A": null,
+            "P": null,
+            "K": null,
+            "M": null
+          }
+        },
+        {
+          "id": "a_perfil_l",
+          "nombre": "Perfil al terminar en 5,3 · Lucas",
+          "rol": "Lucas",
           "tipo": "perfil",
           "frecuencia": null,
           "premios": {
