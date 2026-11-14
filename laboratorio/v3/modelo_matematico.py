@@ -436,3 +436,81 @@ def calcular_demanda_secuencial(
         "traza": trail,
         "estado_final": estado,
     }
+
+
+def tasas_desde_demanda(
+    demanda: Mapping,
+    rondas_por_etapa: Mapping[str, float],
+    participantes_productores: Mapping[str, int],
+    *,
+    perdidas_estimadas: Mapping[str, Mapping[str, float]] | None = None,
+    holgura: Mapping[str, Mapping[str, float]] | None = None,
+) -> dict:
+    """Transformar demanda mínima de la ruta en objetivos de emisión por ronda.
+
+    G*(s,r) = [demanda_justo_a_tiempo(s,r) + pérdidas(s,r)
+               + holgura(s,r)] / [jugadores_productores(s) * rondas(s)].
+
+    Las pérdidas/holgura son montos TOTALES por etapa para el grupo
+    modelado; no valores per cápita. Sólo se exigen rondas/productores
+    para etapas que tengan alguna demanda positiva. La distribución
+    temporal justo-a-tiempo es optimista: NO prueba que los recursos
+    puedan obtenerse antes de cada requisito (restricciones de tiempo).
+    """
+    for label, mapping in (
+        ("perdidas_estimadas", perdidas_estimadas or {}),
+        ("holgura", holgura or {}),
+    ):
+        if any(s not in ETAPAS for s in mapping):
+            raise CatalogoInvalido(f"{label} contiene una etapa desconocida")
+        for s, amounts in mapping.items():
+            if any(r not in RECURSOS for r in amounts):
+                raise CatalogoInvalido(f"Recurso desconocido en {label}/{s}")
+            for r, amount in amounts.items():
+                _numero_no_negativo(amount, f"{label}/{s}/{r}")
+    objetivos = {}
+    detalle = []
+    demands = demanda.get("produccion_minima_por_etapa")
+    if not isinstance(demands, Mapping):
+        raise CatalogoInvalido("No se recibió una demanda secuencial válida")
+    for s in ETAPAS:
+        by_resource = demands.get(s, {})
+        objetivos[s] = {}
+        for r in "APKM":
+            base = _numero_no_negativo(by_resource.get(r, 0), f"Demanda {s}/{r}")
+            loss = _numero_no_negativo(
+                (perdidas_estimadas or {}).get(s, {}).get(r, 0),
+                f"Pérdida estimada {s}/{r}"
+            )
+            extra = _numero_no_negativo(
+                (holgura or {}).get(s, {}).get(r, 0),
+                f"Holgura {s}/{r}"
+            )
+            total = base + loss + extra
+            if total == 0:
+                objetivos[s][r] = 0.0
+                continue
+            if s not in rondas_por_etapa or s not in participantes_productores:
+                raise CatalogoInvalido(
+                    f"Faltan rondas/productores para demanda positiva en {s}"
+                )
+            rounds = _numero_no_negativo(rondas_por_etapa[s], f"Rondas {s}")
+            n = participantes_productores[s]
+            if not rounds or isinstance(n, bool) or not isinstance(n, int) or n < 1:
+                raise CatalogoInvalido(
+                    f"Rondas y productores deben ser positivos para {s}"
+                )
+            tasa = total/(rounds*n)
+            objetivos[s][r] = tasa
+            detalle.append({
+                "etapa": s, "recurso": r,
+                "demanda_minima": base, "perdidas_estimadas": loss,
+                "holgura": extra, "rondas": rounds,
+                "participantes_productores": n,
+                "objetivo_emision_per_capita_ronda": tasa,
+            })
+    return {
+        "tipo": "COTA_INFERIOR: proyección lineal, no balance final validado",
+        "objetivos_emision": objetivos,
+        "detalle": detalle,
+    }
