@@ -57,7 +57,8 @@
     "regreso_juventud": "casillero_1",
     "mazos": "barajar_independiente_y_rebarajar_al_agotarse",
     "paso_afinidad": "uno_por_eleccion",
-    "casamiento": "pago_terminal_Afinidad_sin_pago_fijo"
+    "casamiento": "pago_terminal_Afinidad_sin_pago_fijo",
+    "politica_entrada_utn": "solo_con_umbral_previo"
   },
   "juventud_casilleros": {
     "UNIVERSIDAD": [
