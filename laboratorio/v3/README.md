@@ -37,7 +37,7 @@ El cálculo base no inventa valores ni interpreta `null` como cero. Una tasa con
 
 **No es aún una predicción completa de rondas de partida.** La ruta hacia UTN, la tirada de examen, distancias de movimiento, las visitas reales, la adjudicación por dados, la competencia entre parejas, la compatibilidad A–Neutro–B, el consentimiento y las interacciones no están integrados en un modelo probabilístico de primera llegada. Sin esos datos no hay tiempo central, conservador ni p80 justificables.
 
-**Aproximaciones pendientes de refinar:** el modelo agrega recursos en flujos netos esperados, sin resolver la truncación por saldo libre de las pérdidas ordinarias; no modela deshacer reservas ni transferencias reales; usa un reparto parametrizado del precio de Casa; no acredita todavía el cobro único inicial de Perfil al entrar en Adultez; no modela frecuencia de intentos de adjudicación ni las demoras por posición. Al elegir la variante de pago terminal de afinidad, se ensaya esa hipótesis sin darla por aprobada como regla final.
+**Aproximaciones pendientes de refinar:** el modelo agrega recursos en flujos netos esperados, sin resolver la truncación por saldo libre de las pérdidas ordinarias; no modela deshacer reservas ni transferencias reales; usa un reparto parametrizado del precio de Casa; acredita el cobro único inicial de Perfil al entrar en Adultez, pero sus cantidades deben configurarse por rol; no modela frecuencia de intentos de adjudicación ni las demoras por posición. Al elegir la variante de pago terminal de afinidad, se ensaya esa hipótesis sin darla por aprobada como regla final.
 
 ## Cómo usar
 
