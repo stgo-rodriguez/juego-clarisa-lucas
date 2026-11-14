@@ -16,3 +16,8 @@ Web interactiva de soporte para el juego de mesa.
 
 ## Web
 GitHub Pages: https://stgo-rodriguez.github.io/juego-clarisa-lucas/
+
+## Laboratorio analítico v3.0
+- [Abrir Ecualizador Teórico v3.0](https://stgo-rodriguez.github.io/juego-clarisa-lucas/laboratorio/v3/ecualizador.html)
+- [Alcance, fuentes, ejecución y limitaciones](laboratorio/v3/README.md)
+- El laboratorio usa modelos deterministas con parámetros configurables; no modifica los dados ni mazos del sitio original.
