@@ -35,3 +35,10 @@ assert.equal(analizar(clone).estimaciones.boda_autentica, Infinity);
 clone.etapas.infancia.mecanismos.find(x=>x.id==='i_c5').premios.K=0;
 assert.equal(analizar(clone).estimaciones.falso_lucas, Infinity);
 console.log('Motor JS: pruebas económicas correctas.');
+
+const vm = require('node:vm');
+const html = fs.readFileSync(path.join(root, 'ecualizador.html'), 'utf8');
+const inlineScripts = [...html.matchAll(/<script(?:[^>]*)>([\s\S]*?)<\/script>/g)].map(x => x[1]).filter(x => x.trim());
+assert.ok(inlineScripts.length > 0, 'La vista web tiene JS ejecutable');
+for(const source of inlineScripts)new vm.Script(source, { filename:'ecualizador-inline.js' });
+console.log('Dashboard: sintaxis JavaScript válida.');
