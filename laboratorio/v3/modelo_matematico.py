@@ -169,11 +169,23 @@ def evaluar(config: dict[str, Any]) -> dict[str, Any]:
         _crecer(saldo_i, flujos["juventud"], juventud), juveniles_gastos
     )
 
+    # Colocación inicial en "Cobrar Perfil": una activación por integrante.
+    saldo_adulto = _inicial()
+    for rol in ROLES:
+        perfil_id = "a_perfil_c" if rol == "Clarisa" else "a_perfil_l"
+        perfil = next((m for m in config["etapas"]["adultez"]["mecanismos"]
+                       if m["id"] == perfil_id), None)
+        for recurso in RECURSOS:
+            saldo_adulto[rol][recurso] = _sum(
+                saldo_j[rol][recurso],
+                _val(perfil.get("premios") if perfil else {}, recurso)
+            )
+
     casa = req["casa"]
     restricciones_casa = [
         (
             _val(casa["reserva_individual"], k),
-            saldo_j[rol][k],
+            saldo_adulto[rol][k],
             flujos["adultez"][rol][k],
         )
         for rol in ROLES for k in ("A", "P")
@@ -182,18 +194,18 @@ def evaluar(config: dict[str, Any]) -> dict[str, Any]:
     precio = casa["precio_M"]
     if fraccion is None:
         restricciones_casa.append(
-            (precio, _pareja(saldo_j, "M"), _pareja(flujos["adultez"], "M"))
+            (precio, _pareja(saldo_adulto, "M"), _pareja(flujos["adultez"], "M"))
         )
     else:
         restricciones_casa.extend([
             (None if precio is None else precio * (1 - fraccion),
-             saldo_j["Clarisa"]["M"], flujos["adultez"]["Clarisa"]["M"]),
+             saldo_adulto["Clarisa"]["M"], flujos["adultez"]["Clarisa"]["M"]),
             (None if precio is None else precio * fraccion,
-             saldo_j["Lucas"]["M"], flujos["adultez"]["Lucas"]["M"])
+             saldo_adulto["Lucas"]["M"], flujos["adultez"]["Lucas"]["M"])
         ])
     casa_t = _primera_llegada(restricciones_casa)
     saldo_c = _debitar(
-        _crecer(saldo_j, flujos["adultez"], casa_t), casa["reserva_individual"]
+        _crecer(saldo_adulto, flujos["adultez"], casa_t), casa["reserva_individual"]
     )
     if fraccion is None or precio is None:
         saldo_c["Clarisa"]["M"] = None
