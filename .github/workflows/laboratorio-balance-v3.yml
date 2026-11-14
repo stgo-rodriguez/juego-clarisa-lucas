@@ -9,6 +9,7 @@ on:
       - 'tests/test_modelo_matematico_v3.py'
       - 'tests/test_optimizador_economico_v3.py'
       - 'tests/test_simulador_experimental_v3.py'
+      - 'tests/test_sensibilidad_v3.py'
       - '.github/workflows/laboratorio-balance-v3.yml'
   workflow_dispatch:
 
@@ -60,6 +61,30 @@ jobs:
               print("Activaciones distintas:", len(run["activaciones_observadas"]))
               print("---")
           PY
+      - name: Verificar sensibilidad económica apareada
+        run: python -m unittest discover -s tests -p 'test_sensibilidad_v3.py' -v
+      - name: Comparar precio Casa y premio Dinero con semillas iguales
+        run: |
+          python -m laboratorio.v3.sensibilidad_experimental --jugadores 6 --partidas 12 --semilla 2001 --salida /tmp/sensibilidad_v3_6p.json
+          python -m laboratorio.v3.sensibilidad_experimental --jugadores 10 --partidas 12 --semilla 2001 --salida /tmp/sensibilidad_v3_10p.json
+      - name: Resumir efectos pareados experimentales
+        shell: bash
+        run: |
+          python - <<'PY'
+          import json
+          from pathlib import Path
+          for n in (6,10):
+              out=json.loads(Path(f"/tmp/sensibilidad_v3_{n}p.json").read_text())
+              print(f"SENSIBILIDAD EXPERIMENTAL: {n} jugadores {out['semillas']}")
+              print("BASE",out["base"])
+              for e in out["experimentos"]:
+                  print("VARIANTE",e["id"],e["cambios"])
+                  print("CIERRES",e["cierres"])
+                  print("MEDIANA",e["mediana_cierres"],"p80",e["p80_cierres"])
+                  print("DELTA RONDAS OBSERVADAS PAREADAS",e["delta_rondas_medio_pareado_observado"])
+                  print("FUENTES CON FRECUENCIA DISTINTA",len(e["frecuencias_que_cambiaron"]))
+              print("---")
+          PY
       - name: Probar optimización conjunta de premios y costos
         run: python -m unittest discover -s tests -p 'test_optimizador_economico_v3.py' -v
       - name: Optimizar escenario didáctico y verificar salida
@@ -109,4 +134,6 @@ jobs:
             /tmp/simlog_v3_10p.json
             /tmp/simlog_v3_traza_6p.json
             /tmp/simlog_v3_traza_10p.json
+            /tmp/sensibilidad_v3_6p.json
+            /tmp/sensibilidad_v3_10p.json
           retention-days: 30
