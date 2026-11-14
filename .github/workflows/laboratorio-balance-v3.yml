@@ -7,6 +7,7 @@ on:
       - 'laboratorio/v3/**'
       - 'tests/test_matriz_economica_v3.py'
       - 'tests/test_modelo_matematico_v3.py'
+      - 'tests/test_optimizador_economico_v3.py'
       - '.github/workflows/laboratorio-balance-v3.yml'
   workflow_dispatch:
 
@@ -31,3 +32,7 @@ jobs:
         run: python -m unittest discover -s tests -p 'test_modelo_matematico_v3.py' -v
       - name: Ejecutar escenario didáctico v3.0 reproducible
         run: python -m laboratorio.v3.ejecutar_modelo --salida /tmp/salida_modelo_v3.json
+      - name: Probar optimización conjunta de premios y costos
+        run: python -m unittest discover -s tests -p 'test_optimizador_economico_v3.py' -v
+      - name: Optimizar escenario didáctico y verificar salida
+        run: python -m laboratorio.v3.optimizar --max-evaluaciones 1500 --salida /tmp/optimizacion_v3.json
