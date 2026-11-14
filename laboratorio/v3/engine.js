@@ -73,17 +73,24 @@ function analizar(cfg){
  const youngReq=sumVectors([youngCosts,r.vuelo]);
  const tYoung=first(each(youngReq,infBal,flows.juventud));
  const youthBal=debit(grow(infBal,flows.juventud,tYoung),youngCosts);
+ // El ingreso gratuito a Adultez acredita Perfil una vez por integrante.
+ const adultStart=blank();
+ for(const role of roles){
+   const pid=role==="Clarisa"?"a_perfil_c":"a_perfil_l";
+   const profile=cfg.etapas.adultez.mecanismos.find(m=>m.id===pid);
+   for(const k of keys)adultStart[role][k]=add(youthBal[role][k],val(profile?.premios,k));
+ }
  let houseCs=[];
  for(const role of roles)for(const k of ["A","P"])
-   houseCs.push(condition(val(r.casa.reserva_individual,k),youthBal[role][k],flows.adultez[role][k]));
+   houseCs.push(condition(val(r.casa.reserva_individual,k),adultStart[role][k],flows.adultez[role][k]));
  const share=cfg.supuestos.fraccion_precio_casa_lucas;
- if(share===null)houseCs.push(condition(r.casa.precio_M,pair(youthBal,"M"),pair(flows.adultez,"M")));
+ if(share===null)houseCs.push(condition(r.casa.precio_M,pair(adultStart,"M"),pair(flows.adultez,"M")));
  else{
-   houseCs.push(condition(r.casa.precio_M===null?null:r.casa.precio_M*(1-share),youthBal.Clarisa.M,flows.adultez.Clarisa.M));
-   houseCs.push(condition(r.casa.precio_M===null?null:r.casa.precio_M*share,youthBal.Lucas.M,flows.adultez.Lucas.M));
+   houseCs.push(condition(r.casa.precio_M===null?null:r.casa.precio_M*(1-share),adultStart.Clarisa.M,flows.adultez.Clarisa.M));
+   houseCs.push(condition(r.casa.precio_M===null?null:r.casa.precio_M*share,adultStart.Lucas.M,flows.adultez.Lucas.M));
  }
  const tHouse=first(houseCs);
- const houseBal=debit(grow(youthBal,flows.adultez,tHouse),r.casa.reserva_individual);
+ const houseBal=debit(grow(adultStart,flows.adultez,tHouse),r.casa.reserva_individual);
  const frac=cfg.supuestos.fraccion_precio_casa_lucas;
  if(frac===null||r.casa.precio_M===null){houseBal.Clarisa.M=null;houseBal.Lucas.M=null;}
  else{
