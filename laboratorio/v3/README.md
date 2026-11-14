@@ -233,6 +233,40 @@ Escenario sintético, agentes planificadores, semillas 2001–2012:
 
 Estas 24 partidas confirman **ejecución y reproducibilidad del escenario**, no justicia, competitividad, duración objetivo ni dificultad equilibrada de recursos. No constituyen prueba de que las tres vías de victoria sean igualmente viables. Antes de validar v3.0 necesitamos completar las mecánicas omitidas, ampliar agentes, recalcular frecuencias cuando cambian los premios y simular miles de semillas diferentes para calibración y validación.
 
+### Experimentos de sensibilidad apareada (cierre de primera conexión)
+
+`sensibilidad_experimental.py` compara **las mismas semillas** para dos o más configuraciones, preservando el escenario económico base, identificando variables alteradas y midiendo nuevamente **las activaciones** en cada partida. Se exportan reportes con:
+- Cierres, duración de ganadoras y censura.
+- Variación observada de rondas por semilla.
+- Cantidad de fuentes cuya frecuencia cambió y diferencia de activaciones por jugador-ronda.
+
+`sensibilidad_v3_NO_CALIBRADA.json` incluye cuatro pruebas didácticas:
+1. Casa de 4 a 6 M por integrante.
+2. Casillero adulto de Dinero F3C5 de 4 a 6 M.
+3. **Estrés**: Casa de 4 a 24 M por integrante.
+4. **Estrés**: meta individual de Dinero de Falso Lucas de 13 a 45 M.
+
+```bash
+python -m unittest discover -s tests -p 'test_sensibilidad_v3.py' -v
+python -m laboratorio.v3.sensibilidad_experimental \
+  --jugadores 6 --partidas 12 --semilla 2001 \
+  --salida /tmp/sensibilidad_v3_6.json
+```
+
+**Diagnóstico inicial** (24 partidas de dos tamaños, 12 por tamaño, semillas 2001–2012):
+
+| Cambio en muestra sintética | 6 jugadores: bodas auténticas / victorias falso | 10 jugadores: bodas auténticas / victorias falso |
+|---|---|---|
+| Base | 7 / 5 | 8 / 4 |
+| Casa +2 M | 7 / 5 | 8 / 4 |
+| Casillero Dinero +2 M | 7 / 5 | 8 / 4 |
+| Casa +20 M | 6 / 6 | 9 / 3 |
+| Meta Falso Lucas 45 M | 7 / 5 | 9 / 3 |
+
+Los cambios pequeños no alteraron rondas ni ganadores de la muestra; **no** es prueba de irrelevancia universal. El estrés de Casa modificó frecuencias de 58 y 62 fuentes, respectivamente, confirmando que el simulador puede detectar efectos económicos indirectos. El aumento de Casa en seis jugadores redujo la duración observada promedio en esta muestra; **no** significa que encarecer Casa acelere sistemáticamente la partida. Las vías de cierre y el azar competitivo pueden cambiar.
+
+**Limitación estadística adicional:** aparear semillas no garantiza que los mismos dados/eventos aleatorios permanezcan perfectamente sincronizados cuando un cambio económico altera la cantidad u orden de tiradas. Antes de usar estos efectos como sensibilidad causal será conveniente emplear subflujos aleatorios separados por mecanismo y verificar los eventos en trazas. Las 12 partidas por tamaño son insuficientes para seleccionar valores definitivos.
+
 ### Siguiente dependencia del objetivo central
 
 Conectar las **frecuencias observadas** de SIMLOG-3.0 al optimizador (que hoy todavía usa frecuencias declaradas), recalculándolas para cada escenario de premios/costos. La optimización deberá contrastar configuraciones con las **mismas semillas** y múltiples políticas, comparar rutas con ingresos individuales reales y no solamente presupuestos ideales. Un escenario con porcentajes aparentemente perfectos pero rutas bloqueadas o beneficios estratégicos inexistentes debe ser rechazado.
