@@ -240,7 +240,7 @@ class SimuladorExperimentalV3Tests(unittest.TestCase):
     def test_lotes_y_frecuencias_6_y_10_jugadores(self):
         for n in (6,10):
             out=ejecutar_lote(self.cfg,partidas=3,n=n,semilla=2300)
-            self.assertEqual(out["partidas"],3)
+            self.assertEqual(out["cantidad_partidas"],3)
             self.assertEqual(sum(out["cierres"].values()),3)
             self.assertEqual(len(out["partidas"]),3)
             self.assertTrue(out["activaciones_observadas"])
