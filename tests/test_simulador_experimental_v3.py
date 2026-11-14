@@ -244,8 +244,20 @@ class SimuladorExperimentalV3Tests(unittest.TestCase):
             self.assertEqual(sum(out["cierres"].values()),3)
             self.assertEqual(len(out["partidas"]),3)
             self.assertTrue(out["activaciones_observadas"])
-            self.assertTrue(all(e["frecuencia_por_jugador_ronda"]>=0 for e in
-                                out["activaciones_observadas"]))
+            self.assertTrue(out["generacion_por_etapa"])
+            self.assertTrue(out["distribucion_por_etapa"])
+            self.assertEqual(out["partidas_censuradas"]+
+                             out["partidas_con_victoria"], 3)
+            self.assertTrue(all(
+                e["frecuencia_por_jugador_ronda"]>=0
+                and e["activaciones_por_ronda_mesa"]>=0
+                for e in out["activaciones_observadas"]
+            ))
+            self.assertTrue(all(
+                sum(value for value in shares.values() if value is not None)
+                <= 1.0000001
+                for shares in out["distribucion_por_etapa"].values()
+            ))
             self.assertEqual(out,ejecutar_lote(
                 self.cfg,partidas=3,n=n,semilla=2300
             ))
