@@ -1,6 +1,6 @@
 # Laboratorio de Balance v3.0 — Fase 1: matriz económica integral
 
-**Estado:** matriz v3.0 + modelo determinista de economía + optimizador entero multiobjetivo de escenarios explícitos. **No** es todavía un simulador v3.0 ni una calibración validada con partidas.
+**Estado:** matriz v3.0 + modelo de economía + optimizador multiobjetivo + simulador económico **experimental de primera versión** con partidas reales bajo reglas simplificadas. NO es todavía una calibración de v3.0 validada ni un reglamento completo.
 
 **Documento rector:** [Clarisa_y_Lucas_Especificacion_Conceptual_v3_0.docx](https://docs.google.com/document/d/1AfX65pZX_XmXwsPLMwkXAqg5gL1BfzKB/edit) (14/11/2026).
 
@@ -173,13 +173,69 @@ El resultado JSON informa la mejor combinación **condicionada a esos supuestos*
 - No se optimizan todavía los 181 parámetros simultáneamente: son el catálogo íntegro, no un número manejable de variables independientes a explorar exhaustivamente. Corresponde seleccionar ámbitos de sensibilidad y usar búsqueda local/por lotes.
 - Las decisiones reglamentarias abiertas siguen como variantes; ninguna queda aprobada automáticamente por una puntuación.
 
-**Próxima implementación:** simulador económico reproducible v3.0 con instrumentación de frecuencia real de fuentes, demanda por actor, ventanas de pago, decisiones A/B, movimiento y final de partida. Solo entonces cerrar el ciclo de calibración cuantitativa y evaluar robustez de resultados.
+**Siguiente implementación:** completar reglas de interacción que afectan la economía, reforzar políticas de agentes y conectar frecuencias observadas del simulador experimental con la optimización, sin atribuir resultados de muestra a una calibración definitiva.
 
 ---
 
 ### Próxima fase
 
 Medir con trazas v3.0 reales la frecuencia `F_m` de cada mecanismo y el porcentaje efectivo de pérdidas, e implementar la optimización de **costos y premios conjuntamente** sobre rutas reproducidas con múltiples políticas y mesas de 6/10 jugadores. El modelo matemático actual ofrece la interfaz que consumirá ese simulador y el optimizador.
+
+---
+
+## Fase 4 — Simulador económico v3.0 ejecutable (VERTICAL EXPERIMENTAL)
+
+**Objetivo:** sustituir frecuencias supuestas por activaciones observadas en partidas efectivamente recorridas; NO confundir esta maqueta de economía con la especificación reglamentaria completa ni con un balance calibrado.
+
+**Código**:
+- `simulador_experimental.py`: motor reproducible, 6/10 participantes, agentes `planificador` o `aleatorio`, lotes, eventos SIMLOG-3.0 y generación de indicadores.
+- `estado_v3.py`: asientos contables con invariantes de saldo, reservas, inversiones y transferencias.
+- `escenario_simulacion_NO_CALIBRADO.json`: **36 importes económicos arbitrarios**, 24 Situaciones sintéticas y Perfiles prototipo. Todos configurados fuera del motor, sin reutilizar valores históricos.
+- `tests/test_simulador_experimental_v3.py`: pruebas de invariantes, regresión y casos de victoria.
+
+**Soportado en este primer vertical**: seis mazos independientes por etapa y rol con Situación compartida por ronda; cobro infantil solo al caer; nodo UTN y reintentos; movimiento juvenil A/B acoplado a Situación, cartas individuales de movimiento repartidas por ronda; subhitos y adjudicación experimental de Título y Pasaporte con comprobantes simplificados; formación de Pareja y reserva A; movimiento conjunto con turnos individuales; vuelo a Dublín, Perfil inicial y revelación simultánea de identidades/cartas; Adultez 5×5 con ocho direcciones y rebote; mano adulta sin reposición por turno; Casa 2D6, reservas, pago a banca/propietarios; pago terminal de metas de Afinidad, y tres tipos de cierre (boda auténtica, boda con Falso Lucas —solo gana Clarisa—, victoria individual del falso con Casa y dinero propio).
+
+**Contabilidad:** todos los movimientos de fichas se emiten como asientos cronológicos por jugador, recurso, origen y destino. `comprobar()` verifica tras cada turno `stock_total = fichas_emitidas - fichas_consumidas`. Los premios se clasifican por origen en Casillero, Situación y Perfil; pérdidas nominales versus efectivas, inversión y reserva se distinguen de emisión externa.
+
+**Hipótesis reglamentarias explícitas, NO aprobadas**: 3 cartas de mano adulta, Neutro −2..+2, límites del eje, 30 pares de movimiento adulto sin A=B, repetición de mazos agotados, umbrales de adjudicación con D6, aceptación automática de Pareja, consentimiento de Falso Lucas, primera posición de retorno juvenil y opción del agente de entrar o no a UTN antes de alcanzar los umbrales. Todas las cantidades están en el escenario, no en el motor.
+
+**NO soportado todavía:** duelos ordinarios, disputas completas y cesiones de Títulos/Pasaportes, cambio voluntario de rol y Perfil, mercado de Perfiles, negociaciones entre cualquier par de jugadores, banco de conversiones, variedad estratégica suficientemente realista ni diseño definitivo de las 102 cartas del catálogo de v2.x (v3.0 todavía no definió sus tamaños finales). El proyecto de hito se aproxima como un proyecto compartido activo por tipo; hay adjudicaciones, pero no las competencias avanzadas completas. La simulación NO valida reglas abiertas ni es todavía apta para balance económico final.
+
+### Ejecutar
+
+```bash
+python -m unittest discover -s tests -p 'test_simulador_experimental_v3.py' -v
+
+python -m laboratorio.v3.simulador_experimental \
+  --jugadores 6 --partidas 12 --semilla 2001 --politica planificador \
+  --salida /tmp/lote_v3_6.json --traza /tmp/traza_v3_6.json
+
+python -m laboratorio.v3.simulador_experimental \
+  --jugadores 10 --partidas 12 --semilla 2001 --politica planificador \
+  --salida /tmp/lote_v3_10.json --traza /tmp/traza_v3_10.json
+```
+
+El reporte incluye cantidad de partidas cerradas y **censuradas**, mediana/p80 **solo de partidas terminadas**, generación por etapa/recurso/mecanismo, pérdidas efectivas y frecuencias de activación por jugador-ronda y por mesa-ronda de la etapa. El SIMLOG de la primera partida se exporta con `--traza`; las demás se resumen.
+
+### Resultados iniciales de control — no calibrados
+
+Escenario sintético, agentes planificadores, semillas 2001–2012:
+
+| Métrica | 6 participantes | 10 participantes |
+|---|---:|---:|
+| Partidas | 12 | 12 |
+| Bodas auténticas | 7 | 8 |
+| Victoria individual de Falso Lucas | 5 | 4 |
+| Bodas con Falso Lucas | 0 | 0 |
+| Sin cierre | 0 | 0 |
+| Mediana (cierres) | 23 | 23,5 |
+| p80 (cierres) | 34 | 35 |
+
+Estas 24 partidas confirman **ejecución y reproducibilidad del escenario**, no justicia, competitividad, duración objetivo ni dificultad equilibrada de recursos. No constituyen prueba de que las tres vías de victoria sean igualmente viables. Antes de validar v3.0 necesitamos completar las mecánicas omitidas, ampliar agentes, recalcular frecuencias cuando cambian los premios y simular miles de semillas diferentes para calibración y validación.
+
+### Siguiente dependencia del objetivo central
+
+Conectar las **frecuencias observadas** de SIMLOG-3.0 al optimizador (que hoy todavía usa frecuencias declaradas), recalculándolas para cada escenario de premios/costos. La optimización deberá contrastar configuraciones con las **mismas semillas** y múltiples políticas, comparar rutas con ingresos individuales reales y no solamente presupuestos ideales. Un escenario con porcentajes aparentemente perfectos pero rutas bloqueadas o beneficios estratégicos inexistentes debe ser rechazado.
 
 ---
 
