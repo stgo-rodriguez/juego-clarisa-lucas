@@ -1,0 +1,271 @@
+{
+  "titulo": "ESCENARIO DIDACTICO NO CALIBRADO: flujo y demanda de Adultez",
+  "esquema": "balance-v3-modelo-ejemplo-0.1",
+  "advertencia": "CIFRAS DE PRUEBA ARBITRARIAS. NO corresponden a una propuesta aprobada ni a estimaciones de SIMLOG. Solo ejercitan el modelo matemático.",
+  "ajustes": {
+    "CAS_D_F1C5_A": 2,
+    "CAS_D_F4C2_P": 2,
+    "CAS_D_F3C5_M": 3,
+    "SIT_D_C_A_A_GANANCIA": 2,
+    "PERFIL_C_M": 3,
+    "CASA_RESERVA_A": 4,
+    "CASA_RESERVA_P": 2,
+    "CASA_OFERTA_BASE_M": 6,
+    "AFINIDAD_META_A": 7,
+    "AFINIDAD_META_M": 7,
+    "FALSO_LUCAS_META_M": 10
+  },
+  "activaciones": [
+    {
+      "parametro": "CAS_D_F1C5_A",
+      "etapa": "Adultez",
+      "frecuencia": 0.5
+    },
+    {
+      "parametro": "CAS_D_F4C2_P",
+      "etapa": "Adultez",
+      "frecuencia": 0.5
+    },
+    {
+      "parametro": "CAS_D_F3C5_M",
+      "etapa": "Adultez",
+      "frecuencia": 0.5
+    },
+    {
+      "parametro": "SIT_D_C_A_A_GANANCIA",
+      "instancia": "ejemplo-situacion-01",
+      "etapa": "Adultez",
+      "frecuencia": 0.5
+    },
+    {
+      "parametro": "PERFIL_C_M",
+      "instancia": "perfil-ejemplo-01",
+      "etapa": "Adultez",
+      "frecuencia": 0.5
+    }
+  ],
+  "objetivos_produccion": {
+    "Adultez": {
+      "A": 2,
+      "P": 1,
+      "K": 0,
+      "M": 3
+    }
+  },
+  "fuentes_calibrar": [
+    {
+      "parametro": "CAS_D_F1C5_A",
+      "etapa": "Adultez",
+      "frecuencia": 0.5,
+      "cuota": 0.5
+    },
+    {
+      "parametro": "SIT_D_C_A_A_GANANCIA",
+      "instancia": "ejemplo-situacion-01",
+      "etapa": "Adultez",
+      "frecuencia": 0.5,
+      "cuota": 0.5
+    },
+    {
+      "parametro": "CAS_D_F4C2_P",
+      "etapa": "Adultez",
+      "frecuencia": 0.5,
+      "cuota": 1
+    },
+    {
+      "parametro": "CAS_D_F3C5_M",
+      "etapa": "Adultez",
+      "frecuencia": 0.5,
+      "cuota": 0.5
+    },
+    {
+      "parametro": "PERFIL_C_M",
+      "instancia": "perfil-ejemplo-01",
+      "etapa": "Adultez",
+      "frecuencia": 0.5,
+      "cuota": 0.5
+    }
+  ],
+  "rutas": [
+    {
+      "id": "boda_lucas_autentico",
+      "participantes": [
+        "C",
+        "L"
+      ],
+      "ganadores_hipoteticos": [
+        "C",
+        "L"
+      ],
+      "eventos": [
+        {
+          "etapa": "Adultez",
+          "hito": "Casa / reserva A",
+          "parametro": "CASA_RESERVA_A",
+          "actores": [
+            "C",
+            "L"
+          ],
+          "por_integrante": true
+        },
+        {
+          "etapa": "Adultez",
+          "hito": "Casa / reserva P",
+          "parametro": "CASA_RESERVA_P",
+          "actores": [
+            "C",
+            "L"
+          ],
+          "por_integrante": true
+        },
+        {
+          "etapa": "Adultez",
+          "hito": "Casa / precio a banca (solo si gana)",
+          "parametro": "CASA_OFERTA_BASE_M",
+          "actores": [
+            "C",
+            "L"
+          ],
+          "por_integrante": true,
+          "destino": "banca"
+        },
+        {
+          "etapa": "Adultez",
+          "hito": "Afinidad A",
+          "parametro": "AFINIDAD_META_A",
+          "actores": [
+            "C",
+            "L"
+          ],
+          "modo_objetivo": "pago"
+        },
+        {
+          "etapa": "Adultez",
+          "hito": "Afinidad M",
+          "parametro": "AFINIDAD_META_M",
+          "actores": [
+            "C",
+            "L"
+          ],
+          "modo_objetivo": "pago"
+        }
+      ]
+    },
+    {
+      "id": "boda_falso_lucas",
+      "participantes": [
+        "C",
+        "F"
+      ],
+      "ganadores_hipoteticos": [
+        "C"
+      ],
+      "eventos": [
+        {
+          "etapa": "Adultez",
+          "hito": "Casa / reserva A",
+          "parametro": "CASA_RESERVA_A",
+          "actores": [
+            "C",
+            "F"
+          ],
+          "por_integrante": true
+        },
+        {
+          "etapa": "Adultez",
+          "hito": "Casa / reserva P",
+          "parametro": "CASA_RESERVA_P",
+          "actores": [
+            "C",
+            "F"
+          ],
+          "por_integrante": true
+        },
+        {
+          "etapa": "Adultez",
+          "hito": "Casa / precio a banca (solo si gana)",
+          "parametro": "CASA_OFERTA_BASE_M",
+          "actores": [
+            "C",
+            "F"
+          ],
+          "por_integrante": true,
+          "destino": "banca"
+        },
+        {
+          "etapa": "Adultez",
+          "hito": "Afinidad A",
+          "parametro": "AFINIDAD_META_A",
+          "actores": [
+            "C",
+            "F"
+          ],
+          "modo_objetivo": "pago"
+        },
+        {
+          "etapa": "Adultez",
+          "hito": "Afinidad M",
+          "parametro": "AFINIDAD_META_M",
+          "actores": [
+            "C",
+            "F"
+          ],
+          "modo_objetivo": "pago"
+        }
+      ]
+    },
+    {
+      "id": "victoria_individual_falso_lucas",
+      "participantes": [
+        "C",
+        "F"
+      ],
+      "ganadores_hipoteticos": [
+        "F"
+      ],
+      "eventos": [
+        {
+          "etapa": "Adultez",
+          "hito": "Casa / reserva A",
+          "parametro": "CASA_RESERVA_A",
+          "actores": [
+            "C",
+            "F"
+          ],
+          "por_integrante": true
+        },
+        {
+          "etapa": "Adultez",
+          "hito": "Casa / reserva P",
+          "parametro": "CASA_RESERVA_P",
+          "actores": [
+            "C",
+            "F"
+          ],
+          "por_integrante": true
+        },
+        {
+          "etapa": "Adultez",
+          "hito": "Casa / precio a banca (solo si gana)",
+          "parametro": "CASA_OFERTA_BASE_M",
+          "actores": [
+            "C",
+            "F"
+          ],
+          "por_integrante": true,
+          "destino": "banca"
+        },
+        {
+          "etapa": "Adultez",
+          "hito": "Dinero individual del Falso Lucas",
+          "parametro": "FALSO_LUCAS_META_M",
+          "actores": [
+            "F"
+          ],
+          "modo_objetivo": "comprobacion"
+        }
+      ]
+    }
+  ],
+  "nota_limitaciones": "Se asume pareja ya formada, títulos y pasaportes adjudicados, Casa obtenida al primer intento, sin azar ni pérdidas ni costos de etapas previas. Solo ilustra mínimos de fichas requeridas al empezar Adultez."
+}
