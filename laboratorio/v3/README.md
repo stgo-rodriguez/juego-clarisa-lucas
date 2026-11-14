@@ -1,6 +1,6 @@
 # Laboratorio de Balance v3.0 — Fase 1: matriz económica integral
 
-**Estado:** matriz v3.0 + modelo matemático determinista para calibración inversa. **No** es un simulador v3.0, ni una optimización estadística validada.
+**Estado:** matriz v3.0 + modelo determinista de economía + optimizador entero multiobjetivo de escenarios explícitos. **No** es todavía un simulador v3.0 ni una calibración validada con partidas.
 
 **Documento rector:** [Clarisa_y_Lucas_Especificacion_Conceptual_v3_0.docx](https://docs.google.com/document/d/1AfX65pZX_XmXwsPLMwkXAqg5gL1BfzKB/edit) (14/11/2026).
 
@@ -16,6 +16,9 @@ Determinar, con matemáticas, experimentación y simulaciones, **cuánto debe ge
 - `modelo_matematico.py`: proyecciones de flujos, reparto inverso de premios, demanda de rutas y tasas objetivo por etapa.
 - `escenario_didactico_NO_CALIBRADO.json`: ejemplo sintético con cantidades arbitrarias claramente rotuladas.
 - `ejecutar_modelo.py`: ejecución sin simulación de las tres rutas conceptuales usando el ejemplo.
+- `optimizar.py`: búsqueda entera conjunta de premios/costos, cinco objetivos y soluciones no dominadas.
+- `escenario_optimizacion_NO_CALIBRADO.json`: supuestos didácticos con ocho parámetros ajustables (1.296 combinaciones), sin datos v3.0 observados.
+- `tests/test_optimizador_economico_v3.py`: pruebas de evaluación económica, búsqueda reproducible y Pareto.
 - `tests/test_matriz_economica_v3.py`: controles del catálogo.
 - `tests/test_modelo_matematico_v3.py`: pruebas del modelo, reservas, transferencias, metas, Casa y comparación de rutas.
 
@@ -129,6 +132,50 @@ Para escenarios personalizados, copiar `escenario_didactico_NO_CALIBRADO.json` a
 - La demanda secuencial es una cota inferior **idealizada**, pues presupone transferencias legales instantáneas entre participantes autorizados, obtención de Casa al primer intento y recursos disponibles justo antes de cada hito; no considera azar, carreras contra otras parejas, pérdidas futuras o consentimientos.
 - El método no adjudica proyectos ni devuelve automáticamente inversiones: solo modela recursos libres comprometidos; el futuro simulador deberá registrar las liquidaciones reales.
 - Las variantes reglamentarias abiertas no se aprueban por ejecutar el ejemplo.
+
+
+## Fase 3 — Optimizador conjunto inicial (NO simulación)
+
+**Finalidad:** recomendar combinaciones de cantidades de premios, costos y metas bajo **frecuencias, ventanas de tiempo y funciones de utilidad dadas explícitamente**. Ninguno de esos datos es una regla o un resultado v3.0 observado: el motor de partidas sigue pendiente.
+
+### Qué optimiza
+
+1. `deficit`: faltantes económicos de rutas y etapas, divididos por la demanda de cada ruta. Nunca se compensa un faltante en A con exceso de M.
+2. `excedente`: recursos disponibles al final de cada ruta tras descontar sus demandas.
+3. `desviacion_mezcla`: diferencia entre proporción real de emisión bruta y composición objetivo expresamente configurada por etapa.
+4. `disparidad_rutas`: diferencia relativa de presión económica entre rutas de boda auténtica, boda con Falso Lucas y victoria individual.
+5. `desviacion_presion`: distancia entre recursos demandados/emitidos y la tensión económica de referencia (hipótesis de diseño, no duración predicha).
+
+El puntaje escalar se utiliza **solo** para ordenar alternativas con pesos declarados en el escenario. Además, se devuelve la frontera de Pareto de las combinaciones **evaluadas**. En una búsqueda exhaustiva (espacio pequeño), esa frontera es completa para los dominios proporcionados; con búsqueda local, no se garantiza globalidad.
+
+**Importante:** el presupuesto de emisión usa `activaciones_por_ronda_mesa` —cantidad de activaciones del mecanismo en la **mesa entera** por ronda— y `rondas_por_etapa`. Por ejemplo, un aterrizaje que acredite el premio a ambos integrantes debe computar **dos activaciones**, no una. No multiplicar esas frecuencias nuevamente por el número de participantes.
+
+### Experimento reproducible de prueba
+
+```bash
+python -m unittest discover -s tests -p 'test_optimizador_economico_v3.py' -v
+python -m laboratorio.v3.optimizar \
+  --escenario laboratorio/v3/escenario_optimizacion_NO_CALIBRADO.json \
+  --max-evaluaciones 1500 \
+  --salida /tmp/optimizacion_v3.json
+```
+
+La muestra introduce **8 parámetros enteros variables** (recompensas de casillero, Situación y Perfil; precio de Casa; dos metas de Afinidad; cuota de Falso Lucas), con un espacio de 1.296 combinaciones. Incluye rutas para los **tres cierres v3.0**, con pesos de evaluación, intervalos de valores, presión objetivo, mezcla y duraciones arbitrarias etiquetadas como hipótesis. No deben confundirse con parámetros de juego aprobados.
+
+El resultado JSON informa la mejor combinación **condicionada a esos supuestos**, desglose de emisiones, demanda por ruta, déficit por recurso, y frontera Pareto de alternativas.
+
+### Límites y prerrequisitos de la siguiente fase
+
+- La generación `G=F×Q` presupone frecuencias constantes; en partidas reales, **F cambia cuando modifican premios y costos** y los bots alteran sus rutas. La búsqueda real deberá reestimar activaciones simulando cada configuración o usando un sustituto verificado.
+- La demanda secuencial supone recursos disponibles justo a tiempo y, para cuotas conjuntas, cooperación idealizada. **No comprueba** si los recursos de Falso Lucas son propios, si acepta pagos, ni si mantiene Casa cuando corresponde. La modelización del falso y de la pareja debe validarse en un motor de juego.
+- Las pérdidas reales dependen del saldo; esta etapa no predice sus truncamientos estocásticos.
+- No genera tiempos reales ni probabilidades de victoria. Las tres rutas son **presupuestos**; las recomendaciones no pueden declararse balance del juego.
+- No se optimizan todavía los 181 parámetros simultáneamente: son el catálogo íntegro, no un número manejable de variables independientes a explorar exhaustivamente. Corresponde seleccionar ámbitos de sensibilidad y usar búsqueda local/por lotes.
+- Las decisiones reglamentarias abiertas siguen como variantes; ninguna queda aprobada automáticamente por una puntuación.
+
+**Próxima implementación:** simulador económico reproducible v3.0 con instrumentación de frecuencia real de fuentes, demanda por actor, ventanas de pago, decisiones A/B, movimiento y final de partida. Solo entonces cerrar el ciclo de calibración cuantitativa y evaluar robustez de resultados.
+
+---
 
 ### Próxima fase
 
