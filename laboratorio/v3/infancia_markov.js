@@ -46,6 +46,11 @@ function analizarInfanciaUTN(config, override={}) {
   }
   for(const s of outcomes)if(!Number.isInteger(s.P)||!Number.isInteger(s.K))faltan.push("Efectos P/K enteros de Situación");
   if(faltan.length) return {estado:"pendiente",faltan:[...new Set(faltan)],objetivo_rondas:opt.objetivo_rondas??5};
+  // Truncar saldos en la cuota solo es exacto con incrementos no negativos.
+  // Ante pérdidas habría que mantener estados con superávit y acotar el error.
+  const hasLoss=cas.some(x=>(rp>0&&x.P<0)||(rk>0&&x.K<0))||
+    outcomes.some(x=>(rp>0&&x.P<0)||(rk>0&&x.K<0));
+  if(hasLoss) return {estado:"limite",detalle:"El solver v3.1 no trunca pérdidas P/K: hay efectos negativos. Para esos casos se requiere un modelo con excedentes y control del error de truncamiento.",rol,objetivo_rondas:opt.objetivo_rondas??5};
   if((rp>p0 && Math.max(...cas.map(x=>x.P),...outcomes.map(x=>x.P))<=0) ||
      (rk>k0 && Math.max(...cas.map(x=>x.K),...outcomes.map(x=>x.K))<=0))
     return {estado:"inalcanzable",rondas_esperadas:Infinity,detalle:"Al menos un recurso requerido tiene déficit inicial y ninguna fuente positiva en el modelo; no se puede aprobar UTN.",rol,objetivo_rondas:opt.objetivo_rondas??5};
@@ -104,7 +109,7 @@ function analizarInfanciaUTN(config, override={}) {
        "La Situación se resuelve al final de cada turno de Infancia, también en el nodo UTN y en el turno de regreso.",
        "El ingreso no permite examinarse hasta el siguiente turno; cada examen tiene probabilidad 1/2 de aprobación.",
        "Si faltan requisitos tras una Situación en UTN, el próximo turno se destina a regresar al casillero 5, sin dado ni premio de casillero.",
-       "Las reservas y otros consumos externos no se incorporan; las pérdidas por Situación se limitan al saldo P/K libre.",
+       "Solo se modelan efectos P/K no negativos; las pérdidas requieren estados adicionales para conservar excedentes y no se estiman aquí.",
        modo==="neutras"?"Escenario experimental explícito: se omiten los efectos P/K de Situaciones. No representa el mazo real.":"Las opciones A/B se tratan como sucesos independientes por turno con probabilidades indicadas; no modela dependencia de mazo finito."
      ]};
 }
