@@ -15,7 +15,7 @@
 <div class="actions">
 <button id="save">Guardar escenario</button><button id="duplicate">Duplicar</button><button id="reset">Restaurar base</button><button id="export">Exportar parámetros</button><button id="export-results">Exportar resultados</button><button id="export-csv">CSV</button><button id="import">Importar</button><input type="file" id="file-import" accept="application/json,.json">
 </div></header>
-<div class="notice">Este prototipo calcula <b>cotas económicas</b>, no percentiles ni rondas garantizadas. Los valores vacíos representan parámetros no definidos. El modo «pago de afinidad» es una variante de análisis; su carácter reglamentario aún es abierto en la especificación conceptual.</div>
+<div class="notice">La sección <b>UTN v3.1</b> calcula rondas esperadas mediante un proceso probabilístico de estados absorbentes; las demás estimaciones siguen siendo <b>cotas económicas</b>, no percentiles ni rondas garantizadas. Los valores vacíos representan parámetros no definidos. El modo «pago de afinidad» es una variante de análisis; su carácter reglamentario aún es abierto en la especificación conceptual.</div>
 <div class="layout">
 <aside class="panel ctrl">
 <div class="header"><h2>Parámetros</h2><span id="status">Inicializando…</span></div>
@@ -209,6 +209,7 @@ function renderProbabilistic(){
  explanation+='<p class="mini">Cota estructural inferior: 3 rondas esperadas si puede entrar a UTN en la primera y conserva requisitos (una ronda de ingreso y 2 rondas esperadas de examen). El mínimo real depende del casillero inicial y de la economía.</p>';
  $('prob-explain').innerHTML=explanation;
  if(calibrationResults)renderCalibration();
+ else {$('calibration-results').innerHTML='';$('calibration-badge').textContent='Exploratorio';}
 }
 function renderCalibration(){
  const res=calibrationResults;
@@ -268,7 +269,7 @@ function renderResults(){
    return '<div class="block"><div class="label-line"><b>'+esc(label.replaceAll('_',' '))+'</b><span class="mini">Saldo libre / persona</span></div>'+
       ['Clarisa','Lucas'].map(role=>'<div class="mini">'+role+': '+R.map(k=>'<span class="chip" style="color:'+colors[k]+'">'+k+': '+esc(pretty(bal[role][k]))+'</span>').join('')+'</div>').join('')+'</div>';
  }).join('');
- const labels=[['utn','UTN','Comprobación P/K'],['titulo','Título','3 subhitos e intento'],['pasaporte','Pasaporte','3 subhitos e intento'],['dublin','Vuelo a Dublín','Título + Pasaporte + Pareja'],['casa','Casa','Reservas + precio compartido'],['boda_autentica','Boda auténtica','Ganan Clarisa y Lucas'],['boda_con_falso','Boda con Falso Lucas','Gana solo Clarisa; consentimiento abierto'],['falso_lucas','Casa + Dinero (Falso Lucas)','Gana solo Falso Lucas']];
+ const labels=[['utn','UTN · cota económica','Solo P/K, sin examen ni acceso físico'],['titulo','Título','3 subhitos e intento'],['pasaporte','Pasaporte','3 subhitos e intento'],['dublin','Vuelo a Dublín','Título + Pasaporte + Pareja'],['casa','Casa','Reservas + precio compartido'],['boda_autentica','Boda auténtica','Ganan Clarisa y Lucas'],['boda_con_falso','Boda con Falso Lucas','Gana solo Clarisa; consentimiento abierto'],['falso_lucas','Casa + Dinero (Falso Lucas)','Gana solo Falso Lucas']];
  $('estimates').innerHTML=labels.map(([k,n,d])=>estimate(n,k,current,comparison,d)).join('');
  $('bottlenecks').innerHTML=current.cuellos.length?current.cuellos.slice(0,6).map(x=>'<div class="block"><div class="label-line"><b>'+esc(x.recurso)+' · '+esc(x.rol)+'</b><b>'+esc(fmtGoal(x.rondas))+'</b></div><div class="mini">'+esc(x.etapa)+'</div></div>').join(''):'<div class="muted">No hay cuellos cuantificables hasta completar las tasas y demandas.</div>';
  $('warnings').innerHTML=current.avisos.map(x=>'<li>'+esc(x)+'</li>').join('');
@@ -277,7 +278,7 @@ function renderResults(){
  $('deltas').innerHTML=labels.filter(([k])=>k==='utn'||k==='dublin'||k==='casa'||k==='boda_autentica'||k==='falso_lucas').map(([k,n])=>{
    const a=currentVals[k],b=oldVals[k];return '<div class="label-line block"><span>'+esc(n)+'</span><b>'+esc(Number.isFinite(a)&&Number.isFinite(b)?(a-b>0?'+':'')+pretty(a-b)+' rondas':'No comparable')+'</b></div>';
  }).join('');
- $('status').textContent=Object.values(current.estimaciones).filter(x=>x===null).length+' resultados N/D';
+ $('status').textContent=Object.values(current.estimaciones).filter(x=>x===null).length+' cotas N/D';
  renderProbabilistic();
 }
 function update(soft){
