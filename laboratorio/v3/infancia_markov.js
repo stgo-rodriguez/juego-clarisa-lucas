@@ -1,7 +1,8 @@
 /* Clarisa & Lucas v3.1 — MDP absorbente de Infancia/UTN. Sin Monte Carlo. */
 function analizarInfanciaUTN(config, override={}) {
   const opt={...(config.supuestos?.utn_v31||{}),...override};
-  const rol=opt.rol||"Clarisa", sitio=opt.posicion_inicial, p0=opt.P_inicial, k0=opt.K_inicial;
+  const rol=opt.rol||"Clarisa", sitio=opt.posicion_inicial;
+  let p0=opt.P_inicial, k0=opt.K_inicial;
   const modo=opt.modo_situaciones||"configuradas";
   const rp=config.requisitos?.utn?.P, rk=config.requisitos?.utn?.K;
   const faltan=[];
@@ -9,19 +10,22 @@ function analizarInfanciaUTN(config, override={}) {
   if(!Number.isInteger(sitio)||sitio<1||sitio>6) faltan.push("Casillero inicial de Infancia (1–6)");
   const integer=(n)=>Number.isInteger(n)&&n>=0;
   for(const [k,v] of [["P requerida",rp],["K requerido",rk],["P inicial",p0],["K inicial",k0]]){
+    if((k==="P inicial"&&rp===0)||(k==="K inicial"&&rk===0))continue;
     if(v===null||v===undefined) faltan.push(k);
     else if(!integer(v)) faltan.push(k+" (entero no negativo)");
   }
   if(!["configuradas","neutras"].includes(modo)) faltan.push("Modo de Situaciones válido");
   if(faltan.length) return {estado:"pendiente",faltan,objetivo_rondas:opt.objetivo_rondas??5};
+  if(rp===0)p0=0;
+  if(rk===0)k0=0;
   const N=(rp+1)*(rk+1);
   if(N>625) return {estado:"limite",detalle:"El espacio P×K supera 625 estados por posición. Reducí temporalmente los requisitos o usá un solver de mayor capacidad.",estados:N};
   const cas=[];
   for(let t=1;t<=6;t++){
     const m=config.etapas?.infancia?.mecanismos?.find(x=>x.id==="i_c"+t);
     if(!m){faltan.push("Casillero "+t);continue;}
-    const vP=m.premios?.P??(Object.prototype.hasOwnProperty.call(m.premios||{},"P")?null:0);
-    const vK=m.premios?.K??(Object.prototype.hasOwnProperty.call(m.premios||{},"K")?null:0);
+    const vP=rp===0?0:(m.premios?.P??(Object.prototype.hasOwnProperty.call(m.premios||{},"P")?null:0));
+    const vK=rk===0?0:(m.premios?.K??(Object.prototype.hasOwnProperty.call(m.premios||{},"K")?null:0));
     if((rp>0&&vP===null)||(rk>0&&vK===null))faltan.push("Premio P/K del casillero "+t);
     else if(!Number.isInteger(vP)||!Number.isInteger(vK)) faltan.push("Premios P/K enteros del casillero "+t);
     cas.push({P:vP,K:vK});
@@ -32,7 +36,8 @@ function analizarInfanciaUTN(config, override={}) {
     const situ=config.etapas.infancia.mecanismos.find(x=>x.id===(rol==="Clarisa"?"i_s_c":"i_s_l"));
     if(!situ) faltan.push("Situación de "+rol);
     else {
-      const a={P:situ.opcion_A?.P,K:situ.opcion_A?.K},b={P:situ.opcion_B?.P,K:situ.opcion_B?.K},q=situ.probabilidad_A;
+      const a={P:rp===0?0:situ.opcion_A?.P,K:rk===0?0:situ.opcion_A?.K},
+        b={P:rp===0?0:situ.opcion_B?.P,K:rk===0?0:situ.opcion_B?.K},q=situ.probabilidad_A;
       const same=a.P!==null&&a.K!==null&&b.P!==null&&b.K!==null&&a.P===b.P&&a.K===b.K;
       if(same) outcomes=[{prob:1,P:a.P,K:a.K}];
       else if(q===null||q===undefined||!(q>=0&&q<=1))faltan.push("Probabilidad A de Situación "+rol);
