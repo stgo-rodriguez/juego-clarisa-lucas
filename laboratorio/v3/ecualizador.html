@@ -330,7 +330,7 @@ const guideSteps=[
  {title:'5. Aplicar una propuesta al ejemplo',target:'[data-apply-utn]',
   text:'Elegí una de las propuestas y pulsá “Aplicar al escenario”. Esto modifica únicamente los premios del ejemplo que estamos probando. Los valores oficiales del catálogo permanecen sin definir.',
   extra:'Después de aplicar una propuesta, el indicador central “Rondas esperadas para aprobar” mostrará el resultado calculado para esos premios.'},
- {title:'6. Ver qué cambia al modificar Conocimiento',target:'[data-path$="i_c5.premios.K"][type="number"]',
+ {title:'6. Ver qué cambia al modificar Conocimiento',target:'#editors',
   text:'Volvé al panel izquierdo. Cambiá el valor “Casillero 5 · K” una unidad y observá en el centro cómo cambia “Rondas esperadas para aprobar”. También podés cambiar P en los casilleros 2 y 4.',
   extra:'Ese cambio de rondas es la función principal del Ecualizador: medir sensibilidad económica antes de definir premios.'},
  {title:'7. Conservar o descartar la prueba',target:'#save',
@@ -346,7 +346,7 @@ function guideRender(shouldFocus=false){
  if(!guideOpen)return;
  const s=guideSteps[Math.min(guideStep,guideSteps.length-1)];
  $('guide-title').textContent=s.title;
- $('guide-progress').textContent=guideStep===0?'Inicio':'Paso '+guideStep+' de 6';
+ $('guide-progress').textContent='Paso '+(guideStep+1)+' de 7';
  $('guide-text').textContent=s.text;
  $('guide-extra').textContent=s.extra;
  $('guide-action').hidden=guideStep!==0;
@@ -359,7 +359,11 @@ function guideRender(shouldFocus=false){
  $('guide-exit').textContent=guideStep===0?'Ocultar guía':'Cerrar guía (conservar ejemplo)';
  document.querySelectorAll('.guide-target').forEach(el=>el.classList.remove('guide-target','guide-focus'));
  let target=document.querySelector(s.target);
- if(!target&&guideStep===5)target=document.querySelector('[data-path$="i_c5.premios.K"]');
+ if(guideStep===5){
+   const idxK=active.etapas.infancia.mecanismos.findIndex(m=>m.id==='i_c5');
+   const field=idxK<0?null:document.querySelector('[data-path="etapas.infancia.mecanismos.'+idxK+'.premios.K"][type="number"]');
+   if(field)target=field;
+ }
  if(target&&guideStep>0){
    target.classList.add('guide-target','guide-focus');
    if(shouldFocus)target.scrollIntoView({behavior:'smooth',block:'center',inline:'nearest'});
