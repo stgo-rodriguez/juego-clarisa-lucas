@@ -53,6 +53,7 @@ class MarkovUTNTest(unittest.TestCase):
 
     def test_situacion_faltante_bloquea(self):
         c=escenario()
+        c["requisitos"]["utn"]={"P":1,"K":1}
         c["supuestos"]["utn_v31"]["modo_situaciones"]="configuradas"
         self.assertEqual(analizar_infancia_utn(c)["estado"],"pendiente")
 
@@ -74,6 +75,14 @@ class MarkovUTNTest(unittest.TestCase):
         m["opcion_A"].update(P=-1,K=0)
         m["opcion_B"].update(P=0,K=0)
         self.assertEqual(analizar_infancia_utn(c)["estado"],"limite")
+
+    def test_irrelevantes_no_bloquean(self):
+        c=escenario()
+        c["supuestos"]["utn_v31"]["P_inicial"]=None
+        c["supuestos"]["utn_v31"]["K_inicial"]=None
+        m=next(m for m in c["etapas"]["infancia"]["mecanismos"] if m["id"]=="i_c5")
+        m["premios"]["K"]=None
+        self.assertAlmostEqual(analizar_infancia_utn(c)["rondas_esperadas"],3,places=6)
 
     def test_entrada_y_examen_separados(self):
         c=escenario()
