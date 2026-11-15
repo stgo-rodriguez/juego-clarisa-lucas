@@ -29,6 +29,8 @@ def analizar_infancia_utn(config: dict, **override) -> dict:
     elif posicion not in (1,2,3,4,5,6):
         faltan.append("Casillero inicial de Infancia (1–6)")
     for nombre,valor in (("P requerida",rp),("K requerido",rk),("P inicial",P0),("K inicial",K0)):
+        if (nombre=="P inicial" and rp==0) or (nombre=="K inicial" and rk==0):
+            continue
         if valor is None:
             faltan.append(nombre)
         elif not entero(valor):
@@ -37,6 +39,8 @@ def analizar_infancia_utn(config: dict, **override) -> dict:
         faltan.append("Modo de Situaciones válido")
     if faltan:
         return {"estado":"pendiente","faltan":faltan,"objetivo_rondas":target}
+    P0=0 if rp==0 else P0
+    K0=0 if rk==0 else K0
     rp,rk,P0,K0=int(rp),int(rk),int(P0),int(K0)
     cells=(rp+1)*(rk+1)
     if cells>625:
@@ -47,8 +51,8 @@ def analizar_infancia_utn(config: dict, **override) -> dict:
         if m is None:
             faltan.append(f"Casillero {i}")
             continue
-        p=m.get("premios",{}).get("P",0)
-        k=m.get("premios",{}).get("K",0)
+        p=0 if rp==0 else m.get("premios",{}).get("P",0)
+        k=0 if rk==0 else m.get("premios",{}).get("K",0)
         if (rp>0 and p is None) or (rk>0 and k is None):
             faltan.append(f"Premio P/K del casillero {i}")
         elif not isinstance(p,int) or not isinstance(k,int):
@@ -63,8 +67,8 @@ def analizar_infancia_utn(config: dict, **override) -> dict:
         if situ is None:
             faltan.append("Situación de "+rol)
         else:
-            a={"P":situ["opcion_A"].get("P"),"K":situ["opcion_A"].get("K")}
-            b={"P":situ["opcion_B"].get("P"),"K":situ["opcion_B"].get("K")}
+            a={"P":0 if rp==0 else situ["opcion_A"].get("P"),"K":0 if rk==0 else situ["opcion_A"].get("K")}
+            b={"P":0 if rp==0 else situ["opcion_B"].get("P"),"K":0 if rk==0 else situ["opcion_B"].get("K")}
             q=situ["probabilidad_A"]
             same=all(v is not None for v in (*a.values(),*b.values())) and a==b
             if same:
