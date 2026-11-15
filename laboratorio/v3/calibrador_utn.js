@@ -23,7 +23,7 @@ async function calibrarUTN(config, report=()=>{}) {
  if(initial.estado==="pendiente"||initial.estado==="limite"||initial.estado==="error")return {estado:initial.estado,faltan:initial.faltan,detalle:initial.detalle,objetivo_rondas:meta};
  for(let p=0;p<=maximo;p++){
    const lo=evaluate(p,0),hi=evaluate(p,maximo);
-   if(lo.estado==="calculado"&&hi.estado==="calculado"&&lo.rondas_esperadas>=meta&&hi.rondas_esperadas<=meta){
+   if(hi.estado==="calculado"&&hi.rondas_esperadas<=meta&&((lo.estado==="calculado"&&lo.rondas_esperadas>=meta)||lo.estado==="inalcanzable")){
      let l=0,r=maximo;
      while(r-l>1){
        const mid=Math.floor((l+r)/2),z=evaluate(p,mid);
@@ -32,7 +32,7 @@ async function calibrarUTN(config, report=()=>{}) {
      }
      evaluate(p,l);evaluate(p,r);
    }
-   report({procesados:p+1,total:maximo+1,combinaciones:cache.size});
+   if(report({procesados:p+1,total:maximo+1,combinaciones:cache.size})===false)return {estado:"cancelado"};
    if(p%2===1)await new Promise(resolve=>setTimeout(resolve,0));
  }
  const ordered=[...candidatos.values()].sort((a,b)=>a.error_absoluto-b.error_absoluto||
