@@ -41,6 +41,9 @@ function cfg(){
  }
  const same=analizarInfanciaUTN(c);
  assert.equal(same.estado,'calculado');
+ c.etapas.infancia.mecanismos.find(m=>m.id==='i_s_c').opcion_A.P=-1;
+ c.etapas.infancia.mecanismos.find(m=>m.id==='i_s_c').probabilidad_A=.5;
+ assert.equal(analizarInfanciaUTN(c).estado,'limite');
  c.supuestos.utn_v31.modo_situaciones='neutras';
  const saved=JSON.stringify(c);
  const out=await calibrarUTN(c);
