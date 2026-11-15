@@ -24,7 +24,7 @@ def analizar_infancia_utn(config: dict, **override) -> dict:
         return type(x) in (int,float) and float(x).is_integer() and x>=0 and math.isfinite(x)
     if rol not in ("Clarisa","Lucas"):
         faltan.append("Rol Clarisa o Lucas")
-    if not entero(posicion) if posicion is not None else True:
+    if posicion is None or not entero(posicion):
         faltan.append("Casillero inicial de Infancia (1–6)")
     elif posicion not in (1,2,3,4,5,6):
         faltan.append("Casillero inicial de Infancia (1–6)")
@@ -82,6 +82,13 @@ def analizar_infancia_utn(config: dict, **override) -> dict:
         faltan.append("Efectos P/K enteros de Situación")
     if faltan:
         return {"estado":"pendiente","faltan":list(dict.fromkeys(faltan)),"objetivo_rondas":target}
+    has_loss=any((rp>0 and v["P"]<0) or (rk>0 and v["K"]<0)
+                 for v in [*cas,*outcomes])
+    if has_loss:
+        return {
+            "estado":"limite","rol":rol,"objetivo_rondas":target,
+            "detalle":"Existen efectos P/K negativos. El modelo v3.1 no trunca excedentes bajo pérdidas: se requiere solver ampliado."
+        }
     if (rp>P0 and max([c["P"] for c in cas]+[o["P"] for o in outcomes])<=0) or (
         rk>K0 and max([c["K"] for c in cas]+[o["K"] for o in outcomes])<=0):
         return {
@@ -163,7 +170,7 @@ def analizar_infancia_utn(config: dict, **override) -> dict:
             "Situación al final de cada turno, incluido examen y regreso obligatorio.",
             "La primera tirada de examen es al turno siguiente; P(aprobación)=1/2.",
             "Sin requisitos después de Situación en UTN, se vuelve al casillero 5 el siguiente turno sin D6 ni premio.",
-            "Recursos P/K se limitan a [0,requisito] para el estado, con pérdidas acotadas por cero.",
+            "Solo se modelan efectos P/K no negativos; las pérdidas y excedentes bajo riesgo requieren otro solver.",
             "Situaciones P/K neutralizadas solo como hipótesis explícita." if modo=="neutras" else
             "Efectos A/B IID por turno; no se modela el orden del mazo finito.",
         ],
