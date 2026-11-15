@@ -79,7 +79,7 @@
 <div class="section"><h3>Parámetros aún no identificables</h3><div id="unknown" class="mini scroll"></div></div>
 </aside>
 </div><div class="footer">Modelo v3.1 aislado de v2.x · Datos modificables y exportables · Sin Monte Carlo · <a href="../../" style="color:#9fd0f1">Volver a la aplicación de cartas</a></div>
-</div><script src="./engine.js"></script><script src="./infancia_markov.js"></script><script src="./calibrador_utn.js"></script><script>
+</div><script src="./engine.js"></script><script src="./infancia_markov.js"></script><script src="./calibrador_utn.js"></script><script src="./guia_utn.js"></script><script>
 (function(){
 'use strict';
 const R=['A','P','K','M'],colors={A:'#f183a4',P:'#b39bf5',K:'#75c9e0',M:'#e3c574'},names={A:'Amor',P:'Personalidad',K:'Conocimiento',M:'Dinero'};
@@ -373,16 +373,7 @@ function guideLoadExample(){
  if(!base)return;
  if(!guideSnapshot)guideSnapshot={active:clone(active),selected,tab,stage,mechanismIndex,objectiveIndex,compare};
  guideExample=true;guideSearched=false;guideApplied=false;
- active=clone(base); selected='actual'; compare='base';
- Object.assign(active.supuestos.utn_v31,{
-   rol:'Clarisa',posicion_inicial:5,P_inicial:0,K_inicial:0,
-   modo_situaciones:'neutras',objetivo_rondas:5,maximo_premio_exploracion:12
- });
- active.requisitos.utn.P=1;active.requisitos.utn.K=1;
- for(const [id,recurso] of [['i_c2','P'],['i_c4','P'],['i_c5','K']]){
-   const tile=active.etapas.infancia.mecanismos.find(m=>m.id===id);
-   if(tile)tile.premios[recurso]=0;
- }
+ active=crearEscenarioGuiaUTN(base); selected='actual'; compare='base';
  calibrationResults=null;calibrationToken++;selectGuideTab();
  guideStep=1;restoreNames();update(false);guideRender(true);
 }
