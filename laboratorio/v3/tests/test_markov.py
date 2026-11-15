@@ -64,6 +64,17 @@ class MarkovUTNTest(unittest.TestCase):
             m[side]["P"]=m[side]["K"]=0
         self.assertEqual(analizar_infancia_utn(c)["estado"],"calculado")
 
+    def test_perdida_de_p_no_puede_truncarse(self):
+        c=escenario()
+        c["requisitos"]["utn"]={"P":1,"K":0}
+        next(m for m in c["etapas"]["infancia"]["mecanismos"] if m["id"]=="i_c2")["premios"]["P"]=2
+        c["supuestos"]["utn_v31"]["modo_situaciones"]="configuradas"
+        m=next(m for m in c["etapas"]["infancia"]["mecanismos"] if m["id"]=="i_s_c")
+        m["probabilidad_A"]=0.5
+        m["opcion_A"].update(P=-1,K=0)
+        m["opcion_B"].update(P=0,K=0)
+        self.assertEqual(analizar_infancia_utn(c)["estado"],"limite")
+
     def test_entrada_y_examen_separados(self):
         c=escenario()
         c["supuestos"]["utn_v31"]["posicion_inicial"]=5
