@@ -5,6 +5,7 @@ const vm=require('node:vm');
 const {analizarInfanciaUTN}=require('../infancia_markov.js');
 global.analizarInfanciaUTN=analizarInfanciaUTN;
 const {calibrarUTN,aplicarCandidatoUTN}=require('../calibrador_utn.js');
+const {crearEscenarioGuiaUTN}=require('../guia_utn.js');
 const raw=JSON.parse(fs.readFileSync(path.join(__dirname,'..','matriz_economica_v3.json'),'utf8'));
 function cfg(){
   const c=JSON.parse(JSON.stringify(raw));
@@ -17,6 +18,25 @@ function cfg(){
   return c;
 }
 (async()=>{
+ const catalogoOriginal=JSON.stringify(raw);
+ const demo=crearEscenarioGuiaUTN(raw);
+ assert.equal(JSON.stringify(raw),catalogoOriginal,'La guía no debe modificar el catálogo');
+ assert.notStrictEqual(demo,raw);
+ assert.equal(demo.supuestos.utn_v31.objetivo_rondas,5);
+ assert.equal(demo.supuestos.utn_v31.modo_situaciones,'neutras');
+ assert.equal(demo.supuestos.utn_v31.posicion_inicial,5);
+ assert.deepEqual(demo.requisitos.utn,{P:1,K:1});
+ for(const mid of ['i_c2','i_c4']){
+   assert.equal(demo.etapas.infancia.mecanismos.find(m=>m.id===mid).premios.P,0);
+ }
+ assert.equal(demo.etapas.infancia.mecanismos.find(m=>m.id==='i_c5').premios.K,0);
+ assert.equal(analizarInfanciaUTN(demo).estado,'inalcanzable','El paso 2 explica correctamente el caso inicial');
+ const propuestasDemo=await calibrarUTN(demo);
+ assert.equal(propuestasDemo.estado,'calculado','La guía debe obtener propuestas');
+ assert.ok(propuestasDemo.lista.length>0);
+ const aplicadaDemo=aplicarCandidatoUTN(demo,propuestasDemo.lista[0]);
+ assert.equal(analizarInfanciaUTN(aplicadaDemo).estado,'calculado','Una propuesta de guía debe producir rondas estimadas');
+ assert.equal(analizarInfanciaUTN(demo).estado,'inalcanzable','Aplicar propuesta no debe alterar el ejemplo original');
  const untouched=analizarInfanciaUTN(raw);
  assert.equal(untouched.estado,'pendiente');
  assert.equal(raw.requisitos.utn.P,null);
@@ -61,7 +81,15 @@ function cfg(){
  assert.ok(ui.includes('id="prob-panel"'));
  assert.ok(ui.includes('data-tab="utn"'));
  assert.ok(ui.includes('objetivo_rondas'));
+ assert.ok(ui.includes('id="guide-launch"'));
+ assert.ok(ui.includes('id="guide"'));
+ assert.ok(ui.includes('function guideLoadExample()'));
+ assert.ok(ui.includes('function guideRestore()'));
+ assert.ok(ui.includes('guia_utn.js'));
+ assert.ok(ui.includes("active=crearEscenarioGuiaUTN(base)"));
+ assert.ok(ui.includes("guideStep===2&&result.estado==='calculado'"));
+ assert.ok(ui.includes("guideStep===4"));
  for(const s of [...ui.matchAll(/<script(?:[^>]*)>([\s\S]*?)<\/script>/g)])
   if(s[1].trim())new vm.Script(s[1],{filename:'ecualizador.html:inline'});
- console.log('v3.1: Markov, calibrador inverso, escenarios y sintaxis UI OK. '+out.evaluaciones+' evaluaciones.');
+ console.log('v3.1: Markov, calibrador inverso, guía interactiva, escenario aislado y sintaxis UI OK. '+out.evaluaciones+' evaluaciones.');
 })().catch(e=>{console.error(e);process.exitCode=1;});

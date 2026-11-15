@@ -80,3 +80,19 @@ Mantiene sin modificar todos los demás parámetros. Utiliza búsqueda determini
 ### Límites y siguiente fase
 
 La cifra v3.1 es tiempo esperado individual de UTN bajo una política ideal, no tiempo garantizado, tiempo global de partida ni percentil. No hay tiempos de Título, Pasaporte y Casa probabilísticos todavía. Para incorporar pérdidas P/K deberán implementarse estados de excedentes con cotas de error; para representar mazos reales, estados de composición de cartas y dependencias entre rondas. El objetivo sigue siendo un balance de recursos y no un rediseño de reglas.
+
+## Guía interactiva en la misma página
+
+El botón **«Guía paso a paso»** del encabezado abre un recorrido de siete pasos dentro del Ecualizador. La guía, visible inicialmente al cargar la página, indica dónde hacer clic y resalta los controles correspondientes:
+
+1. **Preparar el ejemplo:** crea una copia aislada del catálogo, sin sobrescribir premios oficiales, escenarios guardados ni el escenario original de trabajo.
+2. **Revisar los datos:** utiliza solo como ejemplo P requerida = 1, K requerida = 1; P/K iniciales = 0; casillero inicial 5; P en casilleros 2/4 = 0 y K en casillero 5 = 0. Se omiten expresamente los efectos P/K de las Situaciones para aislar la lógica.
+3. **Buscar premios:** clic en «Buscar premios para la meta» (5 rondas esperadas); el análisis es matemático, sin Monte Carlo.
+4. **Interpretar propuestas:** cada tarjeta señala premios sugeridos, rondas esperadas y distancia a la meta. No se garantiza alcanzar exactamente las 5 rondas.
+5. **Aplicar una propuesta:** se modifica únicamente el escenario de ejemplo.
+6. **Analizar sensibilidad:** cambiar Conocimiento en el casillero 5 y comparar duración resultante.
+7. **Conservar o descartar:** guardar/exportar el ejemplo con los controles normales de la página o recuperar el escenario previo mediante «Volver a mi escenario anterior».
+
+El ejemplo es una **hipótesis didáctica, no un reglamento**. Los datos originales continúan indefinidos (`null`). El generador puro `guia_utn.js` se prueba automáticamente contra el catálogo, junto con el cálculo inicial de inalcanzabilidad y la obtención de propuestas.
+
+Para recuperar cambios no guardados del trabajo previo tras empezar la guía, mantenerla abierta y elegir **«Volver a mi escenario anterior»**. Si se elige **«Cerrar guía (conservar ejemplo)»**, el ejemplo se mantiene como escenario de trabajo actual y la restauración anterior deja de estar disponible.

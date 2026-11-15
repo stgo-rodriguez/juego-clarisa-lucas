@@ -9,13 +9,36 @@
 .layout{display:grid;grid-template-columns:minmax(285px,340px) minmax(390px,1fr) minmax(270px,335px);gap:13px;align-items:start}.panel{border:1px solid var(--border);background:var(--card);border-radius:15px;min-width:0;overflow:hidden}.panel .header{display:flex;align-items:center;justify-content:space-between;padding:14px 16px;border-bottom:1px solid var(--border)}h2{font-size:1rem;margin:0;font-weight:700}h3{font-size:.86rem;margin:0 0 9px;color:var(--text)}.section{padding:15px 16px;border-bottom:1px solid #ffffff12}.section:last-child{border-bottom:0}.ctrl{position:sticky;top:10px;max-height:calc(100vh - 20px);overflow:auto}.tabs{display:flex;gap:5px}.tabs button{flex:1;padding:8px 4px;font-size:.79rem}.tabs button.on{background:#416b91;border-color:#628bb4}.field{margin:10px 0}.field label{display:flex;justify-content:space-between;gap:8px;color:var(--muted);font-size:.83rem;margin-bottom:5px}.field input[type=number],select,.field input[type=text]{width:100%;border:1px solid var(--border);background:#101928;border-radius:8px;padding:7px 8px;min-height:34px}.field input[type=range]{width:100%;accent-color:var(--accent);margin:5px 0 0}.value-row{display:grid;grid-template-columns:1fr 94px;align-items:center;gap:7px}.value-row input[type=number]{min-width:0}.input-note{font-size:.74rem;color:var(--muted);margin-top:5px}.tag{font-size:.72rem;padding:3px 7px;border-radius:5px;background:#27405a;color:#b7dcf4}.tag.warn{background:#513c2a;color:#ffe0a2}.rewards{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:2px 10px}.rules{font-size:.82rem;color:var(--muted)}.chip{display:inline-block;border:1px solid var(--border);border-radius:7px;padding:3px 7px;margin:2px;font-size:.75rem}.legend-dot{display:inline-block;width:10px;height:10px;border-radius:3px;margin-right:5px}.cards{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:8px}.metric{border:1px solid var(--border);background:var(--card2);border-radius:12px;padding:12px;min-width:0}.metric span{font-size:.74rem;color:var(--muted)}.metric strong{display:block;font-size:1.5rem;font-variant-numeric:tabular-nums;margin-top:4px}.metric .delta{font-size:.76rem;color:var(--sub)}.flowbar{height:12px;border-radius:8px;background:#29384b;margin-top:6px;overflow:hidden;display:flex}.flowbar span{display:block;height:100%}.flow-row{display:grid;grid-template-columns:34px 90px 1fr 62px;gap:9px;align-items:center;margin:11px 0}.flow-row .resname{font-weight:800;font-size:.95rem}.flow-row .number{font-variant-numeric:tabular-nums;text-align:right}.flex{display:flex;gap:7px;align-items:center;flex-wrap:wrap}.block{padding:11px;border:1px solid var(--border);border-radius:10px;background:#111b29;margin:9px 0}.label-line{display:flex;justify-content:space-between;align-items:center;gap:8px}.label-line strong{font-weight:650}.muted{color:var(--muted)}.positive{color:var(--sub)}.negative{color:#ffa6a6}.grid2{display:grid;grid-template-columns:1fr 1fr;gap:9px}.estimate{display:flex;justify-content:space-between;gap:10px;align-items:center;padding:11px 13px;border-bottom:1px solid #ffffff10}.estimate:last-child{border-bottom:0}.estimate strong{font-size:1.08rem;font-variant-numeric:tabular-nums}.estimate small{display:block;font-size:.75rem;color:var(--muted)}.result{border-top:1px solid var(--border)}.result:first-child{border-top:0}.bullets{padding-left:17px;color:var(--muted);font-size:.82rem}.bullets li{margin:7px 0}.scroll{max-height:235px;overflow:auto}.source-list{display:grid;grid-template-columns:1fr auto;gap:6px 10px;font-size:.81rem}.source-list>div{border-bottom:1px solid #ffffff10;padding:3px 0}.formula{font:12px/1.55 ui-monospace,SFMono-Regular,Consolas,monospace;color:#bbcee2;overflow-wrap:anywhere}.footer{color:var(--muted);font-size:.78rem;padding-top:14px}.compare{display:flex;align-items:center;gap:9px;flex-wrap:wrap}.compare select{width:auto;min-width:130px}.notice{padding:10px 12px;border-radius:10px;background:#3b3124;border:1px solid #695236;color:#ffe3b8;font-size:.82rem;margin-bottom:12px}#status{font-size:.79rem;color:var(--muted)}#file-import{display:none}
 @media(max-width:1200px){.layout{grid-template-columns:300px minmax(0,1fr)}.right{grid-column:2}.cards{grid-template-columns:repeat(2,1fr)}}@media(max-width:720px){.screen{padding:10px}.layout{grid-template-columns:1fr}.ctrl{position:static;max-height:none}.right{grid-column:auto}.cards{grid-template-columns:repeat(2,1fr)}.top{align-items:start}}
 </style>
+<style>
+/* Guía contextual de uso — no altera los valores oficiales ni el catálogo. */
+.guide-panel{position:sticky;top:8px;z-index:10;background:#183149;border:1px solid #5e9bc3;border-radius:14px;padding:14px 16px;margin:12px 0;box-shadow:0 8px 28px #0009}
+.guide-panel[hidden]{display:none}
+.guide-head{display:flex;align-items:center;justify-content:space-between;gap:10px;flex-wrap:wrap}
+.guide-head h2{font-size:1.06rem}
+.guide-progress{font-size:.78rem;color:#aedff9}
+.guide-panel p{margin:8px 0;line-height:1.55;max-width:105ch}
+.guide-panel .guide-note{color:#ffe0a2;font-size:.82rem}
+.guide-buttons{display:flex;gap:8px;flex-wrap:wrap;margin-top:12px;align-items:center}
+.guide-buttons button:disabled{opacity:.5;cursor:not-allowed}
+.guide-target{outline:3px solid #ffdf86!important;outline-offset:3px!important;box-shadow:0 0 0 5px #ffdf8630}
+.guide-focus{scroll-margin-top:210px}
+#guide-help{margin-left:auto;color:#d0e6f5}
+@media(max-width:720px){.guide-panel{position:relative;top:auto}.guide-head h2{font-size:.96rem}}
+</style>
 </head>
 <body><div class="screen">
 <header class="top"><div class="identity"><small>LABORATORIO DE BALANCE / V3.1</small><h1>Ecualizador Teórico de Recursos</h1><small>Clarisa & Lucas · Motor determinista · Valores económicos por definir</small></div>
 <div class="actions">
-<button id="save">Guardar escenario</button><button id="duplicate">Duplicar</button><button id="reset">Restaurar base</button><button id="export">Exportar parámetros</button><button id="export-results">Exportar resultados</button><button id="export-csv">CSV</button><button id="import">Importar</button><input type="file" id="file-import" accept="application/json,.json">
+<button class="primary" id="guide-launch" type="button">Guía paso a paso</button><button id="save">Guardar escenario</button><button id="duplicate">Duplicar</button><button id="reset">Restaurar base</button><button id="export">Exportar parámetros</button><button id="export-results">Exportar resultados</button><button id="export-csv">CSV</button><button id="import">Importar</button><input type="file" id="file-import" accept="application/json,.json">
 </div></header>
 <div class="notice">La sección <b>UTN v3.1</b> calcula rondas esperadas mediante un proceso probabilístico de estados absorbentes, bajo efectos P/K no negativos; las demás estimaciones siguen siendo <b>cotas económicas</b>, no percentiles ni rondas garantizadas. Los valores vacíos representan parámetros no definidos. El modo «pago de afinidad» es una variante de análisis; su carácter reglamentario aún es abierto en la especificación conceptual.</div>
+<section id="guide" class="guide-panel" aria-label="Guía paso a paso de UTN" aria-live="polite" hidden>
+ <div class="guide-head"><h2 id="guide-title">Prueba guiada de UTN</h2><span class="guide-progress" id="guide-progress">Presentación</span></div>
+ <p id="guide-text"></p><div id="guide-extra" class="guide-note"></div>
+ <div class="guide-buttons"><button id="guide-action" class="primary" type="button">Preparar ejemplo</button>
+ <button id="guide-prev" type="button">Anterior</button><button id="guide-next" type="button">Siguiente</button>
+ <button id="guide-exit" type="button">Cerrar guía</button><button id="guide-restore" type="button" hidden>Volver a mi escenario anterior</button></div>
+</section>
 <div class="layout">
 <aside class="panel ctrl">
 <div class="header"><h2>Parámetros</h2><span id="status">Inicializando…</span></div>
@@ -56,7 +79,7 @@
 <div class="section"><h3>Parámetros aún no identificables</h3><div id="unknown" class="mini scroll"></div></div>
 </aside>
 </div><div class="footer">Modelo v3.1 aislado de v2.x · Datos modificables y exportables · Sin Monte Carlo · <a href="../../" style="color:#9fd0f1">Volver a la aplicación de cartas</a></div>
-</div><script src="./engine.js"></script><script src="./infancia_markov.js"></script><script src="./calibrador_utn.js"></script><script>
+</div><script src="./engine.js"></script><script src="./infancia_markov.js"></script><script src="./calibrador_utn.js"></script><script src="./guia_utn.js"></script><script>
 (function(){
 'use strict';
 const R=['A','P','K','M'],colors={A:'#f183a4',P:'#b39bf5',K:'#75c9e0',M:'#e3c574'},names={A:'Amor',P:'Personalidad',K:'Conocimiento',M:'Dinero'};
@@ -64,6 +87,7 @@ const $=id=>document.getElementById(id),clone=o=>JSON.parse(JSON.stringify(o)),p
 const esc=v=>String(v).replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
 let base,active,tab='utn',stage='infancia',mechanismIndex=0,objectiveIndex=0,scenarios={},selected='actual',compare='base';
 let calibrationResults=null,calibrationToken=0;
+let guideOpen=false,guideStep=0,guideSnapshot=null,guideExample=false,guideSearched=false,guideApplied=false;
 const objectives=[
  ['UTN','requisitos.utn'],['Título · subhito I','requisitos.titulo.0'],['Título · subhito II','requisitos.titulo.1'],
  ['Título · subhito III','requisitos.titulo.2'],['Título · adjudicación','requisitos.adjudicacion_titulo'],
@@ -229,6 +253,7 @@ function renderCalibration(){
  document.querySelectorAll('[data-apply-utn]').forEach(el=>el.onclick=()=>{
    const candidate=calibrationResults?.lista[Number(el.dataset.applyUtn)];if(!candidate)return;
    active=aplicarCandidatoUTN(active,candidate);calibrationResults=null;calibrationToken++;update(false);
+   if(guideOpen&&guideStep===4){guideApplied=true;guideStep=5;guideRender(true);}
    $('calibration-progress').textContent='Premios aplicados SOLO al escenario actual. Guardalo o exportalo si querés conservarlo.';
  });
 }
@@ -245,6 +270,9 @@ async function searchUTN(){
    });
    if(token===calibrationToken){
      calibrationResults=result;renderCalibration();
+     if(guideOpen&&guideStep===2&&result.estado==='calculado'){
+       guideSearched=true;guideStep=3;guideRender(true);
+     }
      $('calibration-progress').textContent=result.estado==='calculado'?(result.exacta?'Se encontró al menos una propuesta dentro de 0,01 rondas del objetivo.':'No se encontró coincidencia exacta; se muestran las propuestas más cercanas.'):'No se obtuvieron propuestas: revisá los datos pendientes o el rango de búsqueda.';
    }
  }catch(error){$('calibration-progress').textContent='Error de calibración: '+error.message}
@@ -285,6 +313,92 @@ function update(soft){
  if(!soft)renderEditor();
  renderResults();
 }
+
+const guideSteps=[
+ {title:'1. Preparar un ejemplo de prueba',target:'#guide-action',
+  text:'Vamos a crear un escenario temporal separado, sin modificar tu configuración anterior. Usaremos 1 P y 1 K requeridos para UTN, casillero inicial 5, saldos iniciales 0 y premios iniciales 0. Son valores de práctica, NO reglas del juego.',
+  extra:'El objetivo de 5 rondas esperadas ya está configurado. El mazo de Situaciones tendrá efectos P/K omitidos solamente en este experimento.'},
+ {title:'2. Entender los datos iniciales',target:'#editors',
+  text:'Mirá a la izquierda los requisitos de UTN: 1 Personalidad y 1 Conocimiento. Clarisa comienza en el casillero 5, con 0 P y 0 K. Los tres casilleros de producción tienen premios 0 SOLO en este ejemplo.',
+  extra:'En el centro, “Rondas esperadas para aprobar” indica “Inalcanzable”: sin fuentes de P/K no se pueden reunir los requisitos. Esto es correcto.'},
+ {title:'3. Buscar una economía que se acerque a 5 rondas',target:'#search-utn',
+  text:'Buscá en el centro el botón resaltado “Buscar premios para la meta” y hacé clic. El programa evalúa combinaciones de P en los casilleros 2 y 4 y de K en el 5.',
+  extra:'No hace partidas aleatorias. Es matemática analítica. Si 5 rondas no se puede lograr con estos requisitos, mostrará las mejores alternativas encontradas, aunque excedan 5.'},
+ {title:'4. Interpretar las propuestas',target:'#calibration-results',
+  text:'Cada tarjeta muestra dos cantidades propuestas y su duración: “P (2 y 4)” es el premio de ambos casilleros; “K (5)” es el premio del casillero 5. El número de la derecha son las rondas esperadas hasta aprobar UTN.',
+  extra:'“Diferencia absoluta” mide la distancia a las 5 rondas objetivo. Que una propuesta sea la más cercana NO significa que sea una regla equilibrada del juego.'},
+ {title:'5. Aplicar una propuesta al ejemplo',target:'[data-apply-utn]',
+  text:'Elegí una de las propuestas y pulsá “Aplicar al escenario”. Esto modifica únicamente los premios del ejemplo que estamos probando. Los valores oficiales del catálogo permanecen sin definir.',
+  extra:'Después de aplicar una propuesta, el indicador central “Rondas esperadas para aprobar” mostrará el resultado calculado para esos premios.'},
+ {title:'6. Ver qué cambia al modificar Conocimiento',target:'#editors',
+  text:'Volvé al panel izquierdo. Cambiá el valor “Casillero 5 · K” una unidad y observá en el centro cómo cambia “Rondas esperadas para aprobar”. También podés cambiar P en los casilleros 2 y 4.',
+  extra:'Ese cambio de rondas es la función principal del Ecualizador: medir sensibilidad económica antes de definir premios.'},
+ {title:'7. Conservar o descartar la prueba',target:'#save',
+  text:'Terminaste la prueba. Podés pulsar “Guardar escenario” arriba para conservarla en el navegador, o “Exportar parámetros” para descargar un JSON. Si preferís volver a donde estabas, pulsá “Volver a mi escenario anterior”.',
+  extra:'Los premios cargados son experimentales. La meta de 5 rondas no obliga a modificar las reglas ni implica que exista una solución exacta.'}
+];
+function selectGuideTab(){
+ tab='utn';stage='infancia';
+ document.querySelectorAll('[data-tab]').forEach(b=>b.classList.toggle('on',b.dataset.tab==='utn'));
+}
+function guideRender(shouldFocus=false){
+ $('guide').hidden=!guideOpen;
+ if(!guideOpen)return;
+ const s=guideSteps[Math.min(guideStep,guideSteps.length-1)];
+ $('guide-title').textContent=s.title;
+ $('guide-progress').textContent='Paso '+(guideStep+1)+' de 7';
+ $('guide-text').textContent=s.text;
+ $('guide-extra').textContent=s.extra;
+ $('guide-action').hidden=guideStep!==0;
+ $('guide-prev').hidden=guideStep===0;
+ $('guide-prev').disabled=guideStep<=1;
+ $('guide-next').hidden=guideStep===0;
+ $('guide-next').textContent=guideStep===6?'Finalizar y conservar ejemplo':'Siguiente paso';
+ $('guide-next').disabled=(guideStep===2&&!guideSearched)||(guideStep===4&&!guideApplied);
+ $('guide-restore').hidden=!guideSnapshot;
+ $('guide-exit').textContent=guideStep===0?'Ocultar guía':'Cerrar guía (conservar ejemplo)';
+ document.querySelectorAll('.guide-target').forEach(el=>el.classList.remove('guide-target','guide-focus'));
+ let target=document.querySelector(s.target);
+ if(guideStep===5){
+   const idxK=active.etapas.infancia.mecanismos.findIndex(m=>m.id==='i_c5');
+   const field=idxK<0?null:document.querySelector('[data-path="etapas.infancia.mecanismos.'+idxK+'.premios.K"][type="number"]');
+   if(field)target=field;
+ }
+ if(target&&guideStep>0){
+   target.classList.add('guide-target','guide-focus');
+   if(shouldFocus)target.scrollIntoView({behavior:'smooth',block:'center',inline:'nearest'});
+ }
+}
+function guideLoadExample(){
+ if(!base)return;
+ if(!guideSnapshot)guideSnapshot={active:clone(active),selected,tab,stage,mechanismIndex,objectiveIndex,compare};
+ guideExample=true;guideSearched=false;guideApplied=false;
+ active=crearEscenarioGuiaUTN(base); selected='actual'; compare='base';
+ calibrationResults=null;calibrationToken++;selectGuideTab();
+ guideStep=1;restoreNames();update(false);guideRender(true);
+}
+function guideRestore(){
+ calibrationToken++;calibrationResults=null;
+ if(guideSnapshot){
+   ({active,selected,tab,stage,mechanismIndex,objectiveIndex,compare}=guideSnapshot);
+   guideSnapshot=null;
+   document.querySelectorAll('[data-tab]').forEach(b=>b.classList.toggle('on',b.dataset.tab===tab));
+   restoreNames();update(false);
+ }
+ guideExample=false;guideOpen=false;guideStep=0;guideRender();
+}
+$('guide-launch').onclick=()=>{guideOpen=true;if(!guideSnapshot)guideStep=0;guideRender(true)};
+$('guide-action').onclick=guideLoadExample;
+$('guide-prev').onclick=()=>{if(guideStep>1){guideStep--;guideRender(true)}};
+$('guide-next').onclick=()=>{
+ if(guideStep===2&&!guideSearched)return;
+ if(guideStep===4&&!guideApplied)return;
+ if(guideStep>=6){guideOpen=false;guideSnapshot=null;guideRender();return}
+ guideStep++;guideRender(true);
+};
+$('guide-exit').onclick=()=>{guideOpen=false;guideSnapshot=null;guideRender()};
+$('guide-restore').onclick=guideRestore;
+
 $('search-utn').onclick=searchUTN;
 $('cancel-utn').onclick=()=>{calibrationToken++;$('cancel-utn').disabled=true;$('calibration-progress').textContent='Búsqueda cancelada.'};
 function persist(){try{localStorage.setItem('cl-v3-equ-scenarios',JSON.stringify(scenarios));}catch(e){console.warn(e)}}
@@ -326,6 +440,7 @@ fetch('./matriz_economica_v3.json').then(r=>{if(!r.ok)throw Error('Catálogo HTT
  base=data;active=clone(base);
  try{scenarios=JSON.parse(localStorage.getItem('cl-v3-equ-scenarios')||'{}')}catch(e){scenarios={}}
  restoreNames();update(false);
+ guideOpen=true;guideRender(false);
 }).catch(e=>{$('status').textContent='Error';$('editors').textContent='No se pudo cargar el catálogo. Abrí la app mediante GitHub Pages o un servidor HTTP. '+e.message});
 })();
 </script></body></html>
