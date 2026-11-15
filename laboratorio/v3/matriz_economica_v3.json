@@ -1,7 +1,7 @@
 {
-  "version": "3.0-prototipo",
+  "version": "3.1-prototipo",
   "fuente": "Especificación conceptual v3.0 de 14/11/2026",
-  "notas": "Importes null = A DEFINIR. UTN tiene P(examen aprobado)=0,5. D6 uniforme produce P(destino de Infancia)=1/6 mientras el jugador permanezca en circuito. No se presumen frecuencias de visita en Juventud ni Adultez.",
+  "notas": "Importes null = A DEFINIR. UTN tiene P(examen aprobado)=0,5. D6 uniforme produce P(destino de Infancia)=1/6 mientras el jugador permanezca en circuito. No se presumen frecuencias de visita en Juventud ni Adultez. v3.1: Meta UTN = 5 rondas esperadas (objetivo del diseñador, no valor de recurso). Posición y saldos iniciales se mantienen N/D. Se requiere configurar Situaciones o habilitar conscientemente la hipótesis de efectos P/K nulos.",
   "etapas": {
     "infancia": {
       "duracion_objetivo": null,
@@ -504,7 +504,16 @@
     "multiplicador_destinos_en_pareja_adultez": 2,
     "afinidad_clarisa": "A",
     "afinidad_lucas": "P",
-    "regla_afinidad": "pago"
+    "regla_afinidad": "pago",
+    "utn_v31": {
+      "rol": "Clarisa",
+      "posicion_inicial": null,
+      "P_inicial": null,
+      "K_inicial": null,
+      "modo_situaciones": "configuradas",
+      "objetivo_rondas": 5,
+      "maximo_premio_exploracion": 12
+    }
   },
   "catalogo_version": "Catálogo inicial reconstruido desde concepto porque laboratorio/v3 no estaba en el repositorio indicado"
 }

@@ -2,29 +2,44 @@
 <html lang="es">
 <head>
 <meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
-<title>Ecualizador Teórico v3.0 · Clarisa & Lucas</title>
+<title>Ecualizador Teórico v3.1 · Clarisa & Lucas</title>
 <style>
 :root{color-scheme:dark;--bg:#0c121c;--card:#172131;--card2:#1c2839;--border:#2e3e53;--text:#eef4ff;--muted:#9bafc8;--accent:#8ac3ed;--sub:#90dec2;--warn:#ffcf8a;--A:#f183a4;--P:#b39bf5;--K:#75c9e0;--M:#e3c574}
 *{box-sizing:border-box}html,body{margin:0;min-height:100%;background:var(--bg);color:var(--text);font:14px/1.42 system-ui,-apple-system,Segoe UI,sans-serif}button,input,select{font:inherit}button,select,input{color:var(--text)}button{cursor:pointer;border:1px solid var(--border);background:#253448;padding:8px 11px;border-radius:9px}button:hover{border-color:var(--accent)}button.primary{background:#31688b;border-color:#4385aa;color:white;font-weight:650}.screen{max-width:1900px;margin:auto;padding:15px 20px 26px}.top{display:flex;align-items:center;justify-content:space-between;gap:16px;margin-bottom:14px;flex-wrap:wrap}.identity h1{font-size:1.5rem;letter-spacing:-.03em;margin:2px 0}.identity small{color:var(--muted)}.actions{display:flex;gap:7px;flex-wrap:wrap}.mini{font-size:.8rem;color:var(--muted)}
-.layout{display:grid;grid-template-columns:minmax(285px,340px) minmax(390px,1fr) minmax(270px,335px);gap:13px;align-items:start}.panel{border:1px solid var(--border);background:var(--card);border-radius:15px;min-width:0;overflow:hidden}.panel .header{display:flex;align-items:center;justify-content:space-between;padding:14px 16px;border-bottom:1px solid var(--border)}h2{font-size:1rem;margin:0;font-weight:700}h3{font-size:.86rem;margin:0 0 9px;color:var(--text)}.section{padding:15px 16px;border-bottom:1px solid #ffffff12}.section:last-child{border-bottom:0}.ctrl{position:sticky;top:10px;max-height:calc(100vh - 20px);overflow:auto}.tabs{display:flex;gap:5px}.tabs button{flex:1;padding:8px 4px;font-size:.83rem}.tabs button.on{background:#416b91;border-color:#628bb4}.field{margin:10px 0}.field label{display:flex;justify-content:space-between;gap:8px;color:var(--muted);font-size:.83rem;margin-bottom:5px}.field input[type=number],select,.field input[type=text]{width:100%;border:1px solid var(--border);background:#101928;border-radius:8px;padding:7px 8px;min-height:34px}.field input[type=range]{width:100%;accent-color:var(--accent);margin:5px 0 0}.value-row{display:grid;grid-template-columns:1fr 94px;align-items:center;gap:7px}.value-row input[type=number]{min-width:0}.input-note{font-size:.74rem;color:var(--muted);margin-top:5px}.tag{font-size:.72rem;padding:3px 7px;border-radius:5px;background:#27405a;color:#b7dcf4}.tag.warn{background:#513c2a;color:#ffe0a2}.rewards{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:2px 10px}.rules{font-size:.82rem;color:var(--muted)}.chip{display:inline-block;border:1px solid var(--border);border-radius:7px;padding:3px 7px;margin:2px;font-size:.75rem}.legend-dot{display:inline-block;width:10px;height:10px;border-radius:3px;margin-right:5px}.cards{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:8px}.metric{border:1px solid var(--border);background:var(--card2);border-radius:12px;padding:12px;min-width:0}.metric span{font-size:.74rem;color:var(--muted)}.metric strong{display:block;font-size:1.5rem;font-variant-numeric:tabular-nums;margin-top:4px}.metric .delta{font-size:.76rem;color:var(--sub)}.flowbar{height:12px;border-radius:8px;background:#29384b;margin-top:6px;overflow:hidden;display:flex}.flowbar span{display:block;height:100%}.flow-row{display:grid;grid-template-columns:34px 90px 1fr 62px;gap:9px;align-items:center;margin:11px 0}.flow-row .resname{font-weight:800;font-size:.95rem}.flow-row .number{font-variant-numeric:tabular-nums;text-align:right}.flex{display:flex;gap:7px;align-items:center;flex-wrap:wrap}.block{padding:11px;border:1px solid var(--border);border-radius:10px;background:#111b29;margin:9px 0}.label-line{display:flex;justify-content:space-between;align-items:center;gap:8px}.label-line strong{font-weight:650}.muted{color:var(--muted)}.positive{color:var(--sub)}.negative{color:#ffa6a6}.grid2{display:grid;grid-template-columns:1fr 1fr;gap:9px}.estimate{display:flex;justify-content:space-between;gap:10px;align-items:center;padding:11px 13px;border-bottom:1px solid #ffffff10}.estimate:last-child{border-bottom:0}.estimate strong{font-size:1.08rem;font-variant-numeric:tabular-nums}.estimate small{display:block;font-size:.75rem;color:var(--muted)}.result{border-top:1px solid var(--border)}.result:first-child{border-top:0}.bullets{padding-left:17px;color:var(--muted);font-size:.82rem}.bullets li{margin:7px 0}.scroll{max-height:235px;overflow:auto}.source-list{display:grid;grid-template-columns:1fr auto;gap:6px 10px;font-size:.81rem}.source-list>div{border-bottom:1px solid #ffffff10;padding:3px 0}.formula{font:12px/1.55 ui-monospace,SFMono-Regular,Consolas,monospace;color:#bbcee2;overflow-wrap:anywhere}.footer{color:var(--muted);font-size:.78rem;padding-top:14px}.compare{display:flex;align-items:center;gap:9px;flex-wrap:wrap}.compare select{width:auto;min-width:130px}.notice{padding:10px 12px;border-radius:10px;background:#3b3124;border:1px solid #695236;color:#ffe3b8;font-size:.82rem;margin-bottom:12px}#status{font-size:.79rem;color:var(--muted)}#file-import{display:none}
+.layout{display:grid;grid-template-columns:minmax(285px,340px) minmax(390px,1fr) minmax(270px,335px);gap:13px;align-items:start}.panel{border:1px solid var(--border);background:var(--card);border-radius:15px;min-width:0;overflow:hidden}.panel .header{display:flex;align-items:center;justify-content:space-between;padding:14px 16px;border-bottom:1px solid var(--border)}h2{font-size:1rem;margin:0;font-weight:700}h3{font-size:.86rem;margin:0 0 9px;color:var(--text)}.section{padding:15px 16px;border-bottom:1px solid #ffffff12}.section:last-child{border-bottom:0}.ctrl{position:sticky;top:10px;max-height:calc(100vh - 20px);overflow:auto}.tabs{display:flex;gap:5px}.tabs button{flex:1;padding:8px 4px;font-size:.79rem}.tabs button.on{background:#416b91;border-color:#628bb4}.field{margin:10px 0}.field label{display:flex;justify-content:space-between;gap:8px;color:var(--muted);font-size:.83rem;margin-bottom:5px}.field input[type=number],select,.field input[type=text]{width:100%;border:1px solid var(--border);background:#101928;border-radius:8px;padding:7px 8px;min-height:34px}.field input[type=range]{width:100%;accent-color:var(--accent);margin:5px 0 0}.value-row{display:grid;grid-template-columns:1fr 94px;align-items:center;gap:7px}.value-row input[type=number]{min-width:0}.input-note{font-size:.74rem;color:var(--muted);margin-top:5px}.tag{font-size:.72rem;padding:3px 7px;border-radius:5px;background:#27405a;color:#b7dcf4}.tag.warn{background:#513c2a;color:#ffe0a2}.rewards{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:2px 10px}.rules{font-size:.82rem;color:var(--muted)}.chip{display:inline-block;border:1px solid var(--border);border-radius:7px;padding:3px 7px;margin:2px;font-size:.75rem}.legend-dot{display:inline-block;width:10px;height:10px;border-radius:3px;margin-right:5px}.cards{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:8px}.metric{border:1px solid var(--border);background:var(--card2);border-radius:12px;padding:12px;min-width:0}.metric span{font-size:.74rem;color:var(--muted)}.metric strong{display:block;font-size:1.5rem;font-variant-numeric:tabular-nums;margin-top:4px}.metric .delta{font-size:.76rem;color:var(--sub)}.flowbar{height:12px;border-radius:8px;background:#29384b;margin-top:6px;overflow:hidden;display:flex}.flowbar span{display:block;height:100%}.flow-row{display:grid;grid-template-columns:34px 90px 1fr 62px;gap:9px;align-items:center;margin:11px 0}.flow-row .resname{font-weight:800;font-size:.95rem}.flow-row .number{font-variant-numeric:tabular-nums;text-align:right}.flex{display:flex;gap:7px;align-items:center;flex-wrap:wrap}.block{padding:11px;border:1px solid var(--border);border-radius:10px;background:#111b29;margin:9px 0}.label-line{display:flex;justify-content:space-between;align-items:center;gap:8px}.label-line strong{font-weight:650}.muted{color:var(--muted)}.positive{color:var(--sub)}.negative{color:#ffa6a6}.grid2{display:grid;grid-template-columns:1fr 1fr;gap:9px}.estimate{display:flex;justify-content:space-between;gap:10px;align-items:center;padding:11px 13px;border-bottom:1px solid #ffffff10}.estimate:last-child{border-bottom:0}.estimate strong{font-size:1.08rem;font-variant-numeric:tabular-nums}.estimate small{display:block;font-size:.75rem;color:var(--muted)}.result{border-top:1px solid var(--border)}.result:first-child{border-top:0}.bullets{padding-left:17px;color:var(--muted);font-size:.82rem}.bullets li{margin:7px 0}.scroll{max-height:235px;overflow:auto}.source-list{display:grid;grid-template-columns:1fr auto;gap:6px 10px;font-size:.81rem}.source-list>div{border-bottom:1px solid #ffffff10;padding:3px 0}.formula{font:12px/1.55 ui-monospace,SFMono-Regular,Consolas,monospace;color:#bbcee2;overflow-wrap:anywhere}.footer{color:var(--muted);font-size:.78rem;padding-top:14px}.compare{display:flex;align-items:center;gap:9px;flex-wrap:wrap}.compare select{width:auto;min-width:130px}.notice{padding:10px 12px;border-radius:10px;background:#3b3124;border:1px solid #695236;color:#ffe3b8;font-size:.82rem;margin-bottom:12px}#status{font-size:.79rem;color:var(--muted)}#file-import{display:none}
 @media(max-width:1200px){.layout{grid-template-columns:300px minmax(0,1fr)}.right{grid-column:2}.cards{grid-template-columns:repeat(2,1fr)}}@media(max-width:720px){.screen{padding:10px}.layout{grid-template-columns:1fr}.ctrl{position:static;max-height:none}.right{grid-column:auto}.cards{grid-template-columns:repeat(2,1fr)}.top{align-items:start}}
 </style>
 </head>
 <body><div class="screen">
-<header class="top"><div class="identity"><small>LABORATORIO DE BALANCE / V3.0</small><h1>Ecualizador Teórico de Recursos</h1><small>Clarisa & Lucas · Motor determinista · Valores económicos por definir</small></div>
+<header class="top"><div class="identity"><small>LABORATORIO DE BALANCE / V3.1</small><h1>Ecualizador Teórico de Recursos</h1><small>Clarisa & Lucas · Motor determinista · Valores económicos por definir</small></div>
 <div class="actions">
 <button id="save">Guardar escenario</button><button id="duplicate">Duplicar</button><button id="reset">Restaurar base</button><button id="export">Exportar parámetros</button><button id="export-results">Exportar resultados</button><button id="export-csv">CSV</button><button id="import">Importar</button><input type="file" id="file-import" accept="application/json,.json">
 </div></header>
-<div class="notice">Este prototipo calcula <b>cotas económicas</b>, no percentiles ni rondas garantizadas. Los valores vacíos representan parámetros no definidos. El modo «pago de afinidad» es una variante de análisis; su carácter reglamentario aún es abierto en la especificación conceptual.</div>
+<div class="notice">La sección <b>UTN v3.1</b> calcula rondas esperadas mediante un proceso probabilístico de estados absorbentes, bajo efectos P/K no negativos; las demás estimaciones siguen siendo <b>cotas económicas</b>, no percentiles ni rondas garantizadas. Los valores vacíos representan parámetros no definidos. El modo «pago de afinidad» es una variante de análisis; su carácter reglamentario aún es abierto en la especificación conceptual.</div>
 <div class="layout">
 <aside class="panel ctrl">
 <div class="header"><h2>Parámetros</h2><span id="status">Inicializando…</span></div>
-<div class="section"><div class="tabs"><button data-tab="generacion" class="on">Generación</button><button data-tab="objetivos">Costos y metas</button><button data-tab="globales">Supuestos</button></div></div>
+<div class="section"><div class="tabs"><button data-tab="generacion">Generación</button><button data-tab="objetivos">Costos y metas</button><button data-tab="globales">Supuestos</button><button data-tab="utn" class="on">UTN v3.1</button></div></div>
 <div class="section" id="editors"></div>
 <div class="section"><h3>Escenarios</h3><div class="field"><label>Escenario activo</label><select id="scenario"></select></div><div class="field"><label>Comparar contra</label><select id="compare"></select></div><div class="mini">Guardados localmente en este navegador. Exportá un JSON para conservar o compartir configuraciones.</div></div>
 </aside>
 <main class="panel center">
 <div class="header"><h2>Economía por ronda</h2><span class="tag" id="mode">Etapa</span></div>
+<div class="section" id="prob-panel">
+ <div class="label-line"><h3>Infancia → UTN · Modelo probabilístico</h3><span class="tag" id="prob-status">N/D</span></div>
+ <div class="cards" style="margin:10px 0">
+  <div class="metric"><span>Rondas esperadas para aprobar</span><strong id="prob-value">N/D</strong><span>Modelo de estados absorbentes</span></div>
+  <div class="metric"><span>Objetivo del diseñador</span><strong id="prob-target">5</strong><span>rondas esperadas</span></div>
+  <div class="metric"><span>Desviación respecto al objetivo</span><strong id="prob-delta">N/D</strong><span>rondas</span></div>
+  <div class="metric"><span>Modelo matemático</span><strong style="font-size:1.12rem">Markov / Bellman</strong><span>Sin Monte Carlo</span></div>
+ </div>
+ <div class="mini" id="prob-explain"></div>
+ <div class="label-line" style="margin-top:12px"><h3>Calibrador inverso de UTN</h3><span class="tag" id="calibration-badge">Exploratorio</span></div>
+ <p class="mini">Busca premios enteros para P en los casilleros 2 y 4 y K en el 5, conservando todos los demás parámetros. No asigna valores automáticamente.</p>
+ <div class="flex"><button class="primary" id="search-utn">Buscar premios para la meta</button><button id="cancel-utn" disabled>Cancelar búsqueda</button></div>
+ <p class="mini" id="calibration-progress">Configurá requisitos, posición inicial y Situaciones en la pestaña UTN v3.1.</p>
+ <div id="calibration-results"></div>
+</div>
 <div class="section"><div class="label-line"><h3>Producción neta esperada · Clarisa</h3><span class="mini">A / P / K / M</span></div><div class="cards" id="kpis-c"></div></div>
 <div class="section"><div class="label-line"><h3>Producción neta esperada · Lucas</h3><span class="mini">A / P / K / M</span></div><div class="cards" id="kpis-l"></div></div>
 <div class="section"><h3>Composición por recurso y rol</h3><div id="composition"></div><div class="mini">Las barras representan tasas netas conocidas. Los componentes sin definir se señalan como N/D; no se les atribuye peso cero.</div></div>
@@ -40,14 +55,15 @@
 <div class="section"><h3>Diagnóstico y límites</h3><ul class="bullets" id="warnings"></ul></div>
 <div class="section"><h3>Parámetros aún no identificables</h3><div id="unknown" class="mini scroll"></div></div>
 </aside>
-</div><div class="footer">Modelo v3.0 aislado de v2.x · Datos modificables y exportables · Sin Monte Carlo · <a href="../../" style="color:#9fd0f1">Volver a la aplicación de cartas</a></div>
-</div><script src="./engine.js"></script><script>
+</div><div class="footer">Modelo v3.1 aislado de v2.x · Datos modificables y exportables · Sin Monte Carlo · <a href="../../" style="color:#9fd0f1">Volver a la aplicación de cartas</a></div>
+</div><script src="./engine.js"></script><script src="./infancia_markov.js"></script><script src="./calibrador_utn.js"></script><script>
 (function(){
 'use strict';
 const R=['A','P','K','M'],colors={A:'#f183a4',P:'#b39bf5',K:'#75c9e0',M:'#e3c574'},names={A:'Amor',P:'Personalidad',K:'Conocimiento',M:'Dinero'};
 const $=id=>document.getElementById(id),clone=o=>JSON.parse(JSON.stringify(o)),pretty=n=>n===null||n===undefined?'N/D':n===Infinity?'Inalcanzable':!Number.isFinite(n)?'N/D':(Math.round(n*100)/100).toLocaleString('es-AR',{maximumFractionDigits:2});
 const esc=v=>String(v).replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
-let base,active,tab='generacion',stage='infancia',mechanismIndex=0,objectiveIndex=0,scenarios={},selected='actual',compare='base';
+let base,active,tab='utn',stage='infancia',mechanismIndex=0,objectiveIndex=0,scenarios={},selected='actual',compare='base';
+let calibrationResults=null,calibrationToken=0;
 const objectives=[
  ['UTN','requisitos.utn'],['Título · subhito I','requisitos.titulo.0'],['Título · subhito II','requisitos.titulo.1'],
  ['Título · subhito III','requisitos.titulo.2'],['Título · adjudicación','requisitos.adjudicacion_titulo'],
@@ -61,10 +77,10 @@ const pathGet=(root,path)=>path.split('.').reduce((o,k)=>o[k],root);
 const pathSet=(root,path,val)=>{const p=path.split('.'),key=p.pop();let obj=root;for(const k of p)obj=obj[k];obj[key]=val;};
 const options=(items,current)=>items.map(([val,text])=>'<option value="'+esc(val)+'"'+(String(val)===String(current)?' selected':'')+'>'+esc(text)+'</option>').join('');
 const numberField=(caption,path,value,opts={})=>{
- const n=value===null?'':String(value),minimum=opts.min===undefined?'':(' min="'+opts.min+'"'),maximum=opts.max===undefined?'':(' max="'+opts.max+'"'),step=opts.step||'any';
+ const n=value===null||value===undefined?'':String(value),minimum=opts.min===undefined?'':(' min="'+opts.min+'"'),maximum=opts.max===undefined?'':(' max="'+opts.max+'"'),step=opts.step||'any';
  const sliderMax=opts.max===undefined?40:opts.max,sliderMin=opts.min===undefined?-15:opts.min;
- return '<div class="field"><label><span>'+esc(caption)+'</span><span>'+(value===null?'SIN DEFINIR':esc(pretty(value)))+'</span></label>'+
- '<div class="value-row"><input type="range" data-path="'+esc(path)+'" min="'+sliderMin+'" max="'+sliderMax+'" step="'+(opts.step||.5)+'" '+(value===null?'disabled':'value="'+esc(value)+'"')+'><input data-path="'+esc(path)+'" type="number" placeholder="N/D" value="'+esc(n)+'" step="'+esc(step)+'"'+minimum+maximum+'></div></div>';
+ return '<div class="field"><label><span>'+esc(caption)+'</span><span>'+(value===null||value===undefined?'SIN DEFINIR':esc(pretty(value)))+'</span></label>'+
+ '<div class="value-row"><input type="range" data-path="'+esc(path)+'" min="'+sliderMin+'" max="'+sliderMax+'" step="'+(opts.step||.5)+'" '+(value===null||value===undefined?'disabled':'value="'+esc(value)+'"')+'><input data-path="'+esc(path)+'" type="number" placeholder="N/D" value="'+esc(n)+'" step="'+esc(step)+'"'+minimum+maximum+'></div></div>';
 };
 function renderEditor(){
  let html='';
@@ -100,6 +116,28 @@ function renderEditor(){
    html+='</div>';
   }else html+=numberField(label,path,value,{min:0,max:120,step:1});
   html+='<div class="input-note">Los importes vacíos no se interpretan como cero. Ingresá 0 únicamente cuando la ausencia de costo sea deliberada.</div>';
+ }else if(tab==='utn'){
+  const p=active.supuestos.utn_v31;
+  const choice=(label,path,items,current)=>'<div class="field"><label>'+esc(label)+'</label><select data-utn-choice="'+path+'">'+options(items,current)+'</select></div>';
+  html+='<p class="rules">Calibración inversa para 5 rondas esperadas, parametrizable. Los valores numéricos vacíos siguen sin definirse.</p>';
+  html+=choice('Rol a evaluar','supuestos.utn_v31.rol',[['Clarisa','Clarisa'],['Lucas','Lucas']],p.rol);
+  html+=choice('Casillero inicial','supuestos.utn_v31.posicion_inicial',[['','SIN DEFINIR'],...[1,2,3,4,5,6].map(x=>[x,'Casillero '+x])],p.posicion_inicial);
+  html+=numberField('P inicial','supuestos.utn_v31.P_inicial',p.P_inicial,{min:0,max:20,step:1});
+  html+=numberField('K inicial','supuestos.utn_v31.K_inicial',p.K_inicial,{min:0,max:20,step:1});
+  html+=numberField('UTN · Requisito P (tenencia)','requisitos.utn.P',active.requisitos.utn.P,{min:0,max:25,step:1});
+  html+=numberField('UTN · Requisito K (tenencia)','requisitos.utn.K',active.requisitos.utn.K,{min:0,max:25,step:1});
+  html+=choice('Situaciones P/K','supuestos.utn_v31.modo_situaciones',[
+    ['configuradas','Usar Situaciones configuradas'],
+    ['neutras','Omitir P/K de Situaciones (EXPERIMENTO)']],p.modo_situaciones);
+  html+='<p class="rules">La hipótesis neutra no modifica las cartas ni sus valores en el catálogo. Solo permite aislar el efecto económico de los casilleros.</p>';
+  html+=numberField('Meta de rondas esperadas','supuestos.utn_v31.objetivo_rondas',p.objetivo_rondas,{min:3,max:30,step:.25});
+  html+=numberField('Máximo de búsqueda (premios enteros)','supuestos.utn_v31.maximo_premio_exploracion',p.maximo_premio_exploracion,{min:0,max:30,step:1});
+  html+='<h3>Premios vigentes en este escenario</h3><div class="rewards">';
+  for(const [id,k] of [['i_c2','P'],['i_c4','P'],['i_c5','K']]){
+    const i=active.etapas.infancia.mecanismos.findIndex(x=>x.id===id);
+    if(i>=0)html+=numberField(id.replace('i_c','Casillero ')+ ' · '+k,'etapas.infancia.mecanismos.'+i+'.premios.'+k,active.etapas.infancia.mecanismos[i].premios[k],{min:0,max:30,step:1});
+  }
+  html+='</div><p class="rules">El optimizador puede encontrar opciones aproximadas: la duración objetivo no se presupone alcanzable con premios enteros.</p>';
  }else{
   const sp=active.supuestos;
   const choice=(label,path,items,current)=>'<div class="field"><label>'+esc(label)+'</label><select data-choice="'+path+'">'+options(items,current)+'</select></div>';
@@ -127,7 +165,13 @@ function renderEditor(){
        if(other.type==='number')other.value=value===null?'':value;
      });
    }
-   renderResults();
+   calibrationResults=null;calibrationToken++;renderResults();
+ }));
+ document.querySelectorAll('#editors [data-utn-choice]').forEach(el=>el.addEventListener('change',ev=>{
+   const path=ev.target.dataset.utnChoice;
+   const value=ev.target.value;
+   pathSet(active,path,path.endsWith('posicion_inicial')?(value===''?null:Number(value)):value);
+   calibrationResults=null;calibrationToken++;update(false);
  }));
  document.querySelectorAll('#editors [data-choice]').forEach(el=>el.addEventListener('change',ev=>{
    const val=ev.target.value;pathSet(active,ev.target.dataset.choice,ev.target.dataset.choice==='supuestos.jugadores'?Number(val):val);update(false);
@@ -148,6 +192,64 @@ function contributions(data,role){
   return '<div class="flow-row"><span class="resname" style="color:'+colors[k]+'">'+k+'</span><span class="muted">'+names[k]+'</span><div class="flowbar"><span style="width:'+width+'%;background:'+colors[k]+'"></span></div><span class="number">'+esc(pretty(n))+'</span></div>';
  }).join('');
 }
+function renderProbabilistic(){
+ const utn=active.supuestos?.utn_v31||{},evalUTN=analizarInfanciaUTN(active);
+ $('prob-target').textContent=pretty(utn.objetivo_rondas??5);
+ $('prob-status').textContent=evalUTN.estado==='calculado'?'Estimación numérica':evalUTN.estado==='pendiente'?'Parámetros pendientes':evalUTN.estado==='inalcanzable'?'Inalcanzable':evalUTN.estado==='limite'?'Límite del solver':'Indeterminado';
+ $('prob-value').textContent=evalUTN.estado==='calculado'?pretty(evalUTN.rondas_esperadas):evalUTN.estado==='inalcanzable'?'∞':'N/D';
+ $('prob-delta').textContent=evalUTN.estado==='calculado'?(evalUTN.desviacion>0?'+':'')+pretty(evalUTN.desviacion):'N/D';
+ let explanation='';
+ if(evalUTN.estado==='calculado'){
+   explanation='Rol: '+esc(evalUTN.rol)+' · '+esc(pretty(evalUTN.estados))+' estados · '+evalUTN.iteraciones+' iteraciones · residual '+evalUTN.residuo.toExponential(2)+'. ';
+   explanation+=utn.modo_situaciones==='neutras'?'Hipótesis EXPERIMENTAL: efectos P/K de Situaciones omitidos.':'Probabilidades A/B configuradas por rol. ';
+   explanation+='Resultado condicionado a la política óptima de ingreso y al retorno obligatorio desde UTN.';
+ }else if(evalUTN.faltan?.length){
+   explanation='Faltan datos: '+esc(evalUTN.faltan.join(' · '))+'. No se sustituyen por cero.';
+ }else explanation=esc(evalUTN.detalle||'Completá los requisitos y frecuencias para estimar la duración de Infancia.');
+ explanation+='<p class="mini">Cota estructural inferior: 3 rondas esperadas si puede entrar a UTN en la primera y conserva requisitos (una ronda de ingreso y 2 rondas esperadas de examen). El mínimo real depende del casillero inicial y de la economía.</p>';
+ $('prob-explain').innerHTML=explanation;
+ if(calibrationResults)renderCalibration();
+ else {$('calibration-results').innerHTML='';$('calibration-badge').textContent='Exploratorio';}
+}
+function renderCalibration(){
+ const res=calibrationResults;
+ if(!res)return;
+ if(res.estado!=='calculado'){
+   $('calibration-results').innerHTML='<div class="block mini">'+esc(res.detalle||res.faltan?.join(' · ')||'No hay combinaciones evaluables en el rango.')+'</div>';
+   $('calibration-badge').textContent='Sin propuesta';return;
+ }
+ $('calibration-badge').textContent=res.exacta?'Objetivo alcanzado (±0,01)':'Propuestas cercanas';
+ const rows=res.lista.map((x,i)=>{
+   const good=x.error_absoluto<=.01;
+   return '<div class="block"><div class="label-line"><span><strong>P (2 y 4): '+x.premio_P_casilleros_2_y_4+'</strong> · K (5): '+x.premio_K_casillero_5+
+    '</span><b style="color:'+(good?'var(--sub)':'var(--warn)')+'">'+pretty(x.rondas_esperadas)+' r</b></div>'+
+    '<div class="label-line"><small class="mini">Diferencia absoluta: '+pretty(x.error_absoluto)+' r</small><button data-apply-utn="'+i+'">Aplicar al escenario</button></div></div>';
+ }).join('');
+ $('calibration-results').innerHTML=rows+'<p class="mini">'+esc(res.hipotesis)+' Evaluaciones: '+res.evaluaciones+' · casos inconclusos: '+res.inconclusos+'.</p>';
+ document.querySelectorAll('[data-apply-utn]').forEach(el=>el.onclick=()=>{
+   const candidate=calibrationResults?.lista[Number(el.dataset.applyUtn)];if(!candidate)return;
+   active=aplicarCandidatoUTN(active,candidate);calibrationResults=null;calibrationToken++;update(false);
+   $('calibration-progress').textContent='Premios aplicados SOLO al escenario actual. Guardalo o exportalo si querés conservarlo.';
+ });
+}
+async function searchUTN(){
+ const token=++calibrationToken;
+ $('search-utn').disabled=true;$('cancel-utn').disabled=false;
+ $('calibration-progress').textContent='Iniciando búsqueda determinista...';
+ $('calibration-results').innerHTML='';
+ try{
+   const result=await calibrarUTN(active,info=>{
+     if(token!==calibrationToken)return false;
+     $('calibration-progress').textContent='Explorando '+info.procesados+' / '+info.total+' valores de P · '+info.combinaciones+' configuraciones analíticas evaluadas';
+     return true;
+   });
+   if(token===calibrationToken){
+     calibrationResults=result;renderCalibration();
+     $('calibration-progress').textContent=result.estado==='calculado'?(result.exacta?'Se encontró al menos una propuesta dentro de 0,01 rondas del objetivo.':'No se encontró coincidencia exacta; se muestran las propuestas más cercanas.'):'No se obtuvieron propuestas: revisá los datos pendientes o el rango de búsqueda.';
+   }
+ }catch(error){$('calibration-progress').textContent='Error de calibración: '+error.message}
+ finally{$('search-utn').disabled=false;$('cancel-utn').disabled=true}
+}
 function renderResults(){
  const current=analizar(active),comparison=analizar(compare==='base'?base:scenarios[compare]||base);
  $('mode').textContent=stage.toUpperCase();
@@ -167,7 +269,7 @@ function renderResults(){
    return '<div class="block"><div class="label-line"><b>'+esc(label.replaceAll('_',' '))+'</b><span class="mini">Saldo libre / persona</span></div>'+
       ['Clarisa','Lucas'].map(role=>'<div class="mini">'+role+': '+R.map(k=>'<span class="chip" style="color:'+colors[k]+'">'+k+': '+esc(pretty(bal[role][k]))+'</span>').join('')+'</div>').join('')+'</div>';
  }).join('');
- const labels=[['utn','UTN','Comprobación P/K'],['titulo','Título','3 subhitos e intento'],['pasaporte','Pasaporte','3 subhitos e intento'],['dublin','Vuelo a Dublín','Título + Pasaporte + Pareja'],['casa','Casa','Reservas + precio compartido'],['boda_autentica','Boda auténtica','Ganan Clarisa y Lucas'],['boda_con_falso','Boda con Falso Lucas','Gana solo Clarisa; consentimiento abierto'],['falso_lucas','Casa + Dinero (Falso Lucas)','Gana solo Falso Lucas']];
+ const labels=[['utn','UTN · cota económica','Solo P/K, sin examen ni acceso físico'],['titulo','Título','3 subhitos e intento'],['pasaporte','Pasaporte','3 subhitos e intento'],['dublin','Vuelo a Dublín','Título + Pasaporte + Pareja'],['casa','Casa','Reservas + precio compartido'],['boda_autentica','Boda auténtica','Ganan Clarisa y Lucas'],['boda_con_falso','Boda con Falso Lucas','Gana solo Clarisa; consentimiento abierto'],['falso_lucas','Casa + Dinero (Falso Lucas)','Gana solo Falso Lucas']];
  $('estimates').innerHTML=labels.map(([k,n,d])=>estimate(n,k,current,comparison,d)).join('');
  $('bottlenecks').innerHTML=current.cuellos.length?current.cuellos.slice(0,6).map(x=>'<div class="block"><div class="label-line"><b>'+esc(x.recurso)+' · '+esc(x.rol)+'</b><b>'+esc(fmtGoal(x.rondas))+'</b></div><div class="mini">'+esc(x.etapa)+'</div></div>').join(''):'<div class="muted">No hay cuellos cuantificables hasta completar las tasas y demandas.</div>';
  $('warnings').innerHTML=current.avisos.map(x=>'<li>'+esc(x)+'</li>').join('');
@@ -176,12 +278,15 @@ function renderResults(){
  $('deltas').innerHTML=labels.filter(([k])=>k==='utn'||k==='dublin'||k==='casa'||k==='boda_autentica'||k==='falso_lucas').map(([k,n])=>{
    const a=currentVals[k],b=oldVals[k];return '<div class="label-line block"><span>'+esc(n)+'</span><b>'+esc(Number.isFinite(a)&&Number.isFinite(b)?(a-b>0?'+':'')+pretty(a-b)+' rondas':'No comparable')+'</b></div>';
  }).join('');
- $('status').textContent=Object.values(current.estimaciones).filter(x=>x===null).length+' resultados N/D';
+ $('status').textContent=Object.values(current.estimaciones).filter(x=>x===null).length+' cotas N/D';
+ renderProbabilistic();
 }
 function update(soft){
  if(!soft)renderEditor();
  renderResults();
 }
+$('search-utn').onclick=searchUTN;
+$('cancel-utn').onclick=()=>{calibrationToken++;$('cancel-utn').disabled=true;$('calibration-progress').textContent='Búsqueda cancelada.'};
 function persist(){try{localStorage.setItem('cl-v3-equ-scenarios',JSON.stringify(scenarios));}catch(e){console.warn(e)}}
 function restoreNames(){
  const names=['actual',...Object.keys(scenarios)];
@@ -201,8 +306,8 @@ $('duplicate').onclick=()=>{
  if(!name||name==='base'||name==='actual'||scenarios[name])return;
  scenarios[name]=clone(active);selected=name;persist();restoreNames();update(true);
 };
-$('reset').onclick=()=>{if(!confirm('¿Restaurar el catálogo de referencia? Se perderán cambios no guardados.'))return;active=clone(base);selected='actual';restoreNames();update(false)};
-$('scenario').onchange=ev=>{selected=ev.target.value;active=selected==='actual'?clone(base):clone(scenarios[selected]);update(false)};
+$('reset').onclick=()=>{if(!confirm('¿Restaurar el catálogo de referencia? Se perderán cambios no guardados.'))return;active=clone(base);selected='actual';calibrationResults=null;calibrationToken++;restoreNames();update(false)};
+$('scenario').onchange=ev=>{selected=ev.target.value;active=selected==='actual'?clone(base):clone(scenarios[selected]);if(!active.supuestos.utn_v31)active.supuestos.utn_v31=clone(base.supuestos.utn_v31);calibrationResults=null;calibrationToken++;update(false)};
 $('compare').onchange=ev=>{compare=ev.target.value;update(true)};
 $('export').onclick=()=>download('ecualizador-v3-escenario.json','application/json',JSON.stringify(active,null,2)+'\n');
 $('export-results').onclick=()=>download('ecualizador-v3-resultados.json','application/json',JSON.stringify(analizar(active),(k,v)=>v===Infinity?'inalcanzable':v,2)+'\\n');
@@ -215,7 +320,7 @@ $('import').onclick=()=>$('file-import').click();
 $('file-import').onchange=async ev=>{
  const file=ev.target.files[0];if(!file)return;
  try{const obj=JSON.parse(await file.text());if(!obj.etapas?.infancia||!obj.requisitos||!obj.supuestos)throw Error('El archivo no tiene la estructura v3.0');
- active=obj;selected='actual';restoreNames();update(false);}catch(e){alert('No se pudo importar: '+e.message)}ev.target.value='';
+ active=obj;if(!active.supuestos.utn_v31)active.supuestos.utn_v31=clone(base.supuestos.utn_v31);selected='actual';calibrationResults=null;calibrationToken++;restoreNames();update(false);}catch(e){alert('No se pudo importar: '+e.message)}ev.target.value='';
 };
 fetch('./matriz_economica_v3.json').then(r=>{if(!r.ok)throw Error('Catálogo HTTP '+r.status);return r.json()}).then(data=>{
  base=data;active=clone(base);
