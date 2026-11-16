@@ -65,6 +65,7 @@ assert.ok(!route.etapas.adultez.metas.some(m=>m.id==="boda"));
 const html=fs.readFileSync(path.join(here,"ecualizador.html"),"utf8");
 assert.ok(html.includes('id="stage-tabs"'));
 assert.ok(html.includes('id="source-editor"'));
+assert.ok(html.includes('id="source-shares"'));
 assert.ok(html.includes('id="goal-editor"'));
 assert.ok(html.includes("laboratorio")||html.includes("Ecualizador Macro"));
 for(const name of ["engine.js","ejemplo.js","app.js"])new vm.Script(fs.readFileSync(path.join(here,name),"utf8"),{filename:name});
