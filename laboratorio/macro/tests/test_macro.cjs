@@ -31,7 +31,7 @@ assert.equal(out.etapas.infancia.cuello,"K");
 assert.ok(out.etapas.juventud.tAgregado>0);
 assert.ok(out.etapas.adultez.tAgregado>0);
 const a100=deep(demo);a100.unidad_referencia=100;
-same(evaluarMacro(a100).etapas.infancia.tAgregado,out.etapas.infancia.tAgregado,"Escala V cancela");
+same(evaluarMacro(a100).etapas.infancia.tAgregado,out.etapas.infancia.tAgregado);
 const scaled=deep(demo);
 for(const e of Object.values(scaled.etapas)){
  for(const m of e.mecanismos){m.ganancia*=3;m.perdida*=3}
