@@ -1,10 +1,10 @@
 name: Pruebas Ecualizador v3
 on:
   push:
-    branches: [feature/ecualizador-teorico-v3, feature/ecualizador-v31-infantil-utn, main]
+    branches: [feature/ecualizador-teorico-v3, feature/ecualizador-v31-infantil-utn, feature/ecualizador-macro-proporciones-v1, main]
     paths: ['laboratorio/v3/**', 'laboratorio/macro/**', '.github/workflows/ecualizador-v3.yml']
   pull_request:
-    paths: ['laboratorio/v3/**', '.github/workflows/ecualizador-v3.yml']
+    paths: ['laboratorio/v3/**', 'laboratorio/macro/**', '.github/workflows/ecualizador-v3.yml']
 jobs:
   model:
     runs-on: ubuntu-latest
