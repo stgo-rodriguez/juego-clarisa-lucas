@@ -48,8 +48,9 @@ function meta(g){
  return {por_recurso:d,errores};
 }
 function dividir(a,b){
+ if(a===0)return 0; // un recurso fuera de la demanda no bloquea aunque su producción sea N/D
  if(a===null||b===null)return null;
- if(b===0)return a>0?Infinity:0;
+ if(b<=0)return Infinity;
  return a/b;
 }
 function evaluarEtapa(cfg,stage){
