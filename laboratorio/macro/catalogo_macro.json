@@ -1,0 +1,352 @@
+{
+  "version": "macro-v1.0",
+  "nombre": "Ecualizador de alto nivel (macro): unidades de referencia, volúmenes y proporciones",
+  "origen": "Diseño paramétrico experimental; no implica importes definitivos ni probabilidades reales",
+  "unidad_referencia": 1,
+  "ruta_adultez": "boda",
+  "etapas": {
+    "infancia": {
+      "duracion_objetivo": 5,
+      "distribucion_referencia": {
+        "A": 50,
+        "P": 30,
+        "K": 20,
+        "M": 0
+      },
+      "mecanismos": [
+        {
+          "id": "casilleros",
+          "nombre": "Casilleros",
+          "nota": "Frecuencia esperada de cobrar recursos (sin identificar casilleros)",
+          "frecuencia": 1,
+          "ganancia": null,
+          "perdida": 0,
+          "pesos_ganancia": {
+            "A": 50,
+            "P": 30,
+            "K": 20,
+            "M": 0
+          },
+          "pesos_perdida": {
+            "A": 25,
+            "P": 25,
+            "K": 25,
+            "M": 25
+          }
+        },
+        {
+          "id": "cartas",
+          "nombre": "Cartas de Situación",
+          "nota": "Promedio esperado de todas las opciones A/B por turno y rol; ganancias y pérdidas separadas",
+          "frecuencia": 1,
+          "ganancia": null,
+          "perdida": null,
+          "pesos_ganancia": {
+            "A": 50,
+            "P": 30,
+            "K": 20,
+            "M": 0
+          },
+          "pesos_perdida": {
+            "A": 25,
+            "P": 25,
+            "K": 25,
+            "M": 25
+          }
+        },
+        {
+          "id": "otros",
+          "nombre": "Interacciones / otros",
+          "nota": "Bolsa opcional de duelos, cambios o beneficios no asignados; empieza desactivada",
+          "frecuencia": 0,
+          "ganancia": 0,
+          "perdida": 0,
+          "pesos_ganancia": {
+            "A": 50,
+            "P": 30,
+            "K": 20,
+            "M": 0
+          },
+          "pesos_perdida": {
+            "A": 25,
+            "P": 25,
+            "K": 25,
+            "M": 25
+          }
+        }
+      ],
+      "objetivos": [
+        {
+          "id": "utn",
+          "nombre": "Ingreso y aprobación de UTN (umbral P/K)",
+          "categoria": "verificacion",
+          "multiplicador": null,
+          "pesos": {
+            "A": 0,
+            "P": 50,
+            "K": 50,
+            "M": 0
+          }
+        }
+      ]
+    },
+    "juventud": {
+      "duracion_objetivo": null,
+      "distribucion_referencia": {
+        "A": 17,
+        "P": 25,
+        "K": 42,
+        "M": 17
+      },
+      "mecanismos": [
+        {
+          "id": "casilleros",
+          "nombre": "Casilleros",
+          "nota": "Frecuencia esperada de cobrar recursos (sin identificar casilleros)",
+          "frecuencia": null,
+          "ganancia": null,
+          "perdida": 0,
+          "pesos_ganancia": {
+            "A": 17,
+            "P": 25,
+            "K": 42,
+            "M": 17
+          },
+          "pesos_perdida": {
+            "A": 25,
+            "P": 25,
+            "K": 25,
+            "M": 25
+          }
+        },
+        {
+          "id": "cartas",
+          "nombre": "Cartas de Situación",
+          "nota": "Promedio esperado de todas las opciones A/B por turno y rol; ganancias y pérdidas separadas",
+          "frecuencia": 1,
+          "ganancia": null,
+          "perdida": null,
+          "pesos_ganancia": {
+            "A": 17,
+            "P": 25,
+            "K": 42,
+            "M": 17
+          },
+          "pesos_perdida": {
+            "A": 25,
+            "P": 25,
+            "K": 25,
+            "M": 25
+          }
+        },
+        {
+          "id": "perfiles",
+          "nombre": "Perfiles",
+          "nota": "Frecuencia equivalente por ronda; no presupone cuántas vueltas se dan ni cuándo se cobran",
+          "frecuencia": null,
+          "ganancia": null,
+          "perdida": 0,
+          "pesos_ganancia": {
+            "A": 17,
+            "P": 25,
+            "K": 42,
+            "M": 17
+          },
+          "pesos_perdida": {
+            "A": 25,
+            "P": 25,
+            "K": 25,
+            "M": 25
+          }
+        },
+        {
+          "id": "otros",
+          "nombre": "Interacciones / otros",
+          "nota": "Bolsa opcional de duelos, cambios o beneficios no asignados; empieza desactivada",
+          "frecuencia": 0,
+          "ganancia": 0,
+          "perdida": 0,
+          "pesos_ganancia": {
+            "A": 17,
+            "P": 25,
+            "K": 42,
+            "M": 17
+          },
+          "pesos_perdida": {
+            "A": 25,
+            "P": 25,
+            "K": 25,
+            "M": 25
+          }
+        }
+      ],
+      "objetivos": [
+        {
+          "id": "titulo",
+          "nombre": "Título (inversiones agregadas)",
+          "categoria": "consumo",
+          "multiplicador": null,
+          "pesos": {
+            "A": 0,
+            "P": 0,
+            "K": 100,
+            "M": 0
+          }
+        },
+        {
+          "id": "pasaporte",
+          "nombre": "Pasaporte (inversiones agregadas)",
+          "categoria": "consumo",
+          "multiplicador": null,
+          "pesos": {
+            "A": 0,
+            "P": 50,
+            "K": 0,
+            "M": 50
+          }
+        },
+        {
+          "id": "vuelo",
+          "nombre": "Dublín (umbral de viaje)",
+          "categoria": "verificacion",
+          "multiplicador": null,
+          "pesos": {
+            "A": 0,
+            "P": 0,
+            "K": 50,
+            "M": 50
+          }
+        }
+      ]
+    },
+    "adultez": {
+      "duracion_objetivo": null,
+      "distribucion_referencia": {
+        "A": 27,
+        "P": 18,
+        "K": 9,
+        "M": 45
+      },
+      "mecanismos": [
+        {
+          "id": "casilleros",
+          "nombre": "Casilleros",
+          "nota": "Frecuencia esperada de cobrar recursos (sin identificar casilleros)",
+          "frecuencia": null,
+          "ganancia": null,
+          "perdida": 0,
+          "pesos_ganancia": {
+            "A": 27,
+            "P": 18,
+            "K": 9,
+            "M": 45
+          },
+          "pesos_perdida": {
+            "A": 25,
+            "P": 25,
+            "K": 25,
+            "M": 25
+          }
+        },
+        {
+          "id": "cartas",
+          "nombre": "Cartas de Situación",
+          "nota": "Promedio esperado de todas las opciones A/B por turno y rol; ganancias y pérdidas separadas",
+          "frecuencia": 1,
+          "ganancia": null,
+          "perdida": null,
+          "pesos_ganancia": {
+            "A": 27,
+            "P": 18,
+            "K": 9,
+            "M": 45
+          },
+          "pesos_perdida": {
+            "A": 25,
+            "P": 25,
+            "K": 25,
+            "M": 25
+          }
+        },
+        {
+          "id": "perfiles",
+          "nombre": "Perfiles",
+          "nota": "Frecuencia equivalente por ronda; no presupone cuántas vueltas se dan ni cuándo se cobran",
+          "frecuencia": null,
+          "ganancia": null,
+          "perdida": 0,
+          "pesos_ganancia": {
+            "A": 27,
+            "P": 18,
+            "K": 9,
+            "M": 45
+          },
+          "pesos_perdida": {
+            "A": 25,
+            "P": 25,
+            "K": 25,
+            "M": 25
+          }
+        },
+        {
+          "id": "otros",
+          "nombre": "Interacciones / otros",
+          "nota": "Bolsa opcional de duelos, cambios o beneficios no asignados; empieza desactivada",
+          "frecuencia": 0,
+          "ganancia": 0,
+          "perdida": 0,
+          "pesos_ganancia": {
+            "A": 27,
+            "P": 18,
+            "K": 9,
+            "M": 45
+          },
+          "pesos_perdida": {
+            "A": 25,
+            "P": 25,
+            "K": 25,
+            "M": 25
+          }
+        }
+      ],
+      "objetivos": [
+        {
+          "id": "casa",
+          "nombre": "Casa (umbral agregado A/P/M)",
+          "categoria": "acceso",
+          "multiplicador": null,
+          "pesos": {
+            "A": 34,
+            "P": 33,
+            "K": 0,
+            "M": 33
+          }
+        },
+        {
+          "id": "boda",
+          "nombre": "Casamiento (afinidad y otros requisitos)",
+          "categoria": "meta_boda",
+          "multiplicador": null,
+          "pesos": {
+            "A": 25,
+            "P": 25,
+            "K": 25,
+            "M": 25
+          }
+        },
+        {
+          "id": "falso",
+          "nombre": "Falso Lucas (objetivo individual M)",
+          "categoria": "meta_falso",
+          "multiplicador": null,
+          "pesos": {
+            "A": 0,
+            "P": 0,
+            "K": 0,
+            "M": 100
+          }
+        }
+      ]
+    }
+  }
+}

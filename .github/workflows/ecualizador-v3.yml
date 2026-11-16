@@ -1,10 +1,10 @@
 name: Pruebas Ecualizador v3
 on:
   push:
-    branches: [feature/ecualizador-teorico-v3, feature/ecualizador-v31-infantil-utn, main]
-    paths: ['laboratorio/v3/**', '.github/workflows/ecualizador-v3.yml']
+    branches: [feature/ecualizador-teorico-v3, feature/ecualizador-v31-infantil-utn, feature/ecualizador-macro-proporciones-v1, main]
+    paths: ['laboratorio/v3/**', 'laboratorio/macro/**', '.github/workflows/ecualizador-v3.yml']
   pull_request:
-    paths: ['laboratorio/v3/**', '.github/workflows/ecualizador-v3.yml']
+    paths: ['laboratorio/v3/**', 'laboratorio/macro/**', '.github/workflows/ecualizador-v3.yml']
 jobs:
   model:
     runs-on: ubuntu-latest
@@ -19,4 +19,5 @@ jobs:
       - run: python -m unittest discover -s laboratorio/v3/tests -p 'test_*.py'
       - run: node laboratorio/v3/tests/test_engine.cjs
       - run: node laboratorio/v3/tests/test_markov.cjs
+      - run: node laboratorio/macro/tests/test_macro.cjs
       - run: python laboratorio/v3/modelo_matematico.py > /tmp/v3-output.json

@@ -1,0 +1,72 @@
+const assert=require("node:assert/strict");
+const fs=require("node:fs");
+const path=require("node:path");
+const vm=require("node:vm");
+const here=path.resolve(__dirname,"..");
+const {evaluarMacro,pesosNormalizados,fuente,meta}=require("../engine.js");
+const {crearEjemploMacro}=require("../ejemplo.js");
+const catalog=JSON.parse(fs.readFileSync(path.join(here,"catalogo_macro.json"),"utf8"));
+function same(a,b,eps=1e-8){assert.ok(Math.abs(a-b)<eps,"Se esperaba "+b+" pero se obtuvo "+a)}
+function deep(o){return JSON.parse(JSON.stringify(o))}
+const root=evaluarMacro(catalog);
+assert.equal(root.estado,"ok");
+assert.equal(root.etapas.infancia.tAgregado,null,"Los importes aún indefinidos producen N/D");
+assert.equal(root.etapas.infancia.objetivo_rondas,5);
+assert.equal(catalog.etapas.infancia.mecanismos.find(m=>m.id==="casilleros").ganancia,null);
+const before=JSON.stringify(catalog);
+const demo=crearEjemploMacro(catalog);
+assert.equal(before,JSON.stringify(catalog),"El ejemplo no muta los datos base");
+assert.equal(demo.es_demostracion,true);
+const out=evaluarMacro(demo);
+assert.equal(out.estado,"ok");
+same(out.etapas.infancia.netos.A,2.25);
+same(out.etapas.infancia.netos.P,1.25);
+same(out.etapas.infancia.netos.K,0.75);
+same(out.etapas.infancia.netos.M,-0.25);
+same(out.etapas.infancia.demanda.P,5);
+same(out.etapas.infancia.demanda.K,5);
+same(out.etapas.infancia.tAgregado,5/.75);
+same(out.etapas.infancia.factorVolumenRequerido,(5/.75)/5);
+assert.equal(out.etapas.infancia.cuello,"K");
+assert.ok(out.etapas.juventud.tAgregado>0);
+assert.ok(out.etapas.adultez.tAgregado>0);
+const a100=deep(demo);a100.unidad_referencia=100;
+same(evaluarMacro(a100).etapas.infancia.tAgregado,out.etapas.infancia.tAgregado);
+const scaled=deep(demo);
+for(const e of Object.values(scaled.etapas)){
+ for(const m of e.mecanismos){m.ganancia*=3;m.perdida*=3}
+ for(const g of e.objetivos){g.multiplicador*=3}
+}
+same(evaluarMacro(scaled).etapas.infancia.tAgregado,out.etapas.infancia.tAgregado);
+same(evaluarMacro(scaled).etapas.juventud.tAgregado,out.etapas.juventud.tAgregado);
+same(evaluarMacro(scaled).etapas.adultez.tAgregado,out.etapas.adultez.tAgregado);
+const loss=deep(demo);
+loss.etapas.infancia.mecanismos.find(m=>m.id==="cartas").perdida=8;
+assert.equal(evaluarMacro(loss).etapas.infancia.tAgregado,Infinity);
+const unknown=deep(demo);
+unknown.etapas.infancia.objetivos[0].multiplicador=null;
+assert.equal(evaluarMacro(unknown).etapas.infancia.tAgregado,null);
+const noK=deep(demo);
+noK.etapas.infancia.objetivos[0].pesos={A:0,P:100,K:0,M:0};
+noK.etapas.infancia.mecanismos.find(m=>m.id==="casilleros").ganancia=null;
+assert.equal(evaluarMacro(noK).etapas.infancia.tAgregado,null);
+const weights=pesosNormalizados({A:17,P:25,K:42,M:17});
+same(Object.values(weights).reduce((a,b)=>a+b,0),1);
+assert.equal(pesosNormalizados({A:0,P:0,K:0,M:0}),null);
+const checkSource=fuente({nombre:"Carta",frecuencia:2,ganancia:3,perdida:1,pesos_ganancia:{A:100,P:0,K:0,M:0},pesos_perdida:{A:0,P:0,K:100,M:0}});
+same(checkSource.neta.A,6);
+same(checkSource.neta.K,-2);
+const fullGoal=meta({nombre:"Test",multiplicador:10,pesos:{A:20,P:30,K:50,M:0}});
+same(fullGoal.por_recurso.A,2);same(fullGoal.por_recurso.K,5);
+const fake=deep(demo);fake.ruta_adultez="falso";
+const route=evaluarMacro(fake);
+assert.ok(route.etapas.adultez.metas.some(m=>m.id==="falso"));
+assert.ok(!route.etapas.adultez.metas.some(m=>m.id==="boda"));
+const html=fs.readFileSync(path.join(here,"ecualizador.html"),"utf8");
+assert.ok(html.includes('id="stage-tabs"'));
+assert.ok(html.includes('id="source-editor"'));
+assert.ok(html.includes('id="source-shares"'));
+assert.ok(html.includes('id="goal-editor"'));
+assert.ok(html.includes("laboratorio")||html.includes("Ecualizador Macro"));
+for(const name of ["engine.js","ejemplo.js","app.js"])new vm.Script(fs.readFileSync(path.join(here,name),"utf8"),{filename:name});
+console.log("OK: macro, escenarios, volumen, mezcla, cuellos, escala, alternativas de victoria y sintaxis JS");
