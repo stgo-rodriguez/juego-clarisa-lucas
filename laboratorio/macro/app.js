@@ -132,6 +132,15 @@ function renderResults(){
   const m=active.etapas[stage].mecanismos[i],net=sumObj(s.neta);
   return '<tr><td>'+esc(m.nombre)+'</td><td class="num">'+fmt(m.frecuencia)+'</td><td class="num">'+fmt(m.ganancia)+'</td><td class="num">'+fmt(m.perdida)+'</td><td class="num">'+fmt(net)+'</td></tr>';
  }).join("");
+ const sourceColors={casilleros:"#88d2b6",cartas:"#7fc9ea",perfiles:"#b7a3f5",otros:"#e4bd81"};
+ const shares=e.fuentes.map(s=>({id:s.id,nombre:s.nombre,volumen:sumObj(s.ganancia)}));
+ const sourceSum=shares.some(s=>s.volumen===null)?null:shares.reduce((sum,s)=>sum+s.volumen,0);
+ $("source-shares").innerHTML=shares.map(s=>{
+  const share=sourceSum===null||s.volumen===null||sourceSum===0?null:s.volumen/sourceSum;
+  return '<div class="resource-row" style="grid-template-columns:125px 1fr 65px">'+
+   '<span class="tiny">'+esc(s.nombre)+'</span><div class="mini-bar"><span style="width:'+(share===null?0:Math.max(0,Math.min(100,share*100)))+'%;background:'+sourceColors[s.id]+'"></span></div>'+
+   '<strong>'+esc(share===null?"N/D":pct(share))+'</strong></div>';
+ }).join("");
  $("goal-rows").innerHTML=e.metas.map(g=>{
   const original=active.etapas[stage].objetivos.find(m=>m.id===g.id);
   return '<tr><td>'+esc(g.nombre)+'</td><td>'+esc(g.categoria)+'</td><td class="num">'+fmt(original.multiplicador)+'</td><td>'+esc(normRaw(original.pesos))+'</td></tr>';
