@@ -1,5 +1,7 @@
 # Ecualizador Teórico v3.1 · Clarisa & Lucas
 
+**Segundo ecualizador independiente:** [Macro de volúmenes y proporciones](https://stgo-rodriguez.github.io/juego-clarisa-lucas/laboratorio/macro/ecualizador.html). Su motor y escenarios están separados de esta herramienta; no reemplaza el modelo detallado de UTN.
+
 Prototipo de balance analítico basado en la especificación conceptual del 14 de noviembre de 2026. El repositorio original no contenía la carpeta `laboratorio/v3`; esta implementación la crea, sin modificar los motores ni las pantallas anteriores.
 
 ## Abrir
